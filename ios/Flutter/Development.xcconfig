@@ -1,0 +1,6 @@
+// Development xcconfig
+// Copy this file to Xcode and assign to the Development build configuration.
+// Example: set PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.pos_royal.dev
+PRODUCT_BUNDLE_IDENTIFIER = posroyal.pos_royal.dev
+FLAVOR = development
+// Add any other dev-specific flags here

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "122681934982",
+    "project_id": "img-royalcorp",
+    "storage_bucket": "img-royalcorp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:122681934982:android:9f44dac247624fc3267d07",
+        "android_client_info": {
+          "package_name": "posroyal.pos_royal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "122681934982-ilfedk4jjpragbqpm9dvhlq6g2ss73hb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQnMZziIJ4II_cpVvUU2aGDu-1CatWjc8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "122681934982-ilfedk4jjpragbqpm9dvhlq6g2ss73hb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

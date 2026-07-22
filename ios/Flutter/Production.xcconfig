@@ -1,0 +1,3 @@
+// Production xcconfig
+PRODUCT_BUNDLE_IDENTIFIER = posroyal.pos_royal
+FLAVOR = production

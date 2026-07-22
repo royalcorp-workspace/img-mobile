@@ -1,0 +1,90 @@
+{
+  "project_info": {
+    "project_number": "355423691978",
+    "project_id": "img-royalcorp-dev",
+    "storage_bucket": "img-royalcorp-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:355423691978:android:3f772e61c8f3e0131c0033",
+        "android_client_info": {
+          "package_name": "posroyal.pos_royal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "355423691978-pgv8ulnfbmqmaqdq3iq793plh7m6a5vo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB25iTc5dpqwSjz1Zo323tThbB-KTnSpy0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "355423691978-pgv8ulnfbmqmaqdq3iq793plh7m6a5vo.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "355423691978-etg1pmssunmaiibi2pcviuq2krdn2gh4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "posroyal.posRoyal"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:355423691978:android:89ac8794cd7d55321c0033",
+        "android_client_info": {
+          "package_name": "posroyal.pos_royal.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "355423691978-0cftgdnual1rq6muo3mkeg9lb6p4i75p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "posroyal.pos_royal.dev",
+            "certificate_hash": "1ff2de204a697905efbb3b07dc434067d12b448a"
+          }
+        },
+        {
+          "client_id": "355423691978-pgv8ulnfbmqmaqdq3iq793plh7m6a5vo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB25iTc5dpqwSjz1Zo323tThbB-KTnSpy0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "355423691978-pgv8ulnfbmqmaqdq3iq793plh7m6a5vo.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "355423691978-etg1pmssunmaiibi2pcviuq2krdn2gh4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "posroyal.posRoyal"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

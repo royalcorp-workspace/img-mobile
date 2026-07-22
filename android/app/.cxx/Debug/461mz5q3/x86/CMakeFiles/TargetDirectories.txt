@@ -1,0 +1,2 @@
+/Users/alghanykennedyadam/Downloads/Project/Frontend/Mobile Apps/Flutter/pos_royal/android/app/.cxx/Debug/461mz5q3/x86/CMakeFiles/edit_cache.dir
+/Users/alghanykennedyadam/Downloads/Project/Frontend/Mobile Apps/Flutter/pos_royal/android/app/.cxx/Debug/461mz5q3/x86/CMakeFiles/rebuild_cache.dir

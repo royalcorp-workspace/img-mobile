@@ -1,0 +1,191 @@
+import 'package:add_to_cart_animation/add_to_cart_icon.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'package:get/get.dart';
+import 'package:pos_royal/app/core/styles/app_color.dart';
+import 'package:pos_royal/app/core/styles/app_text_style.dart';
+import 'package:pos_royal/app/modules/home/widgets/icon_badge.dart';
+import 'package:pos_royal/app/modules/home/widgets/product_card.dart';
+import 'package:pos_royal/app/modules/product/widgets/countdown_container.dart';
+import 'package:pos_royal/app/modules/product/widgets/product_promotion_card.dart';
+import 'package:pos_royal/app/routes/app_pages.dart';
+import 'package:pos_royal/app/shared/widgets/app_banner.dart';
+import 'package:pos_royal/app/shared/widgets/app_divider.dart';
+import 'package:pos_royal/app/shared/widgets/app_search_field.dart';
+
+import '../controllers/product_controller.dart';
+
+class ProductView extends GetView<ProductController> {
+  const ProductView({super.key});
+  @override
+  Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: AppColors.primaryColor, // same as top container
+        statusBarIconBrightness: Brightness.light, // white icons
+      ),
+    );
+    return Scaffold(
+      appBar: _buildAppBar(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            15.verticalSpace,
+            SizedBox(
+              height: 40.h,
+              child: ListView.separated(
+                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                padding: const EdgeInsets.only(left: 8, bottom: 5, right: 8),
+                scrollDirection: Axis.horizontal,
+                itemCount: 4,
+                itemBuilder: (context, index) => Obx(
+                  () => InkWell(
+                    onTap: () => controller.selectedIndex.value = index,
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: controller.selectedIndex.value == index
+                              ? AppColors.primaryColor
+                              : AppColors.lightGrey,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          index == 0
+                              ? 'Semua'
+                              : index == 1
+                                  ? 'Harga Terendah'
+                                  : index == 2
+                                      ? 'Promo'
+                                      : 'Bebas Ongkir',
+                          style: controller.selectedIndex.value == index
+                              ? AppTextStyle.mediumBlack
+                                  .copyWith(color: AppColors.primaryColor)
+                              : AppTextStyle.mediumBlack,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            15.verticalSpace,
+            const CustomBanner(imagePath: 'img_banner5.png'),
+            15.verticalSpace,
+            Visibility(
+              visible: controller.start.value != 0,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RPadding(
+                    padding: EdgeInsets.symmetric(horizontal: 14),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Promo Diskon Hingga 78%',
+                          style: AppTextStyle.largeBlackBold,
+                        ),
+                        Obx(
+                          () => CountdownContainer(
+                            text: controller.formattedTime,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  15.verticalSpace,
+                  RPadding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ProductPromotionCard(),
+                        ProductPromotionCard(),
+                        ProductPromotionCard(),
+                        ProductPromotionCard(),
+                      ],
+                    ),
+                  ),
+                  20.verticalSpace,
+                  const AppDivider(),
+                  20.verticalSpace,
+                ],
+              ),
+            ),
+            const RPadding(
+              padding: EdgeInsets.symmetric(horizontal: 14),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Mungkin kamu tertarik',
+                  style: AppTextStyle.largeBlackBold,
+                ),
+              ),
+            ),
+            10.verticalSpace,
+            RPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: GridView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 0.64,
+                ),
+                shrinkWrap: true,
+                itemCount: 8,
+                itemBuilder: (context, index) => ProductCard(
+                  onTap: (p0) => Get.toNamed(Routes.DETAIL_PRODUCT),
+                ),
+              ),
+            ),
+            20.verticalSpace,
+          ],
+        ),
+      ),
+    );
+  }
+
+  // AppBar with search and action icons
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      toolbarHeight: 70.h,
+      automaticallyImplyLeading: false,
+      title: SizedBox(
+        width: 260.w,
+        child: const AppSearchField(),
+      ),
+      backgroundColor: AppColors.primaryColor,
+      actions: [
+        const IconBadge(
+          iconPath: 'ic_notification.svg',
+          count: 3,
+        ),
+        2.horizontalSpace,
+        AddToCartIcon(
+          key: controller.cartKey,
+          icon: InkWell(
+            onTap: () => Get.toNamed(Routes.CART),
+            child: IconBadge(
+              iconPath: 'ic_cart.svg',
+              count: 1,
+            ),
+          ),
+          badgeOptions: const BadgeOptions(
+            width: 0,
+            height: 0,
+            fontSize: 0,
+            active: false,
+          ),
+        ),
+        7.horizontalSpace,
+      ],
+    );
+  }
+}

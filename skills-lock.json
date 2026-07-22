@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "skills": {
+    "agile": {
+      "source": "pluginagentmarketplace/custom-plugin-product-manager",
+      "sourceType": "github",
+      "computedHash": "903d1363cd95223b4cf560082a8955d7709a130f193f60663e529f3a241ae220"
+    },
+    "analytics-metrics-kpi": {
+      "source": "pluginagentmarketplace/custom-plugin-product-manager",
+      "sourceType": "github",
+      "computedHash": "b84bd1bd613695a96e4ca1ed7259a8e2fec1838947bcb8d3ce599fd219262c5f"
+    },
+    "competitive-analysis": {
+      "source": "pluginagentmarketplace/custom-plugin-product-manager",
+      "sourceType": "github",
+      "computedHash": "cd22f43ad0abe8b9657676f9b4359691c6afe102a8fc0329f581a3fe1b4f6ec0"
+    },
+    "launch-gtm-execution": {
+      "source": "pluginagentmarketplace/custom-plugin-product-manager",
+      "sourceType": "github",
+      "computedHash": "f3120f15bd78ef1abc92a9f31da187cbceab332b67d20dcdd718de3e3366132b"
+    },
+    "leadership-stakeholder-management": {
+      "source": "pluginagentmarketplace/custom-plugin-product-manager",
+      "sourceType": "github",
+      "computedHash": "745da4691188f40890bbb7d119bbf5f5869684da3be537b4988a19f591e74a16"
+    },
+    "pricing": {
+      "source": "pluginagentmarketplace/custom-plugin-product-manager",
+      "sourceType": "github",
+      "computedHash": "36a1d184c8c4ba04320072c8447b952e1e02f9b5d05a1025bada43c865110438"
+    },
+    "product-strategy": {
+      "source": "pluginagentmarketplace/custom-plugin-product-manager",
+      "sourceType": "github",
+      "computedHash": "25036663346edd8bf27e5ff90869481bfbe5e245f1eb1e998718d5db612c75d8"
+    },
+    "requirements-specification": {
+      "source": "pluginagentmarketplace/custom-plugin-product-manager",
+      "sourceType": "github",
+      "computedHash": "c7e1f516409992a8a6f80987164a741750203f9756e08dcdb89524e1160d86e5"
+    },
+    "roadmap-prioritization-planning": {
+      "source": "pluginagentmarketplace/custom-plugin-product-manager",
+      "sourceType": "github",
+      "computedHash": "a5ab61f504c364483acab36cef8bbcffede8e2be94ee37d65af0bdcac7b1f07f"
+    },
+    "stakeholder-communication": {
+      "source": "pluginagentmarketplace/custom-plugin-product-manager",
+      "sourceType": "github",
+      "computedHash": "dea406845a3ef9d552218efd2ca03499b05cc9775e9453921b65e5706fd2ec15"
+    },
+    "user-discovery-research": {
+      "source": "pluginagentmarketplace/custom-plugin-product-manager",
+      "sourceType": "github",
+      "computedHash": "4e58040f015ecfdfed680a44fc8a822fb6bbf7e98f9a4fd8b2b6079fb061654e"
+    },
+    "user-research": {
+      "source": "pluginagentmarketplace/custom-plugin-product-manager",
+      "sourceType": "github",
+      "computedHash": "a9d4dd2afdf20f73aca51c3e5cee579edbc952ec6762bad7af7981affe8fe220"
+    }
+  }
+}
