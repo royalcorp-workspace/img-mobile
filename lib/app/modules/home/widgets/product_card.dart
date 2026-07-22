@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pos_royal/app/core/helper/helper.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
+import 'package:pos_royal/app/domain/entities/product_entity.dart';
 import 'package:pos_royal/app/shared/widgets/text/text_price_bold.dart';
 import 'package:pos_royal/app/shared/widgets/text/text_price_line_through.dart';
 
@@ -142,13 +143,51 @@ class ProductsCard extends StatelessWidget {
   ProductsCard({
     super.key,
     required this.onTap,
+    this.product,
   });
 
   final GlobalKey widgetKey = GlobalKey();
   final void Function(GlobalKey) onTap;
+  final ProductEntity? product;
 
   @override
   Widget build(BuildContext context) {
+    final String title = product?.name ?? "-";
+    double priceVal = 0.0;
+    double originalPriceVal = 0.0;
+    if (product != null) {
+      priceVal = product!.finalPrice > 0
+          ? product!.finalPrice
+          : (product!.basePrice > 0
+              ? product!.basePrice
+              : (product!.variants.isNotEmpty
+                  ? (product!.variants.first.finalPrice > 0
+                      ? product!.variants.first.finalPrice
+                      : product!.variants.first.price)
+                  : 0.0));
+      if (product!.basePrice > priceVal) {
+        originalPriceVal = product!.basePrice;
+      }
+    }
+    final String formattedPrice =
+        product != null ? Helper.formatCurrency(priceVal.toInt()) : 'Rp 0';
+    final String formattedOriginalPrice = originalPriceVal > 0
+        ? Helper.formatCurrency(originalPriceVal.toInt())
+        : '';
+    final String imageUrl = product?.thumbnail ??
+        (product?.images.isNotEmpty == true ? product!.images.first.image : '');
+    final String ratingStr = (product?.avgRating ?? 4.2).toStringAsFixed(1);
+    final String reviewsStr = '(${product?.totalReviews ?? 128})';
+
+    ImageProvider imageProvider;
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      imageProvider = NetworkImage(imageUrl);
+    } else {
+      imageProvider = AssetImage(
+        Helper.getImagePath('img_product1.jpg'),
+      );
+    }
+
     Container mandatoryContainer = Container(
       key: widgetKey,
       width: 150.w,
@@ -169,17 +208,14 @@ class ProductsCard extends StatelessWidget {
           Container(
             height: 80.h,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20),
                 topRight: Radius.circular(20),
               ),
               image: DecorationImage(
                 fit: BoxFit.cover,
-                image: AssetImage(
-                  Helper.getImagePath(
-                    'img_product1.jpg',
-                  ),
-                ),
+                image: imageProvider,
+                onError: (exception, stackTrace) {},
               ),
             ),
           ),
@@ -190,15 +226,18 @@ class ProductsCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Elite Springbed Kasur Pocket Emporium New Edition",
+                  title,
                   style: AppTextStyle.largeBlackBold,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 15.verticalSpace,
-                TextPriceBold(price: 'Rp 1.087.210'),
+                TextPriceBold(price: formattedPrice),
                 5.verticalSpace,
-                TextPriceLineThrough(price: 'Rp 3.749.000'),
+                if (product == null)
+                  TextPriceLineThrough(price: 'Rp 0')
+                else if (formattedOriginalPrice.isNotEmpty)
+                  TextPriceLineThrough(price: formattedOriginalPrice),
               ],
             ),
           ),
@@ -214,14 +253,14 @@ class ProductsCard extends StatelessWidget {
                 ),
                 2.horizontalSpace,
                 Text(
-                  '4.2',
+                  ratingStr,
                   style: AppTextStyle.mediumBlackBold.copyWith(
                     color: AppColors.yellow,
                   ),
                 ),
                 4.horizontalSpace,
                 Text(
-                  '(128)',
+                  reviewsStr,
                   style: AppTextStyle.smallGrey,
                 ),
               ],

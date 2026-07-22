@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:pos_royal/app/core/helper/helper.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
+import 'package:pos_royal/app/modules/home/controllers/home_controller.dart';
 import 'package:pos_royal/app/modules/home/views/home_view.dart';
 import 'package:pos_royal/app/modules/order/views/order_view.dart';
 import 'package:pos_royal/app/modules/product/views/product_view.dart';
@@ -45,6 +46,11 @@ class NavigationView extends GetView<NavigationController> {
           child: NavigationBar(
             elevation: 15,
             onDestinationSelected: (int index) {
+              if (index == 0) {
+                if (Get.isRegistered<HomeController>()) {
+                  Get.find<HomeController>().scrollToTop();
+                }
+              }
               controller.currentPageIndex.value = index;
             },
             indicatorColor: Colors.transparent,

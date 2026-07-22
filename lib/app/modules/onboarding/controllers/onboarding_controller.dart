@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:pos_royal/app/routes/app_pages.dart';
+import 'package:pos_royal/app/shared/data/app_shared_prefs.dart';
 
 class OnboardingController extends GetxController {
   final pageController = PageController();
@@ -11,8 +12,7 @@ class OnboardingController extends GetxController {
       "title": "Temukan Belanja\nPremium",
       "subtitle":
           "Temukan ribuan produk berkualitas\ndari penjual terpercaya di seluruh dunia.",
-      "image":
-          "assets/svg/onboarding_1.svg", // Placeholder, will use icon in view
+      "image": "assets/svg/onboarding_1.svg",
     },
     {
       "title": "Pengiriman Cepat\n& Aman",
@@ -42,7 +42,11 @@ class OnboardingController extends GetxController {
     }
   }
 
-  void skip() {
+  Future<void> skip() async {
+    try {
+      final prefs = Get.find<AppSharedPrefs>();
+      await prefs.write('seen_onboarding', 'true');
+    } catch (_) {}
     Get.offAllNamed(Routes.LOGIN);
   }
 }

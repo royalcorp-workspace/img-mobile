@@ -11,10 +11,13 @@ Future<void> initInjections() async {
   await appSharedPrefs.init();
   await TokenStorage.init();
 
+  final inspector = DioRequestInspector(isInspectorEnabled: true);
+  DioNetwork.appAPI.interceptors.add(inspector.getDioRequestInterceptor());
+
   Get
     ..put<Dio>(DioNetwork.appAPI)
     ..put(appSharedPrefs)
     ..put(AuthService())
     ..put(DioNetwork())
-    ..put(DioRequestInspector(isInspectorEnabled: true));
+    ..put(inspector);
 }

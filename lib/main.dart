@@ -26,8 +26,6 @@ void main() async {
 
   await Firebase.initializeApp(options: options);
 
-
-
   // Initialize dependencies
   await initInjections();
 
