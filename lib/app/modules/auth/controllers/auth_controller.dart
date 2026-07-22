@@ -49,69 +49,67 @@ class AuthController extends GetxController {
   }
 
   /// Login with email and password
-  void login() {
-    // logger.info('🔍 [CONTROLLER] Starting email login...');
-    // final email = loginEmailC.text.trim();
-    // final password = loginPassC.text;
+  void login() async {
+    logger.info('🔍 [CONTROLLER] Starting email login...');
+    final email = loginEmailC.text.trim();
+    final password = loginPassC.text;
 
-    // logger.info('  Email: $email');
+    logger.info('  Email: $email');
 
-    // // Validation
-    // if (email.isEmpty) {
-    //   logger.warning('⚠️ [CONTROLLER] Email is empty');
-    //   Get.snackbar('Kesalahan', 'Email diperlukan',
-    //       backgroundColor: Get.context!.theme.colorScheme.error,
-    //       colorText: Colors.white);
-    //   return;
-    // }
-    // if (!_isValidEmail(email)) {
-    //   logger.warning('⚠️ [CONTROLLER] Invalid email format: $email');
-    //   Get.snackbar('Kesalahan', 'Masukkan email yang valid',
-    //       backgroundColor: Get.context!.theme.colorScheme.error,
-    //       colorText: Colors.white);
-    //   return;
-    // }
-    // if (password.isEmpty) {
-    //   logger.warning('⚠️ [CONTROLLER] Password is empty');
-    //   Get.snackbar('Kesalahan', 'Kata sandi diperlukan',
-    //       backgroundColor: Get.context!.theme.colorScheme.error,
-    //       colorText: Colors.white);
-    //   return;
-    // }
-    // if (password.length < 6) {
-    //   logger.warning('⚠️ [CONTROLLER] Password too short');
-    //   Get.snackbar('Kesalahan', 'Kata sandi harus minimal 6 karakter',
-    //       backgroundColor: Get.context!.theme.colorScheme.error,
-    //       colorText: Colors.white);
-    //   return;
-    // }
+    // Validation
+    if (email.isEmpty) {
+      logger.warning('⚠️ [CONTROLLER] Email is empty');
+      Get.snackbar('Kesalahan', 'Email diperlukan',
+          backgroundColor: Get.context!.theme.colorScheme.error,
+          colorText: Colors.white);
+      return;
+    }
+    if (!_isValidEmail(email)) {
+      logger.warning('⚠️ [CONTROLLER] Invalid email format: $email');
+      Get.snackbar('Kesalahan', 'Masukkan email yang valid',
+          backgroundColor: Get.context!.theme.colorScheme.error,
+          colorText: Colors.white);
+      return;
+    }
+    if (password.isEmpty) {
+      logger.warning('⚠️ [CONTROLLER] Password is empty');
+      Get.snackbar('Kesalahan', 'Kata sandi diperlukan',
+          backgroundColor: Get.context!.theme.colorScheme.error,
+          colorText: Colors.white);
+      return;
+    }
+    if (password.length < 6) {
+      logger.warning('⚠️ [CONTROLLER] Password too short');
+      Get.snackbar('Kesalahan', 'Kata sandi harus minimal 6 karakter',
+          backgroundColor: Get.context!.theme.colorScheme.error,
+          colorText: Colors.white);
+      return;
+    }
 
-    // try {
-    //   isLoggingIn.value = true;
-    //   logger.info('🔍 [CONTROLLER] Calling AuthService.loginWithEmail()');
-    //   await _authService.loginWithEmail(email: email, password: password);
-    //   logger.info('✅ [CONTROLLER] Login successful, navigating...');
-    //   Get.offAllNamed(Routes.NAVIGATION);
-    // } on Exception catch (e) {
-    //   logger.severe('❌ [CONTROLLER] Login error: $e');
-    //   String errorMsg = 'Gagal masuk';
-    //   if (e.toString().contains('user-not-found')) {
-    //     errorMsg = 'Pengguna tidak ditemukan';
-    //   } else if (e.toString().contains('wrong-password')) {
-    //     errorMsg = 'Kata sandi salah';
-    //   } else if (e.toString().contains('invalid-email')) {
-    //     errorMsg = 'Email tidak valid';
-    //   } else if (e.toString().contains('user-disabled')) {
-    //     errorMsg = 'Akun pengguna dinonaktifkan';
-    //   }
-    //   Get.snackbar('Kesalahan', errorMsg,
-    //       backgroundColor: Get.context!.theme.colorScheme.error,
-    //       colorText: Colors.white);
-    // } finally {
-    //   isLoggingIn.value = false;
-    // }
-
-    Get.offAllNamed(Routes.NAVIGATION);
+    try {
+      isLoggingIn.value = true;
+      logger.info('🔍 [CONTROLLER] Calling AuthService.loginWithEmail()');
+      await _authService.loginWithEmail(email: email, password: password);
+      logger.info('✅ [CONTROLLER] Login successful, navigating...');
+      Get.offAllNamed(Routes.NAVIGATION);
+    } on Exception catch (e) {
+      logger.severe('❌ [CONTROLLER] Login error: $e');
+      String errorMsg = 'Gagal masuk';
+      if (e.toString().contains('user-not-found')) {
+        errorMsg = 'Pengguna tidak ditemukan';
+      } else if (e.toString().contains('wrong-password')) {
+        errorMsg = 'Kata sandi salah';
+      } else if (e.toString().contains('invalid-email')) {
+        errorMsg = 'Email tidak valid';
+      } else if (e.toString().contains('user-disabled')) {
+        errorMsg = 'Akun pengguna dinonaktifkan';
+      }
+      Get.snackbar('Kesalahan', errorMsg,
+          backgroundColor: Get.context!.theme.colorScheme.error,
+          colorText: Colors.white);
+    } finally {
+      isLoggingIn.value = false;
+    }
   }
 
   /// Register with email and password

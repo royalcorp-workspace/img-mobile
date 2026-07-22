@@ -198,8 +198,8 @@ class AuthService {
     logger.info('🔍 [AUTH-VERIFY] Verifying token with server...');
     try {
       logger.info('🔍 [AUTH-VERIFY] Sending POST /auth/verify');
-      final resp = await DioNetwork.appAPI
-          .post('/auth/verify', data: {'firebase_token': firebaseToken});
+      final resp = await DioNetwork.appAPI.post('/auth/firebase-login',
+          data: {'firebase_token': firebaseToken});
 
       logger.info('🔍 [AUTH-VERIFY] Response status: ${resp.statusCode}');
       logger.info('🔍 [AUTH-VERIFY] Response data: ${resp.data}');
