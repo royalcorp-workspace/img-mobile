@@ -285,6 +285,7 @@ class AuthService {
     } catch (e) {
       logger.severe('❌ [AUTH-LOGIN] Server verification failed: $e');
       logger.severe('  Error type: ${e.runtimeType}');
+      rethrow;
     }
     return false;
   }

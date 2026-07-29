@@ -48,22 +48,26 @@ class SettingView extends GetView<SettingController> {
                         ),
                         16.horizontalSpace,
                         Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Alghany Kennedy Adam",
-                                style: AppTextStyle.largeWhiteBold,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              4.verticalSpace,
-                              Text(
-                                "+62 8512 3535 532",
-                                style: AppTextStyle.mediumWhite,
-                              ),
-                            ],
+                          child: Obx(
+                            () => Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  controller.userModel.value.name ?? '-',
+                                  style: AppTextStyle.largeWhiteBold,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                4.verticalSpace,
+                                Text(
+                                  controller.userModel.value.email ?? '-',
+                                  style: AppTextStyle.mediumWhite,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         IconButton(

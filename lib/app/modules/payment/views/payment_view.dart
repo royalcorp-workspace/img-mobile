@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:pos_royal/app/core/helper/helper.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
@@ -38,7 +39,9 @@ class PaymentView extends GetView<PaymentController> {
                     style: AppTextStyle.mediumBlack,
                   ),
                   Text(
-                    'Rp. 27.500',
+                    Helper.formatCurrency((controller.selectedPrice.value *
+                            controller.selectedQty.value) +
+                        2500),
                     style: AppTextStyle.largeBlackBold.copyWith(
                       color: AppColors.red,
                     ),
@@ -47,7 +50,7 @@ class PaymentView extends GetView<PaymentController> {
               ),
               10.verticalSpace,
               Divider(color: AppColors.lightGrey, thickness: 1.2),
-              15.verticalSpace,
+              10.verticalSpace,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -58,14 +61,17 @@ class PaymentView extends GetView<PaymentController> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(
-                        '23 Jam 59 Menit 42 Detik',
-                        style: AppTextStyle.largeBlackBold.copyWith(
-                          color: AppColors.red,
+                      Obx(
+                        () => Text(
+                          controller.formattedTime,
+                          style: AppTextStyle.largeBlackBold.copyWith(
+                            color: AppColors.red,
+                          ),
                         ),
                       ),
                       Text(
-                        '06 Sep 2025 ( 14.30 WIB )',
+                        DateFormat('dd MMM yyyy hh:mm a').format(
+                            DateTime.now().add(const Duration(minutes: 5))),
                         style: AppTextStyle.mediumBlack,
                       ),
                     ],
@@ -223,6 +229,34 @@ class PaymentView extends GetView<PaymentController> {
               30.verticalSpace,
               SizedBox(
                 width: MediaQuery.of(context).size.width,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(28),
+                    ),
+                    side: const BorderSide(
+                        color: AppColors.primaryColor, width: 1.5),
+                  ),
+                  onPressed: () => controller.checkPaymentStatus(),
+                  child: Obx(
+                    () => controller.isCheckingStatus.value
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                                color: AppColors.primaryColor, strokeWidth: 2),
+                          )
+                        : Text(
+                            'Cek Status Pembayaran',
+                            style: AppTextStyle.largeBlackBold
+                                .copyWith(color: AppColors.primaryColor),
+                          ),
+                  ),
+                ),
+              ),
+              12.verticalSpace,
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
                 child: ElevatedButton(
                   style: ButtonStyle(
                     shape: WidgetStatePropertyAll(
@@ -234,7 +268,7 @@ class PaymentView extends GetView<PaymentController> {
                       AppColors.primaryColor,
                     ),
                   ),
-                  onPressed: () => Get.toNamed(Routes.SUCCESS),
+                  onPressed: () => controller.finishPayment(),
                   child: Text(
                     'Selesai',
                     style: AppTextStyle.largeWhiteBold,

@@ -104,18 +104,22 @@ class ProductModel extends ProductEntity {
       finalPrice: _parseDouble(json['final_price']),
       uom: json['uom']?.toString(),
       segments: json['segments'] != null && json['segments'] is Map
-          ? ProductSegmentsModel.fromJson(json['segments'] as Map<String, dynamic>)
+          ? ProductSegmentsModel.fromJson(
+              json['segments'] as Map<String, dynamic>)
           : null,
       images: (json['images'] as List<dynamic>?)
-              ?.map((e) => ProductImageModel.fromJson(e as Map<String, dynamic>))
+              ?.map(
+                  (e) => ProductImageModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
       variants: (json['variants'] as List<dynamic>?)
-              ?.map((e) => ProductVariantModel.fromJson(e as Map<String, dynamic>))
+              ?.map((e) =>
+                  ProductVariantModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
       colors: (json['colors'] as List<dynamic>?)
-              ?.map((e) => ProductColorModel.fromJson(e as Map<String, dynamic>))
+              ?.map(
+                  (e) => ProductColorModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
       priceProductSettings: (json['price_product_settings'] as List<dynamic>?)
@@ -177,10 +181,10 @@ class ProductVariantModel extends ProductVariantEntity {
       price: _parseDouble(json['price']),
       finalPrice: _parseDouble(json['final_price']),
       stockQty: _parseInt(json['stock_qty']),
-      width: _parseDouble(attrs?['width'] ?? json['width']),
-      length: _parseDouble(attrs?['length'] ?? json['length']),
-      height: _parseDouble(attrs?['height'] ?? json['height']),
-      weight: _parseDouble(attrs?['weight'] ?? json['weight']),
+      width: _parseInt(attrs?['width'] ?? json['width']),
+      length: _parseInt(attrs?['length'] ?? json['length']),
+      height: _parseInt(attrs?['height'] ?? json['height']),
+      weight: _parseInt(attrs?['weight'] ?? json['weight']),
       status: _parseBool(json['status']),
       priceProductSettings: (json['price_product_settings'] as List<dynamic>?)
               ?.map((e) =>

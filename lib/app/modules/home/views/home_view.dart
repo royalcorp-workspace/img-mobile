@@ -23,7 +23,7 @@ class HomeView extends GetView<HomeController> {
     return Scaffold(
       appBar: _buildAppBar(),
       body: CustomScrollView(
-        controller: controller.pageScrollController, // <-- attach here
+        controller: controller.pageScrollController,
         slivers: [
           SliverToBoxAdapter(
             child: Column(
@@ -126,7 +126,7 @@ class HomeView extends GetView<HomeController> {
       if (controller.isLoadingProducts.value && controller.products.isEmpty) {
         return const SliverFillRemaining(
           child: Center(
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator(color: AppColors.primaryColor),
           ),
         );
       }
@@ -139,12 +139,8 @@ class HomeView extends GetView<HomeController> {
               final product = controller.products[index];
 
               return ProductsCard(
-                product: product,
-                onTap: (_) => Get.toNamed(
-                  Routes.DETAIL_PRODUCT,
-                  arguments: product,
-                ),
-              );
+                  product: product,
+                  onTap: (_) => controller.fetchProductByID(product.id));
             },
             childCount: controller.products.length,
           ),
@@ -169,7 +165,8 @@ class HomeView extends GetView<HomeController> {
             child: SizedBox(
               width: 24,
               height: 24,
-              child: CircularProgressIndicator(strokeWidth: 2.5),
+              child: CircularProgressIndicator(
+                  color: AppColors.primaryColor, strokeWidth: 2.5),
             ),
           ),
         ),

@@ -6,15 +6,18 @@ import 'package:pos_royal/app/core/utils/log/logger.dart';
 import 'package:pos_royal/app/data/datasources/product_remote_datasource.dart';
 import 'package:pos_royal/app/data/repositories/product_repository_impl.dart';
 import 'package:pos_royal/app/domain/entities/product_entity.dart';
+import 'package:pos_royal/app/domain/usecases/get_product_by_id_usecase.dart';
 import 'package:pos_royal/app/domain/usecases/get_products_usecase.dart';
 import 'package:pos_royal/app/modules/home/views/home_view.dart';
 import 'package:pos_royal/app/modules/home/widgets/parts_product.dart';
+import 'package:pos_royal/app/routes/app_pages.dart';
 import 'package:pos_royal/app/shared/widgets/app_banner.dart';
 
 class HomeController extends GetxController {
-  final GetProductsUseCase? getProductsUseCase;
+  HomeController({this.getProductsUseCase, this.getProductByIdUsecase});
 
-  HomeController({this.getProductsUseCase});
+  final GetProductsUseCase? getProductsUseCase;
+  final GetProductByIdUsecase? getProductByIdUsecase;
 
   GlobalKey<CartIconKey> cartKey = GlobalKey<CartIconKey>();
   late Function(GlobalKey) runAddToCartAnimation;
@@ -76,9 +79,39 @@ class HomeController extends GetxController {
     }
   }
 
+  Future<void> fetchProductByID(String productID) async {
+    try {
+      isLoadingProducts.value = true;
+      productErrorMessage.value = '';
+
+      final useCase = getProductByIdUsecase ??
+          GetProductByIdUsecase(
+            ProductRepositoryImpl(
+              remoteDataSource: ProductRemoteDataSourceImpl(),
+            ),
+          );
+
+      final result = await useCase.call(productID);
+      Get.toNamed(
+        Routes.DETAIL_PRODUCT,
+        arguments: result,
+      );
+    } catch (e, stackTrace) {
+      logger.severe('❌ [HOME] Failed to fetch products by ID: $e');
+      if (kDebugMode) {
+        print('❌ [HOME] Error: $e');
+        print(stackTrace);
+      }
+      productErrorMessage.value = e.toString();
+    } finally {
+      isLoadingProducts.value = false;
+    }
+  }
+
   Future<void> loadNextPage() async {
-    if (isLoadingMore.value || isLoadingProducts.value || !hasMore.value)
+    if (isLoadingMore.value || isLoadingProducts.value || !hasMore.value) {
       return;
+    }
 
     try {
       isLoadingMore.value = true;

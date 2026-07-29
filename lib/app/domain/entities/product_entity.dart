@@ -76,10 +76,10 @@ class ProductVariantEntity {
   final double price;
   final double finalPrice;
   final int stockQty;
-  final double width;
-  final double length;
-  final double height;
-  final double weight;
+  final int width;
+  final int length;
+  final int height;
+  final int weight;
   final bool status;
   final List<PriceProductSettingEntity> priceProductSettings;
 

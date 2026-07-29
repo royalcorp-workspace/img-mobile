@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:pos_royal/app/modules/checkout/controllers/checkout_controller.dart';
 import 'package:pos_royal/app/modules/home/controllers/home_controller.dart';
 import 'package:pos_royal/app/modules/navigation/controllers/navigation_controller.dart';
 import 'package:pos_royal/app/modules/order/controllers/order_controller.dart';
@@ -27,6 +28,9 @@ class InitialBinding extends Bindings {
       )
       ..lazyPut<SettingController>(
         () => SettingController(),
+      )
+      ..lazyPut<CheckoutController>(
+        () => CheckoutController(),
       );
   }
 }
