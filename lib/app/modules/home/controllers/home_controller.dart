@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:add_to_cart_animation/add_to_cart_animation.dart';
 import 'package:pos_royal/app/core/utils/log/logger.dart';
+import 'package:pos_royal/app/data/datasources/category_remote_datasource.dart';
 import 'package:pos_royal/app/data/datasources/product_remote_datasource.dart';
+import 'package:pos_royal/app/data/repositories/category_repository_impl.dart';
 import 'package:pos_royal/app/data/repositories/product_repository_impl.dart';
-import 'package:pos_royal/app/domain/entities/product_entity.dart';
+import 'package:pos_royal/app/domain/usecases/get_category_usecase.dart';
 import 'package:pos_royal/app/domain/usecases/get_product_by_id_usecase.dart';
 import 'package:pos_royal/app/domain/usecases/get_products_usecase.dart';
 import 'package:pos_royal/app/modules/home/views/home_view.dart';
@@ -14,10 +16,15 @@ import 'package:pos_royal/app/routes/app_pages.dart';
 import 'package:pos_royal/app/shared/widgets/app_banner.dart';
 
 class HomeController extends GetxController {
-  HomeController({this.getProductsUseCase, this.getProductByIdUsecase});
+  HomeController({
+    this.getProductsUseCase,
+    this.getProductByIdUsecase,
+    this.getCategoryUsecase,
+  });
 
   final GetProductsUseCase? getProductsUseCase;
   final GetProductByIdUsecase? getProductByIdUsecase;
+  final GetCategoryUsecase? getCategoryUsecase;
 
   GlobalKey<CartIconKey> cartKey = GlobalKey<CartIconKey>();
   late Function(GlobalKey) runAddToCartAnimation;
@@ -25,7 +32,8 @@ class HomeController extends GetxController {
 
   // Products Infinite Scroll State
   final ScrollController pageScrollController = ScrollController(); // renamed
-  var products = <ProductEntity>[].obs;
+  var products = [].obs;
+  var category = [].obs;
   var isLoadingProducts = false.obs;
   var isLoadingMore = false.obs;
   var hasMore = true.obs;
@@ -38,6 +46,7 @@ class HomeController extends GetxController {
     super.onInit();
     _initScrollListener();
     fetchProducts();
+    fetchCategory();
   }
 
   void _initScrollListener() {
@@ -60,6 +69,36 @@ class HomeController extends GetxController {
           GetProductsUseCase(
             ProductRepositoryImpl(
               remoteDataSource: ProductRemoteDataSourceImpl(),
+            ),
+          );
+
+      final result =
+          await useCase.call(page: currentPage, itemsPerPage: itemsPerPage);
+      products.assignAll(result.data);
+      hasMore.value = result.hasMore;
+    } catch (e, stackTrace) {
+      logger.severe('❌ [HOME] Failed to fetch products: $e');
+      if (kDebugMode) {
+        print('❌ [HOME] Error: $e');
+        print(stackTrace);
+      }
+      productErrorMessage.value = e.toString();
+    } finally {
+      isLoadingProducts.value = false;
+    }
+  }
+
+  Future<void> fetchCategory() async {
+    try {
+      isLoadingProducts.value = true;
+      productErrorMessage.value = '';
+      currentPage = 1;
+      hasMore.value = true;
+
+      final useCase = getCategoryUsecase ??
+          GetCategoryUsecase(
+            CategoryRepositoryImpl(
+              remoteDataSource: CategoryRemoteDataSourceImpl(),
             ),
           );
 

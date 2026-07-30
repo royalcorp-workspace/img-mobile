@@ -1,33 +1,5 @@
 import 'package:pos_royal/app/domain/entities/payment_method_entity.dart';
 
-class PaymentMethodPaginatedModel extends PaymentMethodPaginatedEntity {
-  PaymentMethodPaginatedModel({
-    required super.data,
-    required super.totalCount,
-    required super.hasMore,
-    required super.page,
-    required super.itemsPerPage,
-  });
-
-  factory PaymentMethodPaginatedModel.fromJson(Map<String, dynamic> json) =>
-      PaymentMethodPaginatedModel(
-        data: List<PaymentMethodModel>.from(
-            json["data"].map((x) => PaymentMethodModel.fromJson(x))),
-        totalCount: json["total_count"],
-        hasMore: json["has_more"],
-        page: json["page"],
-        itemsPerPage: json["items_per_page"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "data": List<dynamic>.from(data.map((x) => x.toJson())),
-        "total_count": totalCount,
-        "has_more": hasMore,
-        "page": page,
-        "items_per_page": itemsPerPage,
-      };
-}
-
 class PaymentMethodModel extends PaymentMethodEntity {
   PaymentMethodModel({
     required super.createdAt,

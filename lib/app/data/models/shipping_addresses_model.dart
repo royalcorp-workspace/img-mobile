@@ -1,33 +1,5 @@
 import 'package:pos_royal/app/domain/entities/shipping_addresses_entity.dart';
 
-class ShippingAddressesPaginatedModel extends ShippingAddressesPaginatedEntity {
-  ShippingAddressesPaginatedModel({
-    required super.data,
-    required super.totalCount,
-    required super.hasMore,
-    required super.page,
-    required super.itemsPerPage,
-  });
-
-  factory ShippingAddressesPaginatedModel.fromJson(Map<String, dynamic> json) =>
-      ShippingAddressesPaginatedModel(
-        data: List<ShippingAddressesModel>.from(
-            json["data"].map((x) => ShippingAddressesModel.fromJson(x))),
-        totalCount: json["total_count"],
-        hasMore: json["has_more"],
-        page: json["page"],
-        itemsPerPage: json["items_per_page"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "data": List<dynamic>.from(data.map((x) => x.toJson())),
-        "total_count": totalCount,
-        "has_more": hasMore,
-        "page": page,
-        "items_per_page": itemsPerPage,
-      };
-}
-
 class ShippingAddressesModel extends ShippingAddressesEntity {
   ShippingAddressesModel({
     required super.createdAt,

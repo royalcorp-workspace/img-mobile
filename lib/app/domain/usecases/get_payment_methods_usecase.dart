@@ -1,3 +1,4 @@
+import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
 import 'package:pos_royal/app/domain/entities/payment_method_entity.dart';
 import 'package:pos_royal/app/domain/repositories/payment_method_repository.dart';
 
@@ -6,7 +7,7 @@ class GetPaymentMethodsUsecase {
 
   GetPaymentMethodsUsecase(this.repository);
 
-  Future<PaymentMethodPaginatedEntity> call({
+  Future<PaginatedEntity<PaymentMethodEntity>> call({
     int page = 1,
     int itemsPerPage = 10,
   }) {

@@ -1,4 +1,5 @@
-import '../entities/product_entity.dart';
+import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
+import 'package:pos_royal/app/domain/entities/product_entity.dart';
 import '../repositories/product_repository.dart';
 
 class GetProductsUseCase {
@@ -6,7 +7,7 @@ class GetProductsUseCase {
 
   GetProductsUseCase(this.repository);
 
-  Future<ProductPaginatedEntity> call({
+  Future<PaginatedEntity<ProductEntity>> call({
     int page = 1,
     int itemsPerPage = 10,
   }) {

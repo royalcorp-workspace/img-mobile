@@ -33,30 +33,6 @@ String _parseString(dynamic val) {
   return val.toString();
 }
 
-class ProductPaginatedModel extends ProductPaginatedEntity {
-  ProductPaginatedModel({
-    required super.data,
-    required super.totalCount,
-    required super.hasMore,
-    required super.page,
-    required super.itemsPerPage,
-  });
-
-  factory ProductPaginatedModel.fromJson(Map<String, dynamic> json) {
-    final list = (json['data'] as List<dynamic>?)
-            ?.map((e) => ProductModel.fromJson(e as Map<String, dynamic>))
-            .toList() ??
-        [];
-    return ProductPaginatedModel(
-      data: list,
-      totalCount: _parseInt(json['total_count']),
-      hasMore: _parseBool(json['has_more']),
-      page: _parseInt(json['page']),
-      itemsPerPage: _parseInt(json['items_per_page']),
-    );
-  }
-}
-
 class ProductModel extends ProductEntity {
   ProductModel({
     required super.id,

@@ -1,6 +1,8 @@
-import 'package:pos_royal/app/data/datasources/shipping_addresses_remote_datasource.dart';
+import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
 import 'package:pos_royal/app/domain/entities/shipping_addresses_entity.dart';
-import 'package:pos_royal/app/domain/repositories/shipping_addresses_repository.dart';
+
+import '../../domain/repositories/shipping_addresses_repository.dart';
+import '../datasources/shipping_addresses_remote_datasource.dart';
 
 class ShippingAddressesRepositoryImpl implements ShippingAddressesRepository {
   final ShippingAddressesRemoteDatasource remoteDataSource;
@@ -8,7 +10,7 @@ class ShippingAddressesRepositoryImpl implements ShippingAddressesRepository {
   ShippingAddressesRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<ShippingAddressesPaginatedEntity> getShippingAddresses({
+  Future<PaginatedEntity<ShippingAddressesEntity>> getShippingAddresses({
     int page = 1,
     int itemsPerPage = 10,
   }) {

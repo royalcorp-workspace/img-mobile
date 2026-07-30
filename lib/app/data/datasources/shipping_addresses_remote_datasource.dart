@@ -1,10 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:pos_royal/app/core/network/dio_network.dart';
 import 'package:pos_royal/app/core/utils/log/logger.dart';
+import 'package:pos_royal/app/data/models/paginated_model.dart';
 import 'package:pos_royal/app/data/models/shipping_addresses_model.dart';
+import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
+import 'package:pos_royal/app/domain/entities/shipping_addresses_entity.dart';
 
 abstract class ShippingAddressesRemoteDatasource {
-  Future<ShippingAddressesPaginatedModel> getShippingAddresses({
+  Future<PaginatedEntity<ShippingAddressesEntity>> getShippingAddresses({
     int page = 1,
     int itemsPerPage = 10,
   });
@@ -13,7 +16,7 @@ abstract class ShippingAddressesRemoteDatasource {
 class ShippingAddressesRemoteDatasourceImpl
     implements ShippingAddressesRemoteDatasource {
   @override
-  Future<ShippingAddressesPaginatedModel> getShippingAddresses({
+  Future<PaginatedEntity<ShippingAddressesEntity>> getShippingAddresses({
     int page = 1,
     int itemsPerPage = 10,
   }) async {
@@ -32,10 +35,13 @@ class ShippingAddressesRemoteDatasourceImpl
         final data = response.data is Map<String, dynamic>
             ? response.data as Map<String, dynamic>
             : Map<String, dynamic>.from(response.data as Map);
-        return ShippingAddressesPaginatedModel.fromJson(data);
+        return PaginatedModel<ShippingAddressesEntity>.fromJson(
+          data,
+          (json) => ShippingAddressesModel.fromJson(json),
+        );
       } else {
         throw Exception(
-            'Failed to load products: status ${response.statusCode}');
+            'Failed to load shipping addresses: status ${response.statusCode}');
       }
     } catch (e, stackTrace) {
       logger.severe('❌ [SHIPPING-AD] Error fetching/parsing shipping: $e');

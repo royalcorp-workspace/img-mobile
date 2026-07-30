@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:pos_royal/app/core/helper/helper.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
-import 'package:pos_royal/app/routes/app_pages.dart';
 
 import '../controllers/payment_controller.dart';
 

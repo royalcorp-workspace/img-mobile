@@ -531,20 +531,63 @@ ${controller.productByID.value.description}
               ),
               10.verticalSpace,
               GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(14),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 0.7,
-                ),
-                itemCount: 4,
-                itemBuilder: (context, index) => ProductsCard(
-                  onTap: (p0) => Get.toNamed(Routes.DETAIL_PRODUCT),
-                ),
-              )
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(14),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 0.7,
+                  ),
+                  itemCount: 4,
+                  itemBuilder: (context, index) {
+                    //               final String title = product?.name ?? "-";
+                    // double priceVal = 0.0;
+                    // double originalPriceVal = 0.0;
+                    // if (product != null) {
+                    //   priceVal = product!.finalPrice > 0
+                    //       ? product!.finalPrice
+                    //       : (product!.basePrice > 0
+                    //           ? product!.basePrice
+                    //           : (product!.variants.isNotEmpty
+                    //               ? (product!.variants.first.finalPrice > 0
+                    //                   ? product!.variants.first.finalPrice
+                    //                   : product!.variants.first.price)
+                    //               : 0.0));
+                    //   if (product!.basePrice > priceVal) {
+                    //     originalPriceVal = product!.basePrice;
+                    //   }
+                    // }
+                    // final String formattedPrice =
+                    //     product != null ? Helper.formatCurrency(priceVal.toInt()) : 'Rp 0';
+                    // final String formattedOriginalPrice = originalPriceVal > 0
+                    //     ? Helper.formatCurrency(originalPriceVal.toInt())
+                    //     : '';
+                    // final String imageUrl = product?.thumbnail ??
+                    //     (product?.images.isNotEmpty == true ? product!.images.first.image : '');
+                    // final String ratingStr = (product?.avgRating ?? 4.2).toStringAsFixed(1);
+                    // final String reviewsStr = '(${product?.totalReviews ?? 128})';
+
+                    // ImageProvider imageProvider;
+                    // if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+                    //   imageProvider = NetworkImage(imageUrl);
+                    // } else {
+                    //   imageProvider = AssetImage(
+                    //     Helper.getImagePath('img_product1.jpg'),
+                    //   );
+                    // }
+                    return ProductsCard(
+                      title: '',
+                      formattedOriginalPrice: '',
+                      formattedPrice: '',
+                      imageProvider:
+                          AssetImage(Helper.getImagePath('img_product1.jpg')),
+                      rating: '',
+                      review: '',
+                      onTap: (p0) => Get.toNamed(Routes.DETAIL_PRODUCT),
+                    );
+                  })
             ],
           ),
         ),

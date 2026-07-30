@@ -5,7 +5,6 @@ import 'package:pos_royal/app/data/datasources/shipping_addresses_remote_datasou
 import 'package:pos_royal/app/data/repositories/shipping_addresses_repository_impl.dart';
 
 import 'package:pos_royal/app/domain/entities/product_by_id_entity.dart';
-import 'package:pos_royal/app/domain/entities/shipping_addresses_entity.dart';
 import 'package:pos_royal/app/domain/usecases/get_shipping_addresses_usecase.dart';
 
 class CheckoutController extends GetxController {
@@ -25,7 +24,7 @@ class CheckoutController extends GetxController {
   var hasMore = true.obs;
 
   var productByID = ProductByIdEntity().obs;
-  var shippingAddresses = <ShippingAddressesEntity>[].obs;
+  var shippingAddresses = [].obs;
   final GetShippingAddressesUsecase? getShippingAddressesUsecase;
 
   @override

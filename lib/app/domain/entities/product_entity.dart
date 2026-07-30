@@ -142,22 +142,6 @@ class PriceProductSettingEntity {
   });
 }
 
-class ProductPaginatedEntity {
-  final List<ProductEntity> data;
-  final int totalCount;
-  final bool hasMore;
-  final int page;
-  final int itemsPerPage;
-
-  ProductPaginatedEntity({
-    required this.data,
-    required this.totalCount,
-    required this.hasMore,
-    required this.page,
-    required this.itemsPerPage,
-  });
-}
-
 class ProductSegmentsEntity {
   final String uom;
   final String segment1;

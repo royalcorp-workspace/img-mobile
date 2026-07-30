@@ -1,21 +1,5 @@
 import 'package:pos_royal/app/data/models/shipping_addresses_model.dart';
 
-class ShippingAddressesPaginatedEntity {
-  final List<ShippingAddressesModel> data;
-  final int totalCount;
-  final bool hasMore;
-  final int page;
-  final int itemsPerPage;
-
-  ShippingAddressesPaginatedEntity({
-    required this.data,
-    required this.totalCount,
-    required this.hasMore,
-    required this.page,
-    required this.itemsPerPage,
-  });
-}
-
 class ShippingAddressesEntity {
   final String createdAt;
   final String updatedAt;

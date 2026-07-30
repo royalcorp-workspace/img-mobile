@@ -52,7 +52,7 @@ class HomeView extends GetView<HomeController> {
                   ),
                 ),
                 20.verticalSpace,
-                const SectionHeader(title: 'Brand Pilihan', actionText: ''),
+                const SectionHeader(title: 'Kategori Pilihan', actionText: ''),
                 12.verticalSpace,
                 RPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -137,10 +137,56 @@ class HomeView extends GetView<HomeController> {
           delegate: SliverChildBuilderDelegate(
             (context, index) {
               final product = controller.products[index];
+              final String title = product?.name ?? "-";
+              double priceVal = 0.0;
+              double originalPriceVal = 0.0;
+              if (product != null) {
+                priceVal = product!.finalPrice > 0
+                    ? product!.finalPrice
+                    : (product!.basePrice > 0
+                        ? product!.basePrice
+                        : (product!.variants.isNotEmpty
+                            ? (product!.variants.first.finalPrice > 0
+                                ? product!.variants.first.finalPrice
+                                : product!.variants.first.price)
+                            : 0.0));
+                if (product!.basePrice > priceVal) {
+                  originalPriceVal = product!.basePrice;
+                }
+              }
+              final String formattedPrice = product != null
+                  ? Helper.formatCurrency(priceVal.toInt())
+                  : 'Rp 0';
+              final String formattedOriginalPrice = originalPriceVal > 0
+                  ? Helper.formatCurrency(originalPriceVal.toInt())
+                  : '';
+              final String imageUrl = product?.thumbnail ??
+                  (product?.images.isNotEmpty == true
+                      ? product!.images.first.image
+                      : '');
+              final String rating =
+                  (product?.avgRating ?? 4.2).toStringAsFixed(1);
+              final String review = '(${product?.totalReviews ?? 128})';
+
+              ImageProvider imageProvider;
+              if (imageUrl.startsWith('http://') ||
+                  imageUrl.startsWith('https://')) {
+                imageProvider = NetworkImage(imageUrl);
+              } else {
+                imageProvider = AssetImage(
+                  Helper.getImagePath('img_product1.jpg'),
+                );
+              }
 
               return ProductsCard(
-                  product: product,
-                  onTap: (_) => controller.fetchProductByID(product.id));
+                formattedOriginalPrice: formattedOriginalPrice,
+                formattedPrice: formattedPrice,
+                imageProvider: imageProvider,
+                rating: rating,
+                review: review,
+                title: title,
+                onTap: (_) => controller.fetchProductByID(product.id),
+              );
             },
             childCount: controller.products.length,
           ),

@@ -1,12 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:pos_royal/app/core/network/dio_network.dart';
 import 'package:pos_royal/app/core/utils/log/logger.dart';
+import 'package:pos_royal/app/data/models/paginated_model.dart';
 import 'package:pos_royal/app/data/models/product_by_id_model.dart';
+import 'package:pos_royal/app/data/models/product_model.dart';
+import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
 import 'package:pos_royal/app/domain/entities/product_by_id_entity.dart';
-import '../models/product_model.dart';
+import 'package:pos_royal/app/domain/entities/product_entity.dart';
 
 abstract class ProductRemoteDataSource {
-  Future<ProductPaginatedModel> getProducts({
+  Future<PaginatedEntity<ProductEntity>> getProducts({
     int page = 1,
     int itemsPerPage = 10,
   });
@@ -15,7 +18,7 @@ abstract class ProductRemoteDataSource {
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   @override
-  Future<ProductPaginatedModel> getProducts({
+  Future<PaginatedEntity<ProductEntity>> getProducts({
     int page = 1,
     int itemsPerPage = 10,
   }) async {
@@ -34,7 +37,10 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
         final data = response.data is Map<String, dynamic>
             ? response.data as Map<String, dynamic>
             : Map<String, dynamic>.from(response.data as Map);
-        return ProductPaginatedModel.fromJson(data);
+        return PaginatedModel<ProductEntity>.fromJson(
+          data,
+          (json) => ProductModel.fromJson(json),
+        );
       } else {
         throw Exception(
             'Failed to load products: status ${response.statusCode}');

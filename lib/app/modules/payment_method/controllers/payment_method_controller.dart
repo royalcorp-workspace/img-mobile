@@ -10,7 +10,6 @@ import 'package:pos_royal/app/data/models/user_model.dart';
 import 'package:pos_royal/app/data/repositories/order_repository_impl.dart';
 import 'package:pos_royal/app/data/repositories/payment_method_repository_impl.dart';
 import 'package:pos_royal/app/domain/entities/order_entity.dart';
-import 'package:pos_royal/app/domain/entities/payment_method_entity.dart';
 import 'package:pos_royal/app/domain/entities/product_by_id_entity.dart';
 import 'package:pos_royal/app/domain/usecases/create_order_usecase.dart';
 import 'package:pos_royal/app/domain/usecases/get_payment_methods_usecase.dart';
@@ -51,7 +50,7 @@ class PaymentMethodController extends GetxController {
   RxBool isCreatingOrder = false.obs;
   RxBool hasMore = false.obs;
   final int itemsPerPage = 10;
-  var paymentMethod = <PaymentMethodEntity>[].obs;
+  var paymentMethod = [].obs;
   ProductByIdEntity? product;
   List<CreateOrderItemParams> customOrderItems = [];
 

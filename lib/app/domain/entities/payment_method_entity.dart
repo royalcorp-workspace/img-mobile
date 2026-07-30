@@ -1,21 +1,5 @@
 import 'package:pos_royal/app/data/models/payment_method_model.dart';
 
-class PaymentMethodPaginatedEntity {
-  final List<PaymentMethodModel> data;
-  final int totalCount;
-  final bool hasMore;
-  final int page;
-  final int itemsPerPage;
-
-  PaymentMethodPaginatedEntity({
-    required this.data,
-    required this.totalCount,
-    required this.hasMore,
-    required this.page,
-    required this.itemsPerPage,
-  });
-}
-
 class PaymentMethodEntity {
   final String createdAt;
   final String updatedAt;
