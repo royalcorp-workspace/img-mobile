@@ -611,19 +611,22 @@ ${controller.productByID.value.description}
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.lightGrey),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.message_outlined,
-                      size: 20,
-                      color: AppColors.black,
+                GestureDetector(
+                  onTap: () => Get.toNamed(Routes.CHAT),
+                  child: Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.lightGrey),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.message_outlined,
+                        size: 20,
+                        color: AppColors.black,
+                      ),
                     ),
                   ),
                 ),

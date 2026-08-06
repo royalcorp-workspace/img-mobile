@@ -104,10 +104,10 @@ class HomeController extends GetxController {
 
       final result =
           await useCase.call(page: currentPage, itemsPerPage: itemsPerPage);
-      products.assignAll(result.data);
+      category.assignAll(result.data);
       hasMore.value = result.hasMore;
     } catch (e, stackTrace) {
-      logger.severe('❌ [HOME] Failed to fetch products: $e');
+      logger.severe('❌ [HOME] Failed to fetch category: $e');
       if (kDebugMode) {
         print('❌ [HOME] Error: $e');
         print(stackTrace);
