@@ -1,6 +1,6 @@
 import '../flavor.dart';
 
-const String _devApi = "'http://172.16.8.23:8001/api/v1";
+const String _devApi = "http://172.16.8.23:8001/api/v1";
 // const String _stagingApi = "https://api-staging.example.com";
 const String _prodApi = "https://api.example.com";
 
