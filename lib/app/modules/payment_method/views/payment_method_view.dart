@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:pos_royal/app/core/helper/helper.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
-import 'package:pos_royal/app/routes/app_pages.dart';
 import 'package:pos_royal/app/shared/widgets/text/text_price_line_through.dart';
 
 import '../controllers/payment_method_controller.dart';
@@ -35,73 +34,117 @@ class PaymentMethodView extends GetView<PaymentMethodController> {
                 'Metode Pembayaran',
                 style: AppTextStyle.largeBlackBold,
               ),
+
+              // 15.verticalSpace,
+              // AppExpansionTileCard(
+              //   title: 'Transfer Bank (Virtual Account)',
+              //   imgPath: 'img_va.png',
+              //   children: <Widget>[
+              //     RPadding(
+              //       padding: const EdgeInsets.symmetric(horizontal: 14),
+              //       child: const Divider(
+              //           color: AppColors.lightGrey, thickness: 1.2),
+              //     ),
+              //     VirtualAccountListTile(
+              //       imgPath: 'img_bca.png',
+              //       title: 'Bank BCA',
+              //       index: 0,
+              //     ),
+              //     VirtualAccountListTile(
+              //       imgPath: 'img_mandiri.png',
+              //       title: 'Bank Mandiri',
+              //       index: 1,
+              //     ),
+              //     VirtualAccountListTile(
+              //       imgPath: 'img_bsi.png',
+              //       title: 'Bank BSI',
+              //       index: 2,
+              //     ),
+              //     VirtualAccountListTile(
+              //       imgPath: 'img_bni.png',
+              //       title: 'Bank BNI',
+              //       index: 3,
+              //     ),
+              //     VirtualAccountListTile(
+              //       imgPath: 'img_bri.png',
+              //       title: 'Bank BRI',
+              //       index: 4,
+              //     ),
+              //     VirtualAccountListTile(
+              //       imgPath: 'img_other_bank.png',
+              //       title: 'Bank Lainnya',
+              //       index: 5,
+              //     ),
+              //   ],
+              // ),
+              // 15.verticalSpace,
+              // AppExpansionTileCard(
+              //   title: 'Gerai/Agen',
+              //   imgPath: 'img_market.png',
+              //   children: <Widget>[
+              //     RPadding(
+              //       padding: const EdgeInsets.symmetric(horizontal: 14),
+              //       child: const Divider(
+              //           color: AppColors.lightGrey, thickness: 1.2),
+              //     ),
+              //     VirtualAccountListTile(
+              //       imgPath: 'img_alfamart.png',
+              //       title: 'Alfamart/Alfamidi/Lawson',
+              //       index: 6,
+              //     ),
+              //     VirtualAccountListTile(
+              //       imgPath: 'img_indomaret.png',
+              //       title: 'Indomaret',
+              //       index: 7,
+              //     ),
+              //   ],
+              // ),
+              // 15.verticalSpace,
+              // AppExpansionTileCard(
+              //   title: 'E-Wallet',
+              //   imgPath: 'img_ewallet.png',
+              //   children: <Widget>[
+              //     RPadding(
+              //       padding: const EdgeInsets.symmetric(horizontal: 14),
+              //       child: const Divider(
+              //           color: AppColors.lightGrey, thickness: 1.2),
+              //     ),
+              //     VirtualAccountListTile(
+              //       imgPath: 'img_roku.png',
+              //       title: 'Doku Pay',
+              //       index: 8,
+              //     ),
+              //     VirtualAccountListTile(
+              //       imgPath: 'img_gopay.png',
+              //       title: 'GoPay',
+              //       index: 9,
+              //     ),
+              //     VirtualAccountListTile(
+              //       imgPath: 'img_dana.png',
+              //       title: 'Dana',
+              //       index: 10,
+              //     ),
+              //     VirtualAccountListTile(
+              //       imgPath: 'img_linkaja.png',
+              //       title: 'Link Aja',
+              //       index: 11,
+              //     ),
+              //     VirtualAccountListTile(
+              //       imgPath: 'img_ovo.png',
+              //       title: 'OVO',
+              //       index: 12,
+              //     ),
+              //     VirtualAccountListTile(
+              //       imgPath: 'img_shopepay.png',
+              //       title: 'Shopee Pay',
+              //       index: 13,
+              //     ),
+              //   ],
+              // ),
+
               15.verticalSpace,
               AppExpansionTileCard(
-                title: 'Transfer Bank (Virtual Account)',
-                imgPath: 'img_va.png',
-                children: <Widget>[
-                  RPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    child: const Divider(
-                        color: AppColors.lightGrey, thickness: 1.2),
-                  ),
-                  VirtualAccountListTile(
-                    imgPath: 'img_bca.png',
-                    title: 'Bank BCA',
-                    index: 0,
-                  ),
-                  VirtualAccountListTile(
-                    imgPath: 'img_mandiri.png',
-                    title: 'Bank Mandiri',
-                    index: 1,
-                  ),
-                  VirtualAccountListTile(
-                    imgPath: 'img_bsi.png',
-                    title: 'Bank BSI',
-                    index: 2,
-                  ),
-                  VirtualAccountListTile(
-                    imgPath: 'img_bni.png',
-                    title: 'Bank BNI',
-                    index: 3,
-                  ),
-                  VirtualAccountListTile(
-                    imgPath: 'img_bri.png',
-                    title: 'Bank BRI',
-                    index: 4,
-                  ),
-                  VirtualAccountListTile(
-                    imgPath: 'img_other_bank.png',
-                    title: 'Bank Lainnya',
-                    index: 5,
-                  ),
-                ],
-              ),
-              15.verticalSpace,
-              AppExpansionTileCard(
-                title: 'Gerai/Agen',
-                imgPath: 'img_market.png',
-                children: <Widget>[
-                  RPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    child: const Divider(
-                        color: AppColors.lightGrey, thickness: 1.2),
-                  ),
-                  VirtualAccountListTile(
-                    imgPath: 'img_alfamart.png',
-                    title: 'Alfamart/Alfamidi/Lawson',
-                    index: 6,
-                  ),
-                  VirtualAccountListTile(
-                    imgPath: 'img_indomaret.png',
-                    title: 'Indomaret',
-                    index: 7,
-                  ),
-                ],
-              ),
-              15.verticalSpace,
-              AppExpansionTileCard(
-                title: 'E-Wallet',
+                title: 'Others',
                 imgPath: 'img_ewallet.png',
                 children: <Widget>[
                   RPadding(
@@ -109,35 +152,19 @@ class PaymentMethodView extends GetView<PaymentMethodController> {
                     child: const Divider(
                         color: AppColors.lightGrey, thickness: 1.2),
                   ),
-                  VirtualAccountListTile(
-                    imgPath: 'img_roku.png',
-                    title: 'Doku Pay',
-                    index: 8,
-                  ),
-                  VirtualAccountListTile(
-                    imgPath: 'img_gopay.png',
-                    title: 'GoPay',
-                    index: 9,
-                  ),
-                  VirtualAccountListTile(
-                    imgPath: 'img_dana.png',
-                    title: 'Dana',
-                    index: 10,
-                  ),
-                  VirtualAccountListTile(
-                    imgPath: 'img_linkaja.png',
-                    title: 'Link Aja',
-                    index: 11,
-                  ),
-                  VirtualAccountListTile(
-                    imgPath: 'img_ovo.png',
-                    title: 'OVO',
-                    index: 12,
-                  ),
-                  VirtualAccountListTile(
-                    imgPath: 'img_shopepay.png',
-                    title: 'Shopee Pay',
-                    index: 13,
+                  Obx(
+                    () => ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: controller.paymentMethod.length,
+                        itemBuilder: (contex, index) {
+                          final data = controller.paymentMethod[index];
+                          return VirtualAccountListTile(
+                            imgPath: 'img_dana.png',
+                            title: data.name,
+                            index: index,
+                          );
+                        }),
                   ),
                 ],
               ),
@@ -252,20 +279,33 @@ class PaymentMethodView extends GetView<PaymentMethodController> {
                           ),
                         ],
                       ),
-                      InkWell(
-                        onTap: () => Get.toNamed(Routes.PAYMENT),
-                        child: Container(
-                          height: 35.h,
-                          width: 148.w,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppColors.primaryColor),
-                            color: AppColors.primaryColor,
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Bayar',
-                              style: AppTextStyle.largeWhiteBold,
+                      Obx(
+                        () => InkWell(
+                          onTap: controller.isCreatingOrder.value
+                              ? null
+                              : () => controller.createOrder(),
+                          child: Container(
+                            height: 35.h,
+                            width: 148.w,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: AppColors.primaryColor),
+                              color: AppColors.primaryColor,
+                            ),
+                            child: Center(
+                              child: controller.isCreatingOrder.value
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : Text(
+                                      'Bayar',
+                                      style: AppTextStyle.largeWhiteBold,
+                                    ),
                             ),
                           ),
                         ),

@@ -49,8 +49,8 @@ class DetailProductView extends GetView<DetailProductController> {
               10.verticalSpace,
               RPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 14),
-                child: const Text(
-                  'Elite Springbed Kasur Pocket Emporium New Edition',
+                child: Text(
+                  controller.productByID.value.name ?? '-',
                   style: AppTextStyle.xLargeBlackBold,
                 ),
               ),
@@ -99,6 +99,28 @@ class DetailProductView extends GetView<DetailProductController> {
                           style: AppTextStyle.mediumGrey,
                         ),
                       ],
+                    ),
+                    8.horizontalSpace,
+                    Text(
+                      '|',
+                      style: AppTextStyle.mediumGrey
+                          .copyWith(color: AppColors.lightGrey),
+                    ),
+                    8.horizontalSpace,
+                    Row(
+                      children: [
+                        Obx(
+                          () => Text(
+                            '${controller.productByID.value.variants?[controller.selectedIndex.value].stockQty}',
+                            style: AppTextStyle.mediumBlack,
+                          ),
+                        ),
+                        5.horizontalSpace,
+                        const Text(
+                          'Stok',
+                          style: AppTextStyle.mediumGrey,
+                        ),
+                      ],
                     )
                   ],
                 ),
@@ -108,14 +130,31 @@ class DetailProductView extends GetView<DetailProductController> {
                 padding: const EdgeInsets.symmetric(horizontal: 14),
                 child: Row(
                   children: [
-                    Text(
-                      'RP 1.087.210',
-                      style: AppTextStyle.xLargeBlackBold.copyWith(
-                        color: AppColors.orange,
+                    Obx(
+                      () => Text(
+                        Helper.formatCurrency(controller
+                                .productByID
+                                .value
+                                .variants?[controller.selectedIndex.value]
+                                .finalPrice
+                                .toInt() ??
+                            0),
+                        style: AppTextStyle.xLargeBlackBold.copyWith(
+                          color: AppColors.orange,
+                        ),
                       ),
                     ),
                     8.horizontalSpace,
-                    const TextPriceLineThrough(price: 'Rp 3.749.000'),
+                    Obx(
+                      () => TextPriceLineThrough(
+                          price: Helper.formatCurrency(controller
+                                  .productByID
+                                  .value
+                                  .variants?[controller.selectedIndex.value]
+                                  .price
+                                  .toInt() ??
+                              0)),
+                    ),
                     8.horizontalSpace,
                     Container(
                       padding: const EdgeInsets.all(4),
@@ -132,12 +171,14 @@ class DetailProductView extends GetView<DetailProductController> {
                             size: 12,
                             color: AppColors.orange,
                           ),
-                          Text(
-                            '71%',
-                            style: AppTextStyle.mediumBlackBold.copyWith(
-                              color: AppColors.orange,
+                          Obx(
+                            () => Text(
+                              '${controller.productByID.value.variants?[controller.selectedIndex.value].priceProductSettings.first.discountValue.toInt()}%',
+                              style: AppTextStyle.mediumBlackBold.copyWith(
+                                color: AppColors.orange,
+                              ),
                             ),
-                          ),
+                          )
                         ],
                       ),
                     )
@@ -146,26 +187,27 @@ class DetailProductView extends GetView<DetailProductController> {
               ),
               10.verticalSpace,
               const Divider(color: AppColors.lightGrey, thickness: 1.2),
-              RPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                child: ListTile(
+              ListTile(
                   contentPadding: EdgeInsets.zero,
+                  minLeadingWidth: 0,
+                  horizontalTitleGap: 5,
                   leading: Image.asset(
                     height: 60,
                     width: 60,
-                    Helper.getImagePath('img_free_ongkir.png'),
+                    Helper.getImagePath('img_special_promo.png'),
                   ),
-                  title: const Text(
-                    'Pengiriman Gratis Ongkir',
-                    style: AppTextStyle.largeBlackBold,
+                  title: Obx(
+                    () => Text(
+                      '${controller.productByID.value.variants?[controller.selectedIndex.value].priceProductSettings.first.title}',
+                      style: AppTextStyle.mediumBlackBold,
+                    ),
                   ),
-                  trailing: const Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    size: 18,
-                    color: AppColors.grey,
-                  ),
-                ),
-              ),
+                  subtitle: Obx(
+                    () => Text(
+                      '${controller.productByID.value.variants?[controller.selectedIndex.value].priceProductSettings.first.description}',
+                      style: AppTextStyle.mediumBlack,
+                    ),
+                  )),
               AppDivider(),
               10.verticalSpace,
               RPadding(
@@ -183,12 +225,51 @@ class DetailProductView extends GetView<DetailProductController> {
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     shrinkWrap: true,
-                    itemCount: controller.sizeProduct.length,
+                    itemCount: controller.productByID.value.variants?.length,
                     itemBuilder: (context, index) => Obx(
                       () => SizeContainer(
-                        label: controller.sizeProduct[index],
+                        label:
+                            '${controller.productByID.value.variants?[index].width}x${controller.productByID.value.variants?[index].length}',
                         isSelected: controller.selectedIndex.value == index,
                         onTap: () => controller.selectedIndex.value = index,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Visibility(
+                  visible: controller.productByID.value.colors!.isNotEmpty,
+                  child: 10.verticalSpace),
+              Visibility(
+                visible: controller.productByID.value.colors!.isNotEmpty,
+                child: RPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: const Text(
+                    'Pilih Warna',
+                    style: AppTextStyle.largeBlackBold,
+                  ),
+                ),
+              ),
+              Visibility(
+                  visible: controller.productByID.value.colors!.isNotEmpty,
+                  child: 10.verticalSpace),
+              Visibility(
+                visible: controller.productByID.value.colors!.isNotEmpty,
+                child: RPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: SizedBox(
+                    height: 32.h,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      shrinkWrap: true,
+                      itemCount: controller.productByID.value.colors?.length,
+                      itemBuilder: (context, index) => Obx(
+                        () => SizeContainer(
+                          label:
+                              '${controller.productByID.value.colors?[index].name}',
+                          isSelected: controller.selectedIndex.value == index,
+                          onTap: () => controller.selectedIndex.value = index,
+                        ),
                       ),
                     ),
                   ),
@@ -209,43 +290,10 @@ class DetailProductView extends GetView<DetailProductController> {
                 padding: const EdgeInsets.symmetric(horizontal: 14),
                 child: ReadMoreText(
                   '''
-Kasur Modern Emporium, didesain khusus dengan fondasi yang kokoh dan semua lini kasur memiliki keunggulan dalam semua dasar material premium, penyangga yang konsisten, dan kebersihan yang maksimal, hingga membuat tidur semakin optimal dan nyenyak semalaman.
-
-Kelengkapan Produk :
-Full set : Mattress Emporium, Headboard Watsonia & Divan Paris
-Mattres Only : Hanya Kasur Emporium Saja
-Feel: Medium
-Tebal/Tinggi Kasur: 35 cm
-
-Tersedia Ukuran (Lebar x Panjang):
-
-100 cm x 200 cm
-120 cm x 200 cm
-160 cm x 200 cm
-180 cm x 200 cm
-200 cm x 200 cm
-
-EKSTRA BONUS :
-Ukuran 200 x 100 = 1 Bantal + 1 Guling Elite Dacron + 1 Elite Mattress Protector
-Ukuran 200 x 120 = 1 Bantal + 1 Guling Elite Dacron + 1 Elite Mattress Protector
-Ukuran 200 x 160 = 2 Bantal + 2 Guling Elite Dacron + 1 Elite Mattress Protector
-Ukuran 200 x 180 = 2 Bantal + 2 Guling Elite Dacron + 1 Elite Mattress Protector
-Ukuran 200 x 200 = 2 Bantal + 2 Guling Elite Dacron + 1 Elite Mattress Protector
-
-Pillow Top System
-- Comfort Layer: Visco I-Gel, Viro Clean, Sanitized, High Density Dura Foam
-- Support Layer: Pocketed Coils With Encase
-- Garansi 15 tahun dan dukungan layanan purna jual.
-
-Pengiriman meliputi wilayah Jabodetabek, Bandung, Cirebon, Surabaya, Tasikmalaya, Sukabumi, Karawang, Yogyakarta. Estimasi waktu pengiriman selama 5 -14 hari kerja. Untuk kota lain bisa konfirmasi terlebih dahulu ya ke Admin.
-
-Seluruh Komplain Akan Kami Terima, Apabila Anda Dapat Memenuhi Syarat Sebagai Berikut:
-1. Videokan paket yang sudah diterima, dibongkar, dan perlihatkan seluruh barang yang Anda terima serta sesuaikan dengan barang yang Anda pesan.
-2. Informasikan paket yang telah tiba pada Admin kami (waktu dapat disesuaikan Brand).
-3. Apabila tidak memenuhi dan mengikuti syarat yang telah kami tentukan, maka Anda tidak bisa mengklaim atau membuktikan bahwa barang yang kami kirimkan kurang atau reject.
+${controller.productByID.value.description}
 ''',
                   trimMode: TrimMode.Line,
-                  trimLines: 4,
+                  trimLines: 3,
                   style: AppTextStyle.mediumBlackSecondary,
                   lessStyle: AppTextStyle.mediumBlack600
                       .copyWith(color: AppColors.primaryColor),
@@ -483,20 +531,63 @@ Seluruh Komplain Akan Kami Terima, Apabila Anda Dapat Memenuhi Syarat Sebagai Be
               ),
               10.verticalSpace,
               GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(14),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 0.7,
-                ),
-                itemCount: 4,
-                itemBuilder: (context, index) => ProductsCard(
-                  onTap: (p0) => Get.toNamed(Routes.DETAIL_PRODUCT),
-                ),
-              )
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(14),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 0.7,
+                  ),
+                  itemCount: 4,
+                  itemBuilder: (context, index) {
+                    //               final String title = product?.name ?? "-";
+                    // double priceVal = 0.0;
+                    // double originalPriceVal = 0.0;
+                    // if (product != null) {
+                    //   priceVal = product!.finalPrice > 0
+                    //       ? product!.finalPrice
+                    //       : (product!.basePrice > 0
+                    //           ? product!.basePrice
+                    //           : (product!.variants.isNotEmpty
+                    //               ? (product!.variants.first.finalPrice > 0
+                    //                   ? product!.variants.first.finalPrice
+                    //                   : product!.variants.first.price)
+                    //               : 0.0));
+                    //   if (product!.basePrice > priceVal) {
+                    //     originalPriceVal = product!.basePrice;
+                    //   }
+                    // }
+                    // final String formattedPrice =
+                    //     product != null ? Helper.formatCurrency(priceVal.toInt()) : 'Rp 0';
+                    // final String formattedOriginalPrice = originalPriceVal > 0
+                    //     ? Helper.formatCurrency(originalPriceVal.toInt())
+                    //     : '';
+                    // final String imageUrl = product?.thumbnail ??
+                    //     (product?.images.isNotEmpty == true ? product!.images.first.image : '');
+                    // final String ratingStr = (product?.avgRating ?? 4.2).toStringAsFixed(1);
+                    // final String reviewsStr = '(${product?.totalReviews ?? 128})';
+
+                    // ImageProvider imageProvider;
+                    // if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+                    //   imageProvider = NetworkImage(imageUrl);
+                    // } else {
+                    //   imageProvider = AssetImage(
+                    //     Helper.getImagePath('img_product1.jpg'),
+                    //   );
+                    // }
+                    return ProductsCard(
+                      title: '',
+                      formattedOriginalPrice: '',
+                      formattedPrice: '',
+                      imageProvider:
+                          AssetImage(Helper.getImagePath('img_product1.jpg')),
+                      rating: '',
+                      review: '',
+                      onTap: (p0) => Get.toNamed(Routes.DETAIL_PRODUCT),
+                    );
+                  })
             ],
           ),
         ),
@@ -537,7 +628,10 @@ Seluruh Komplain Akan Kami Terima, Apabila Anda Dapat Memenuhi Syarat Sebagai Be
                   ),
                 ),
                 InkWell(
-                  onTap: () => Get.toNamed(Routes.CART),
+                  onTap: () => Get.toNamed(Routes.CHECKOUT, arguments: [
+                    controller.productByID.value,
+                    controller.selectedIndex.value
+                  ]),
                   child: Container(
                     height: 35.h,
                     width: 148.w,

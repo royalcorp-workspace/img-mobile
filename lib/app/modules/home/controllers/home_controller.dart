@@ -1,14 +1,198 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:add_to_cart_animation/add_to_cart_animation.dart';
+import 'package:pos_royal/app/core/utils/log/logger.dart';
+import 'package:pos_royal/app/data/datasources/category_remote_datasource.dart';
+import 'package:pos_royal/app/data/datasources/product_remote_datasource.dart';
+import 'package:pos_royal/app/data/repositories/category_repository_impl.dart';
+import 'package:pos_royal/app/data/repositories/product_repository_impl.dart';
+import 'package:pos_royal/app/domain/usecases/get_category_usecase.dart';
+import 'package:pos_royal/app/domain/usecases/get_product_by_id_usecase.dart';
+import 'package:pos_royal/app/domain/usecases/get_products_usecase.dart';
 import 'package:pos_royal/app/modules/home/views/home_view.dart';
 import 'package:pos_royal/app/modules/home/widgets/parts_product.dart';
+import 'package:pos_royal/app/routes/app_pages.dart';
 import 'package:pos_royal/app/shared/widgets/app_banner.dart';
 
 class HomeController extends GetxController {
+  HomeController({
+    this.getProductsUseCase,
+    this.getProductByIdUsecase,
+    this.getCategoryUsecase,
+  });
+
+  final GetProductsUseCase? getProductsUseCase;
+  final GetProductByIdUsecase? getProductByIdUsecase;
+  final GetCategoryUsecase? getCategoryUsecase;
+
   GlobalKey<CartIconKey> cartKey = GlobalKey<CartIconKey>();
   late Function(GlobalKey) runAddToCartAnimation;
   var cartQuantityItems = 0.obs;
+
+  // Products Infinite Scroll State
+  final ScrollController pageScrollController = ScrollController(); // renamed
+  var products = [].obs;
+  var category = [].obs;
+  var isLoadingProducts = false.obs;
+  var isLoadingMore = false.obs;
+  var hasMore = true.obs;
+  var currentPage = 1;
+  final int itemsPerPage = 10;
+  var productErrorMessage = ''.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _initScrollListener();
+    fetchProducts();
+    fetchCategory();
+  }
+
+  void _initScrollListener() {
+    pageScrollController.addListener(() {
+      if (pageScrollController.position.pixels >=
+          pageScrollController.position.maxScrollExtent - 300) {
+        loadNextPage();
+      }
+    });
+  }
+
+  Future<void> fetchProducts() async {
+    try {
+      isLoadingProducts.value = true;
+      productErrorMessage.value = '';
+      currentPage = 1;
+      hasMore.value = true;
+
+      final useCase = getProductsUseCase ??
+          GetProductsUseCase(
+            ProductRepositoryImpl(
+              remoteDataSource: ProductRemoteDataSourceImpl(),
+            ),
+          );
+
+      final result =
+          await useCase.call(page: currentPage, itemsPerPage: itemsPerPage);
+      products.assignAll(result.data);
+      hasMore.value = result.hasMore;
+    } catch (e, stackTrace) {
+      logger.severe('❌ [HOME] Failed to fetch products: $e');
+      if (kDebugMode) {
+        print('❌ [HOME] Error: $e');
+        print(stackTrace);
+      }
+      productErrorMessage.value = e.toString();
+    } finally {
+      isLoadingProducts.value = false;
+    }
+  }
+
+  Future<void> fetchCategory() async {
+    try {
+      isLoadingProducts.value = true;
+      productErrorMessage.value = '';
+      currentPage = 1;
+      hasMore.value = true;
+
+      final useCase = getCategoryUsecase ??
+          GetCategoryUsecase(
+            CategoryRepositoryImpl(
+              remoteDataSource: CategoryRemoteDataSourceImpl(),
+            ),
+          );
+
+      final result =
+          await useCase.call(page: currentPage, itemsPerPage: itemsPerPage);
+      products.assignAll(result.data);
+      hasMore.value = result.hasMore;
+    } catch (e, stackTrace) {
+      logger.severe('❌ [HOME] Failed to fetch products: $e');
+      if (kDebugMode) {
+        print('❌ [HOME] Error: $e');
+        print(stackTrace);
+      }
+      productErrorMessage.value = e.toString();
+    } finally {
+      isLoadingProducts.value = false;
+    }
+  }
+
+  Future<void> fetchProductByID(String productID) async {
+    try {
+      isLoadingProducts.value = true;
+      productErrorMessage.value = '';
+
+      final useCase = getProductByIdUsecase ??
+          GetProductByIdUsecase(
+            ProductRepositoryImpl(
+              remoteDataSource: ProductRemoteDataSourceImpl(),
+            ),
+          );
+
+      final result = await useCase.call(productID);
+      Get.toNamed(
+        Routes.DETAIL_PRODUCT,
+        arguments: result,
+      );
+    } catch (e, stackTrace) {
+      logger.severe('❌ [HOME] Failed to fetch products by ID: $e');
+      if (kDebugMode) {
+        print('❌ [HOME] Error: $e');
+        print(stackTrace);
+      }
+      productErrorMessage.value = e.toString();
+    } finally {
+      isLoadingProducts.value = false;
+    }
+  }
+
+  Future<void> loadNextPage() async {
+    if (isLoadingMore.value || isLoadingProducts.value || !hasMore.value) {
+      return;
+    }
+
+    try {
+      isLoadingMore.value = true;
+      final nextPage = currentPage + 1;
+      logger.info('🔍 [HOME] Loading next page: $nextPage');
+
+      final useCase = getProductsUseCase ??
+          GetProductsUseCase(
+            ProductRepositoryImpl(
+              remoteDataSource: ProductRemoteDataSourceImpl(),
+            ),
+          );
+
+      final result =
+          await useCase.call(page: nextPage, itemsPerPage: itemsPerPage);
+      if (result.data.isNotEmpty) {
+        products.addAll(result.data);
+        currentPage = nextPage;
+      }
+      hasMore.value = result.hasMore;
+    } catch (e) {
+      logger.severe('❌ [HOME] Failed to load next page: $e');
+    } finally {
+      isLoadingMore.value = false;
+    }
+  }
+
+  void scrollToTop() {
+    if (pageScrollController.hasClients) {
+      pageScrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  @override
+  void onClose() {
+    pageScrollController.dispose();
+    super.onClose();
+  }
 
   /// List Slider
   List<CustomBanner> customBannerListSlider = [

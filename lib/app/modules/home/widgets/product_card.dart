@@ -142,10 +142,18 @@ class ProductsCard extends StatelessWidget {
   ProductsCard({
     super.key,
     required this.onTap,
+    required this.title,
+    required this.formattedPrice,
+    required this.formattedOriginalPrice,
+    required this.rating,
+    required this.review,
+    required this.imageProvider,
   });
 
   final GlobalKey widgetKey = GlobalKey();
   final void Function(GlobalKey) onTap;
+  final String title, formattedPrice, formattedOriginalPrice, rating, review;
+  final ImageProvider<Object> imageProvider;
 
   @override
   Widget build(BuildContext context) {
@@ -169,17 +177,14 @@ class ProductsCard extends StatelessWidget {
           Container(
             height: 80.h,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20),
                 topRight: Radius.circular(20),
               ),
               image: DecorationImage(
                 fit: BoxFit.cover,
-                image: AssetImage(
-                  Helper.getImagePath(
-                    'img_product1.jpg',
-                  ),
-                ),
+                image: imageProvider,
+                onError: (exception, stackTrace) {},
               ),
             ),
           ),
@@ -190,15 +195,18 @@ class ProductsCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Elite Springbed Kasur Pocket Emporium New Edition",
+                  title,
                   style: AppTextStyle.largeBlackBold,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 15.verticalSpace,
-                TextPriceBold(price: 'Rp 1.087.210'),
+                TextPriceBold(price: formattedPrice),
                 5.verticalSpace,
-                TextPriceLineThrough(price: 'Rp 3.749.000'),
+                if (formattedOriginalPrice.isEmpty)
+                  TextPriceLineThrough(price: 'Rp 0')
+                else if (formattedOriginalPrice.isNotEmpty)
+                  TextPriceLineThrough(price: formattedOriginalPrice),
               ],
             ),
           ),
@@ -214,14 +222,14 @@ class ProductsCard extends StatelessWidget {
                 ),
                 2.horizontalSpace,
                 Text(
-                  '4.2',
+                  rating,
                   style: AppTextStyle.mediumBlackBold.copyWith(
                     color: AppColors.yellow,
                   ),
                 ),
                 4.horizontalSpace,
                 Text(
-                  '(128)',
+                  review,
                   style: AppTextStyle.smallGrey,
                 ),
               ],

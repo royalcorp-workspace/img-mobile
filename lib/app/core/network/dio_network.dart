@@ -2,10 +2,14 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart' hide Response;
 import 'package:pos_royal/app/core/helper/helper.dart';
 import 'package:pos_royal/app/core/network/logger_interceptor.dart';
 import 'package:pos_royal/app/core/utils/constants/network_constant.dart';
 import 'package:pos_royal/app/core/utils/log/logger.dart';
+import 'package:pos_royal/app/core/utils/token_storage.dart';
+import 'package:pos_royal/app/routes/app_pages.dart';
 
 class DioNetwork {
   static final Dio appAPI = Dio(_baseOptions(apiUrl))
@@ -43,11 +47,26 @@ class DioNetwork {
         return r.next(options);
       },
       onError: (error, handler) async {
+        if (error.response?.statusCode == 401) {
+          logger.severe(
+              '⚠️ [HTTP-401] Unauthorized / Token expired. Redirecting to LOGIN...');
+          await TokenStorage.clear();
+          if (Get.currentRoute != Routes.LOGIN) {
+            Get.offAllNamed(Routes.LOGIN);
+            if (Get.context != null) {
+              Get.snackbar(
+                'Sesi Berakhir',
+                'Sesi Anda telah berakhir, silakan masuk kembali.',
+                backgroundColor: Get.context!.theme.colorScheme.error,
+                colorText: Colors.white,
+              );
+            }
+          }
+        }
         try {
           return handler.next(error);
         } catch (e) {
           return handler.reject(error);
-          // onUnexpectedError(handler, error);
         }
       },
       onResponse: (Response<dynamic> response,
@@ -71,17 +90,23 @@ class DioNetwork {
       onResponse: (response, handler) async {
         if ("${(response.data["code"] ?? "0")}" != "0") {
           return handler.resolve(response);
-          // return handler.reject(DioError(requestOptions: response.requestOptions, response: response, error: response, type: DioErrorType.response));
         } else {
           return handler.next(response);
         }
       },
-      onError: (error, handler) {
+      onError: (error, handler) async {
+        if (error.response?.statusCode == 401) {
+          logger.severe(
+              '⚠️ [HTTP-401] Unauthorized / Token expired. Redirecting to LOGIN...');
+          await TokenStorage.clear();
+          if (Get.currentRoute != Routes.LOGIN) {
+            Get.offAllNamed(Routes.LOGIN);
+          }
+        }
         try {
           return handler.next(error);
         } catch (e) {
           return handler.reject(error);
-          // onUnexpectedError(handler, error);
         }
       },
     );

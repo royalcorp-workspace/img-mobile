@@ -3,8 +3,6 @@ import 'package:pos_royal/app/routes/app_pages.dart';
 import 'package:pos_royal/app/core/utils/token_storage.dart';
 import 'package:pos_royal/app/shared/data/app_shared_prefs.dart';
 
-// Check onboarding flag first, then auth token
-
 class SplashController extends GetxController {
   @override
   void onInit() {
@@ -15,17 +13,20 @@ class SplashController extends GetxController {
   void _onSplashStarted() async {
     await Future.delayed(const Duration(seconds: 2));
 
-    final prefs = Get.find<AppSharedPrefs>();
-    final seen = await prefs.read('seen_onboarding');
-    if (seen == null) {
-      Get.offNamed(Routes.ONBOARDING);
+    // 1. If valid token exists -> go straight to NAVIGATION (skip onboarding & login)
+    if (TokenStorage.serverToken != null && TokenStorage.serverToken!.isNotEmpty) {
+      Get.offAllNamed(Routes.NAVIGATION);
       return;
     }
 
-    if (TokenStorage.serverToken != null) {
-      Get.offNamed(Routes.NAVIGATION);
+    // 2. Otherwise check if onboarding has been shown once before
+    final prefs = Get.find<AppSharedPrefs>();
+    final seenOnboarding = await prefs.read('seen_onboarding');
+
+    if (seenOnboarding == 'true') {
+      Get.offAllNamed(Routes.LOGIN);
     } else {
-      Get.offNamed(Routes.LOGIN);
+      Get.offAllNamed(Routes.ONBOARDING);
     }
   }
 }

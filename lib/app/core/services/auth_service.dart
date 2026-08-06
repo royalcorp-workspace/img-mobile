@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -5,6 +6,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:pos_royal/app/core/network/dio_network.dart';
 import 'package:pos_royal/app/core/utils/token_storage.dart';
 import 'package:pos_royal/app/core/utils/log/logger.dart';
+import 'package:pos_royal/app/data/models/auth_response_model.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -24,7 +26,53 @@ class AuthService {
     }
   }
 
-  Future<UserCredential> loginWithEmail(
+  Future<bool> _verifyWithServer(String firebaseToken) async {
+    logger.info('🔍 [AUTH-VERIFY] Verifying token with server...');
+    try {
+      logger.info('🔍 [AUTH-VERIFY] Sending POST /auth/firebase-login');
+      final resp = await DioNetwork.appAPI.post('/auth/firebase-login',
+          data: {'firebase_token': firebaseToken});
+
+      logger.info('🔍 [AUTH-VERIFY] Response status: ${resp.statusCode}');
+      logger.info('🔍 [AUTH-VERIFY] Response data: ${resp.data}');
+
+      if (resp.statusCode != null &&
+          resp.statusCode! < 300 &&
+          resp.data != null) {
+        final Map<String, dynamic> dataMap = resp.data is String
+            ? jsonDecode(resp.data as String)
+            : Map<String, dynamic>.from(resp.data as Map);
+
+        final authResponse = AuthResponseModel.fromJson(dataMap);
+        final serverToken = authResponse.accessToken;
+
+        if (serverToken != null && serverToken.isNotEmpty) {
+          logger.info(
+              '✅ [AUTH-VERIFY] Server token received: ${serverToken.substring(0, 20)}...');
+          await TokenStorage.save(
+            serverToken,
+            csrf: authResponse.csrfToken,
+            userDataJson: authResponse.user != null
+                ? jsonEncode(authResponse.user!.toJson())
+                : null,
+          );
+          logger.info('✅ [AUTH-VERIFY] Token and user data saved to storage');
+          return true;
+        } else {
+          logger.warning('⚠️ [AUTH-VERIFY] No token in response');
+        }
+      } else {
+        logger.warning(
+            '⚠️ [AUTH-VERIFY] Invalid response status: ${resp.statusCode}');
+      }
+    } catch (e) {
+      logger.severe('❌ [AUTH-VERIFY] Server verification failed: $e');
+      logger.severe('  Error type: ${e.runtimeType}');
+    }
+    return false;
+  }
+
+  Future<UserCredential> loginWithEmailFirebase(
       {required String email, required String password}) async {
     logger.info('🔍 [AUTH] Starting email login: $email');
     try {
@@ -194,34 +242,50 @@ class AuthService {
   }
 
   /// Call Laravel backend to verify firebase token and receive server token
-  Future<bool> _verifyWithServer(String firebaseToken) async {
-    logger.info('🔍 [AUTH-VERIFY] Verifying token with server...');
+  Future<bool> loginWithEmail(
+      {required String email, required String password}) async {
+    logger.info('🔍 [AUTH-LOGIN] Starting email login: $email');
     try {
-      logger.info('🔍 [AUTH-VERIFY] Sending POST /auth/verify');
-      final resp = await DioNetwork.appAPI.post('/auth/firebase-login',
-          data: {'firebase_token': firebaseToken});
+      logger.info('🔍 [AUTH-LOGIN] Sending POST /auth/login');
+      final resp = await DioNetwork.appAPI
+          .post('/auth/login', data: {'email': email, 'password': password});
 
-      logger.info('🔍 [AUTH-VERIFY] Response status: ${resp.statusCode}');
-      logger.info('🔍 [AUTH-VERIFY] Response data: ${resp.data}');
+      logger.info('🔍 [AUTH-LOGIN] Response status: ${resp.statusCode}');
+      logger.info('🔍 [AUTH-LOGIN] Response data: ${resp.data}');
 
-      if (resp.statusCode != null && resp.statusCode! < 300) {
-        final serverToken = resp.data['token']?.toString();
-        if (serverToken != null) {
+      if (resp.statusCode != null &&
+          resp.statusCode! < 300 &&
+          resp.data != null) {
+        final Map<String, dynamic> dataMap = resp.data is String
+            ? jsonDecode(resp.data as String)
+            : Map<String, dynamic>.from(resp.data as Map);
+
+        final authResponse = AuthResponseModel.fromJson(dataMap);
+        final serverToken = authResponse.accessToken;
+
+        if (serverToken != null && serverToken.isNotEmpty) {
           logger.info(
-              '✅ [AUTH-VERIFY] Server token received: ${serverToken.substring(0, 20)}...');
-          await TokenStorage.save(serverToken);
-          logger.info('✅ [AUTH-VERIFY] Token saved to storage');
+              '✅ [AUTH-LOGIN] Server token received: ${serverToken.substring(0, 20)}...');
+          await TokenStorage.save(
+            serverToken,
+            csrf: authResponse.csrfToken,
+            userDataJson: authResponse.user != null
+                ? jsonEncode(authResponse.user!.toJson())
+                : null,
+          );
+          logger.info('✅ [AUTH-LOGIN] Token and user data saved to storage');
           return true;
         } else {
-          logger.warning('⚠️ [AUTH-VERIFY] No token in response');
+          logger.warning('⚠️ [AUTH-LOGIN] No token in response');
         }
       } else {
         logger.warning(
-            '⚠️ [AUTH-VERIFY] Invalid response status: ${resp.statusCode}');
+            '⚠️ [AUTH-LOGIN] Invalid response status: ${resp.statusCode}');
       }
     } catch (e) {
-      logger.severe('❌ [AUTH-VERIFY] Server verification failed: $e');
+      logger.severe('❌ [AUTH-LOGIN] Server verification failed: $e');
       logger.severe('  Error type: ${e.runtimeType}');
+      rethrow;
     }
     return false;
   }

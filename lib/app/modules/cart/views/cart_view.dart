@@ -58,7 +58,7 @@ class CartView extends GetView<CartController> {
           ),
           child: BottomAppBar(
               padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              height: 150,
+              height: 125.h,
               child: Column(
                 children: [
                   15.verticalSpace,

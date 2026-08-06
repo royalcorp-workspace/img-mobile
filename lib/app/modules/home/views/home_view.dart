@@ -22,74 +22,64 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            5.verticalSpace,
-            CarouselSlider(
-              items: controller.customBannerListSlider
-                  .map(
-                    (e) => CustomBanner(imagePath: e.imagePath),
-                  )
-                  .toList(),
-              options: CarouselOptions(
-                autoPlay: true,
-                viewportFraction: 1,
-                height: 122.h,
-              ),
-            ),
-            20.verticalSpace,
-            SizedBox(
-              height: 68.h,
-              child: GridView.count(
-                physics: NeverScrollableScrollPhysics(),
-                crossAxisCount: 4,
-                children: controller.customPartsProduct
-                    .map(
-                      (e) => PartsProduct(
-                        imagePath: e.imagePath,
-                        title: e.title,
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
-            20.verticalSpace,
-            const SectionHeader(
-              title: 'Brand Pilihan',
-              actionText: 'Lihat Semua',
-            ),
-            12.verticalSpace,
-            RPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: SizedBox(
-                height: 55.h,
-                child: GridView.count(
-                  physics: NeverScrollableScrollPhysics(),
-                  crossAxisCount: 6,
-                  crossAxisSpacing: 5.w,
-                  childAspectRatio: 0.95,
-                  shrinkWrap: true,
-                  children: controller.customBrand
-                      .map(
-                        (e) => CategoryBrand(
-                          imagePath: e.imagePath,
-                        ),
-                      )
+      body: CustomScrollView(
+        controller: controller.pageScrollController,
+        slivers: [
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                5.verticalSpace,
+                CarouselSlider(
+                  items: controller.customBannerListSlider
+                      .map((e) => CustomBanner(imagePath: e.imagePath))
                       .toList(),
+                  options: CarouselOptions(
+                    autoPlay: true,
+                    viewportFraction: 1,
+                    height: 122.h,
+                  ),
                 ),
-              ),
+                20.verticalSpace,
+                SizedBox(
+                  height: 68.h,
+                  child: GridView.count(
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 4,
+                    children: controller.customPartsProduct
+                        .map((e) => PartsProduct(
+                            imagePath: e.imagePath, title: e.title))
+                        .toList(),
+                  ),
+                ),
+                20.verticalSpace,
+                const SectionHeader(title: 'Kategori Pilihan', actionText: ''),
+                12.verticalSpace,
+                RPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: SizedBox(
+                    height: 55.h,
+                    child: GridView.count(
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisCount: 6,
+                      crossAxisSpacing: 5.w,
+                      childAspectRatio: 0.95,
+                      shrinkWrap: true,
+                      children: controller.customBrand
+                          .map((e) => CategoryBrand(imagePath: e.imagePath))
+                          .toList(),
+                    ),
+                  ),
+                ),
+                15.verticalSpace,
+                const SectionHeader(
+                    title: 'Promo Spesial Untukmu', actionText: ''),
+                12.verticalSpace,
+              ],
             ),
-            15.verticalSpace,
-            const SectionHeader(
-              title: 'Promo Spesial Untukmu',
-              actionText: 'Lihat Semua',
-            ),
-            12.verticalSpace,
-            _buildPromoList(),
-            20.verticalSpace,
-          ],
-        ),
+          ),
+          _buildProductGrid(),
+          _buildLoadMoreIndicator()
+        ],
       ),
     );
   }
@@ -131,21 +121,103 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildPromoList() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: NeverScrollableScrollPhysics(),
-      child: Row(
-        children: List.generate(2, (index) {
-          return Padding(
-            padding: EdgeInsets.only(right: index == 1 ? 0 : 10),
-            child: ProductsCard(
-              onTap: (p0) => Get.toNamed(Routes.DETAIL_PRODUCT),
+  Widget _buildProductGrid() {
+    return Obx(() {
+      if (controller.isLoadingProducts.value && controller.products.isEmpty) {
+        return const SliverFillRemaining(
+          child: Center(
+            child: CircularProgressIndicator(color: AppColors.primaryColor),
+          ),
+        );
+      }
+
+      return SliverPadding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        sliver: SliverGrid(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              final product = controller.products[index];
+              final String title = product?.name ?? "-";
+              double priceVal = 0.0;
+              double originalPriceVal = 0.0;
+              if (product != null) {
+                priceVal = product!.finalPrice > 0
+                    ? product!.finalPrice
+                    : (product!.basePrice > 0
+                        ? product!.basePrice
+                        : (product!.variants.isNotEmpty
+                            ? (product!.variants.first.finalPrice > 0
+                                ? product!.variants.first.finalPrice
+                                : product!.variants.first.price)
+                            : 0.0));
+                if (product!.basePrice > priceVal) {
+                  originalPriceVal = product!.basePrice;
+                }
+              }
+              final String formattedPrice = product != null
+                  ? Helper.formatCurrency(priceVal.toInt())
+                  : 'Rp 0';
+              final String formattedOriginalPrice = originalPriceVal > 0
+                  ? Helper.formatCurrency(originalPriceVal.toInt())
+                  : '';
+              final String imageUrl = product?.thumbnail ??
+                  (product?.images.isNotEmpty == true
+                      ? product!.images.first.image
+                      : '');
+              final String rating =
+                  (product?.avgRating ?? 4.2).toStringAsFixed(1);
+              final String review = '(${product?.totalReviews ?? 128})';
+
+              ImageProvider imageProvider;
+              if (imageUrl.startsWith('http://') ||
+                  imageUrl.startsWith('https://')) {
+                imageProvider = NetworkImage(imageUrl);
+              } else {
+                imageProvider = AssetImage(
+                  Helper.getImagePath('img_product1.jpg'),
+                );
+              }
+
+              return ProductsCard(
+                formattedOriginalPrice: formattedOriginalPrice,
+                formattedPrice: formattedPrice,
+                imageProvider: imageProvider,
+                rating: rating,
+                review: review,
+                title: title,
+                onTap: (_) => controller.fetchProductByID(product.id),
+              );
+            },
+            childCount: controller.products.length,
+          ),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: .65,
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _buildLoadMoreIndicator() {
+    return Obx(() {
+      if (!controller.isLoadingMore.value) return const SliverToBoxAdapter();
+      return SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 16.h),
+          child: const Center(
+            child: SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(
+                  color: AppColors.primaryColor, strokeWidth: 2.5),
             ),
-          );
-        }),
-      ),
-    );
+          ),
+        ),
+      );
+    });
   }
 }
 
