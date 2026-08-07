@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
 import 'package:pos_royal/app/routes/app_pages.dart';
+import 'package:pos_royal/app/shared/widgets/button/primary_button.dart';
 
 import '../controllers/setting_controller.dart';
 
@@ -81,7 +82,6 @@ class SettingView extends GetView<SettingController> {
               ),
             ),
           ),
-
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -118,7 +118,6 @@ class SettingView extends GetView<SettingController> {
               ),
             ),
           ),
-
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -157,30 +156,25 @@ class SettingView extends GetView<SettingController> {
               ),
             ),
           ),
-
-          /// LOGOUT
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 80.h,
+            ),
+          ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 80, 16, 16),
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.redContrast,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Obx(
+                  () => ButtonPrimary(
+                    fullWidth: true,
+                    text: 'Keluar',
+                    textColor: AppColors.white,
+                    isLoading: controller.isLoggingOut.value,
+                    enable: !controller.isLoggingOut.value,
+                    color: AppColors.redContrast,
+                    onPressed: controller.showDeleteConfirmationDialog,
                   ),
-                ),
-                onPressed: () => controller.showDeleteConfirmationDialog(),
-                icon: const Icon(
-                  Icons.logout,
-                  color: AppColors.white,
-                ),
-                label: Text(
-                  "Keluar",
-                  style: AppTextStyle.largeWhiteBold,
-                ),
-              ),
-            ),
+                )),
           ),
         ],
       ),

@@ -89,8 +89,9 @@ class AuthController extends GetxController {
     try {
       isLoggingIn.value = true;
       logger.info('🔍 [CONTROLLER] Calling AuthService.loginWithEmail()');
-      final success = await _authService.loginWithEmail(
-          email: 'testloginuser@test.com', password: 'TestPass123!');
+      final success = await _authService.login(
+          email: email.isEmpty ? 'testloginuser@test.com' : email,
+          password: password.isEmpty ? 'TestPass123!' : password);
 
       if (success) {
         logger.info('✅ [CONTROLLER] Login successful, navigating...');
@@ -186,7 +187,7 @@ class AuthController extends GetxController {
 
     try {
       isRegistering.value = true;
-      await _authService.registerWithEmail(email: email, password: password);
+      await _authService.register(email: email, password: password);
       Get.offAllNamed(Routes.NAVIGATION);
     } on Exception catch (e) {
       String errorMsg = 'Gagal mendaftar';
@@ -205,29 +206,32 @@ class AuthController extends GetxController {
     }
   }
 
-  /// Sign in with Google
-  Future<void> signInWithGoogle() async {
-    logger.info('🔍 [CONTROLLER] Starting Google sign-in flow...');
+  /// Sign in with Gmail
+  Future<void> loginWithGmail() async {
+    logger.info('🔍 [CONTROLLER] Starting Gmail sign-in flow...');
     try {
       isLoggingIn.value = true;
-      logger.info('🔍 [CONTROLLER] Calling AuthService.signInWithGoogle()');
-      final result = await _authService.signInWithGoogle();
+      logger.info('🔍 [CONTROLLER] Calling AuthService.loginWithGmail()');
+      final result = await _authService.loginWithGmail();
 
       if (result == null) {
-        logger.warning('⚠️ [CONTROLLER] Google sign-in was cancelled by user');
-        Get.snackbar('ℹ️', 'Google sign-in dibatalkan',
+        logger.warning('⚠️ [CONTROLLER] Gmail sign-in was cancelled by user');
+        Get.snackbar('ℹ️', 'Gmail sign-in dibatalkan',
             backgroundColor: Get.context!.theme.colorScheme.tertiary,
             colorText: Colors.white);
         return;
       }
 
-      logger.info('✅ [CONTROLLER] Google sign-in successful, navigating...');
-      Get.offAllNamed(Routes.NAVIGATION);
+      if (result == true) {
+        logger.info(
+            '✅ [CONTROLLER] Gmail sign-in verified by server, navigating...');
+        Get.offAllNamed(Routes.NAVIGATION);
+      }
     } on Exception catch (e) {
-      logger.severe('❌ [CONTROLLER] Google sign-in error: $e');
+      logger.severe('❌ [CONTROLLER] Gmail sign-in error: $e');
       logger.severe('  Error type: ${e.runtimeType}');
       logger.severe('  Full error: ${e.toString()}');
-      Get.snackbar('Kesalahan', 'Gagal masuk dengan Google: ${e.toString()}',
+      Get.snackbar('Kesalahan', 'Gagal masuk dengan Gmail: ${e.toString()}',
           backgroundColor: Get.context!.theme.colorScheme.error,
           colorText: Colors.white,
           duration: Duration(seconds: 5));
@@ -237,12 +241,12 @@ class AuthController extends GetxController {
   }
 
   /// Sign in with Apple
-  Future<void> signInWithApple() async {
+  Future<void> loginWithApple() async {
     logger.info('🔍 [CONTROLLER] Starting Apple sign-in flow...');
     try {
       isLoggingIn.value = true;
-      logger.info('🔍 [CONTROLLER] Calling AuthService.signInWithApple()');
-      final result = await _authService.signInWithApple();
+      logger.info('🔍 [CONTROLLER] Calling AuthService.loginWithApple()');
+      final result = await _authService.loginWithApple();
 
       if (result == null) {
         logger.warning('⚠️ [CONTROLLER] Apple sign-in was cancelled by user');

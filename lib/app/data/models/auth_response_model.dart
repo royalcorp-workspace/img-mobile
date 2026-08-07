@@ -33,3 +33,20 @@ class AuthResponseModel {
     };
   }
 }
+
+class LogoutResponseModel {
+  final String message;
+
+  LogoutResponseModel({
+    required this.message,
+  });
+
+  factory LogoutResponseModel.fromJson(Map<String, dynamic> json) =>
+      LogoutResponseModel(
+        message: json["message"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "message": message,
+      };
+}

@@ -132,11 +132,11 @@ class ChatView extends GetView<ChatController> {
     return Obx(
       () {
         return ListView.builder(
+          controller: controller.scrollController,
           padding: const EdgeInsets.only(bottom: 12, top: 8),
           itemCount: controller.messages.length,
           itemBuilder: (context, index) {
-            final reversedIndex = controller.messages.length - index - 1;
-            final message = controller.messages[reversedIndex];
+            final message = controller.messages[index];
             return ChatMessageBubble(message: message);
           },
           reverse: true,
@@ -151,6 +151,37 @@ class ChatView extends GetView<ChatController> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
+          // Error banner (shows when send fails / pending)
+          Obx(() {
+            if (controller.error.value.isEmpty) return const SizedBox.shrink();
+            return Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(right: 8, bottom: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.shadeRed,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        controller.error.value,
+                        style: AppTextStyle.smallWhite,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: controller.retryPending,
+                      child: const Text('Coba lagi'),
+                    )
+                  ],
+                ),
+              ),
+            );
+          }),
+
           Expanded(
             child: Container(
               decoration: BoxDecoration(

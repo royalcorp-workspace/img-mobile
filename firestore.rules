@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Chats collection structure: /chats/{chatId}/messages/{messageId}
+    match /chats/{chatId}/messages/{messageId} {
+      // Allow read for authenticated users
+      allow read: if request.auth != null;
+
+      // Allow create for authenticated users and validate required fields
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasAll(['text', 'sender', 'timestamp'])
+        && (request.resource.data.sender == 'user' || request.resource.data.sender == 'store')
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0;
+
+      // Do not allow updates or deletes from clients
+      allow update, delete: if false;
+    }
+  }
+}

@@ -158,7 +158,7 @@ class RegisterView extends GetView<AuthController> {
                     ),
                     side: const BorderSide(color: AppColors.lightGrey),
                   ),
-                  onPressed: controller.signInWithGoogle,
+                  onPressed: controller.loginWithGmail,
                   icon: SvgPicture.asset(
                     height: 20,
                     width: 20,
