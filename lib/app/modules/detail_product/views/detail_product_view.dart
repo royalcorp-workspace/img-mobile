@@ -703,6 +703,10 @@ ${controller.productByID.value.description}
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(
+                  onTap: () => Get.toNamed(Routes.CHAT, arguments: [
+                    controller.productByID,
+                    controller.selectedIndex.value,
+                  ]),
                   child: Container(
                     height: 40,
                     width: 40,

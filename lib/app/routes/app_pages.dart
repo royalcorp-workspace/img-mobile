@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import 'package:img/app/modules/chat/bindings/chat_binding.dart';
+import 'package:img/app/modules/chat/views/chat_view.dart';
 
 import '../modules/address/bindings/address_binding.dart';
 import '../modules/address/views/address_view.dart';
@@ -175,6 +177,11 @@ class AppPages {
       name: _Paths.CHANGE_PASSWORD,
       page: () => const ChangePasswordView(),
       binding: ChangePasswordBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHAT,
+      page: () => const ChatView(),
+      binding: ChatBinding(),
     ),
   ];
 }

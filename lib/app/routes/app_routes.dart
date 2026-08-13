@@ -28,6 +28,7 @@ abstract class Routes {
   static const CATEGORY_PRODUCT = _Paths.CATEGORY_PRODUCT;
   static const SHORTCUT_PRODUCT = _Paths.SHORTCUT_PRODUCT;
   static const CHANGE_PASSWORD = _Paths.CHANGE_PASSWORD;
+  static const CHAT = _Paths.CHAT;
 }
 
 abstract class _Paths {
@@ -57,4 +58,5 @@ abstract class _Paths {
   static const CATEGORY_PRODUCT = '/category-product';
   static const SHORTCUT_PRODUCT = '/shortcut-product';
   static const CHANGE_PASSWORD = '/change-password';
+  static const CHAT = '/chat';
 }
