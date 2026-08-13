@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 enum ChatSender { store, user }
 
 class ChatMessage {
@@ -19,7 +17,7 @@ class ChatMessage {
     return {
       'text': text,
       'sender': sender == ChatSender.user ? 'user' : 'store',
-      'timestamp': Timestamp.fromDate(timestamp),
+      'timestamp': timestamp.millisecondsSinceEpoch,
     };
   }
 
@@ -27,8 +25,10 @@ class ChatMessage {
     final senderStr = map['sender'] as String? ?? 'store';
     final ts = map['timestamp'];
     DateTime time;
-    if (ts is Timestamp) {
-      time = ts.toDate();
+    if (ts is int) {
+      time = DateTime.fromMillisecondsSinceEpoch(ts);
+    } else if (ts is String) {
+      time = DateTime.tryParse(ts) ?? DateTime.now();
     } else if (ts is DateTime) {
       time = ts;
     } else {

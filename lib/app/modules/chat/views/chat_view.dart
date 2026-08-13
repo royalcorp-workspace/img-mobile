@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:pos_royal/app/core/helper/helper.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
+import 'package:pos_royal/app/core/utils/log/logger.dart';
 
 import '../controllers/chat_controller.dart';
 import '../widgets/chat_message_bubble.dart';
@@ -40,35 +41,47 @@ class ChatView extends GetView<ChatController> {
               ),
             ),
             const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('IMG Assistant', style: AppTextStyle.mediumBlackBold),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: AppColors.green,
-                        shape: BoxShape.circle,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Obx(() {
+                    final conv = controller.selectedConversation.value;
+                    final title = conv != null && conv.subject.isNotEmpty
+                        ? conv.subject
+                        : 'IMG Assistant';
+                    return Text(
+                      title,
+                      style: AppTextStyle.mediumBlackBold,
+                      overflow: TextOverflow.ellipsis,
+                    );
+                  }),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: AppColors.green,
+                          shape: BoxShape.circle,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 6),
-                    Text('Online', style: AppTextStyle.smallGrey),
-                  ],
-                ),
-              ],
+                      const SizedBox(width: 6),
+                      Text('Online', style: AppTextStyle.smallGrey),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert, color: AppColors.black),
-            onPressed: () {},
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.refresh, color: AppColors.black),
+        //     onPressed: () => controller.fetchMessages(),
+        //   ),
+        // ],
       ),
       body: SafeArea(
         child: Column(
@@ -92,7 +105,7 @@ class ChatView extends GetView<ChatController> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -114,12 +127,27 @@ class ChatView extends GetView<ChatController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Kasur Orthopedic Spring Bed Premium',
+                Text(controller.productByID.value.name ?? '-',
                     style: AppTextStyle.mediumBlackBold),
                 const SizedBox(height: 6),
-                Text('180x200', style: AppTextStyle.smallGrey),
+                Text(
+                    controller
+                            .productByID
+                            .value
+                            .variants?[controller.selectedIndex.value]
+                            .variantName ??
+                        '-',
+                    style: AppTextStyle.smallGrey),
                 const SizedBox(height: 12),
-                Text('Rp 4.250.000', style: AppTextStyle.largeBlackBold),
+                Text(
+                    Helper.formatCurrency(controller
+                            .productByID
+                            .value
+                            .variants?[controller.selectedIndex.value]
+                            .finalPrice
+                            .toInt() ??
+                        0),
+                    style: AppTextStyle.largeBlackBold),
               ],
             ),
           ),
@@ -131,6 +159,30 @@ class ChatView extends GetView<ChatController> {
   Widget _buildMessageList() {
     return Obx(
       () {
+        if (controller.isLoading.value && controller.messages.isEmpty) {
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.primaryColor),
+          );
+        }
+
+        if (controller.messages.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.chat_bubble_outline,
+                    size: 48, color: AppColors.lightGrey),
+                const SizedBox(height: 12),
+                Text(
+                  'Belum ada pesan. Mulai obrolan sekarang!',
+                  style: AppTextStyle.mediumGrey,
+                ),
+              ],
+            ),
+          );
+        }
+
+        logger.info(controller.messages.length);
         return ListView.builder(
           controller: controller.scrollController,
           padding: const EdgeInsets.only(bottom: 12, top: 8),
@@ -139,7 +191,6 @@ class ChatView extends GetView<ChatController> {
             final message = controller.messages[index];
             return ChatMessageBubble(message: message);
           },
-          reverse: true,
         );
       },
     );
@@ -149,74 +200,76 @@ class ChatView extends GetView<ChatController> {
     return Container(
       color: AppColors.white,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           // Error banner (shows when send fails / pending)
           Obx(() {
             if (controller.error.value.isEmpty) return const SizedBox.shrink();
-            return Expanded(
-              child: Container(
-                margin: const EdgeInsets.only(right: 8, bottom: 8),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.shadeRed,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        controller.error.value,
-                        style: AppTextStyle.smallWhite,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+            return Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppColors.redContrast,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      controller.error.value,
+                      style: AppTextStyle.smallWhite,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    TextButton(
-                      onPressed: controller.retryPending,
-                      child: const Text('Coba lagi'),
-                    )
-                  ],
-                ),
+                  ),
+                  TextButton(
+                    onPressed: controller.retryPending,
+                    child: const Text('Coba lagi',
+                        style: TextStyle(color: Colors.white)),
+                  )
+                ],
               ),
             );
           }),
-
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.greyWhite,
-                borderRadius: BorderRadius.circular(40),
-              ),
-              child: TextField(
-                controller: controller.textController,
-                onChanged: controller.onDraftChanged,
-                textInputAction: TextInputAction.send,
-                onSubmitted: (_) => controller.sendMessage(),
-                decoration: InputDecoration(
-                  hintText: 'Tulis pesan...',
-                  hintStyle: AppTextStyle.mediumGrey,
-                  border: InputBorder.none,
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.greyWhite,
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  child: TextField(
+                    controller: controller.textController,
+                    onChanged: controller.onDraftChanged,
+                    textInputAction: TextInputAction.send,
+                    onSubmitted: (_) => controller.sendMessage(),
+                    decoration: InputDecoration(
+                      hintText: 'Tulis pesan...',
+                      hintStyle: AppTextStyle.mediumGrey,
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 18, vertical: 14),
+                    ),
+                    style: AppTextStyle.mediumBlack,
+                  ),
                 ),
-                style: AppTextStyle.mediumBlack,
               ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Obx(
-            () => IconButton(
-              icon: Icon(
-                Icons.send,
-                color: controller.draft.value.trim().isEmpty
-                    ? AppColors.lightGrey
-                    : AppColors.primaryColor,
+              const SizedBox(width: 12),
+              Obx(
+                () => IconButton(
+                  icon: Icon(
+                    Icons.send,
+                    color: controller.draft.value.trim().isEmpty
+                        ? AppColors.lightGrey
+                        : AppColors.primaryColor,
+                  ),
+                  onPressed: controller.draft.value.trim().isEmpty
+                      ? null
+                      : controller.sendMessage,
+                ),
               ),
-              onPressed: controller.draft.value.trim().isEmpty
-                  ? null
-                  : controller.sendMessage,
-            ),
+            ],
           ),
         ],
       ),

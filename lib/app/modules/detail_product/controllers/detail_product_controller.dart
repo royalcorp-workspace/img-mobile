@@ -13,15 +13,6 @@ class DetailProductController extends GetxController {
 
   var productByID = ProductByIdEntity().obs;
 
-  /// List Size Product
-  List sizeProduct = [
-    "100x200",
-    "120x200",
-    "160x200",
-    "180x200",
-    "200x200",
-  ];
-
   @override
   void onInit() {
     super.onInit();

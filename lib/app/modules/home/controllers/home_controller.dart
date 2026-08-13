@@ -40,6 +40,7 @@ class HomeController extends GetxController {
   var currentPage = 1;
   final int itemsPerPage = 10;
   var productErrorMessage = ''.obs;
+  var discount = '';
 
   @override
   void onInit() {

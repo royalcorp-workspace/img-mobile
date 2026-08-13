@@ -177,7 +177,7 @@ class HomeView extends GetView<HomeController> {
                   Helper.getImagePath('img_product1.jpg'),
                 );
               }
-
+              controller.discount = formattedOriginalPrice;
               return ProductsCard(
                 formattedOriginalPrice: formattedOriginalPrice,
                 formattedPrice: formattedPrice,
@@ -194,7 +194,7 @@ class HomeView extends GetView<HomeController> {
             crossAxisCount: 2,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
-            childAspectRatio: .65,
+            childAspectRatio: controller.discount.isNotEmpty ? .65 : .70,
           ),
         ),
       );

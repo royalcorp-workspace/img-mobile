@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
-
-import '../models/chat_message.dart';
+import '../../../domain/entities/chat_message_entity.dart';
 
 class ChatMessageBubble extends StatelessWidget {
-  final ChatMessage message;
+  final ChatMessageEntity message;
   const ChatMessageBubble({super.key, required this.message});
 
   String get _timeLabel {
-    final hours = message.timestamp.hour.toString().padLeft(2, '0');
-    final minutes = message.timestamp.minute.toString().padLeft(2, '0');
+    final dt = message.createdAt ?? message.updatedAt ?? DateTime.now();
+    final hours = dt.hour.toString().padLeft(2, '0');
+    final minutes = dt.minute.toString().padLeft(2, '0');
     return '$hours:$minutes';
   }
 
   @override
   Widget build(BuildContext context) {
-    final isUser = message.sender == ChatSender.user;
+    final isUser = message.isMe;
+    final isPending = message.id.startsWith('temp_');
     final backgroundColor =
         isUser ? AppColors.primaryColor : AppColors.greyWhite;
     final textStyle =
@@ -47,7 +48,20 @@ class ChatMessageBubble extends StatelessWidget {
                 children: [
                   Text(message.text, style: textStyle),
                   const SizedBox(height: 6),
-                  Text(_timeLabel, style: timeStyle),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(_timeLabel, style: timeStyle),
+                      if (isPending) ...[
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.access_time_rounded,
+                          size: 12,
+                          color: isUser ? Colors.white70 : Colors.grey,
+                        ),
+                      ],
+                    ],
+                  ),
                 ],
               ),
             ),

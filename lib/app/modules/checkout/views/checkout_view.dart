@@ -89,9 +89,12 @@ class CheckoutView extends GetView<CheckoutController> {
                                   .variants?[controller.selectedIndex.value]
                                   .variantName ??
                               '',
-                          promoDesc: controller.productByID.value
-                                  .priceProductSettings?.first.title ??
-                              '',
+                          promoDesc: (controller.productByID.value
+                                          .priceProductSettings?.isNotEmpty ==
+                                      true)
+                              ? controller.productByID.value
+                                  .priceProductSettings!.first.title
+                              : '',
                           price: controller.productByID.value.finalPrice ?? 0,
                           onTapDecrement: controller.selectedQty.value == 1
                               ? null
@@ -196,7 +199,7 @@ class CheckoutView extends GetView<CheckoutController> {
                                                   boxShadow: [
                                                     BoxShadow(
                                                       color: Colors.black
-                                                          .withOpacity(0.08),
+                                                          .withValues(alpha: 0.08),
                                                       offset:
                                                           const Offset(0, -1),
                                                       blurRadius: 12,
@@ -240,7 +243,7 @@ class CheckoutView extends GetView<CheckoutController> {
                                                   boxShadow: [
                                                     BoxShadow(
                                                       color: Colors.black
-                                                          .withOpacity(0.08),
+                                                          .withValues(alpha: 0.08),
                                                       offset:
                                                           const Offset(0, -1),
                                                       blurRadius: 12,
@@ -742,7 +745,7 @@ class CheckoutView extends GetView<CheckoutController> {
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               offset: const Offset(0, -8),
               blurRadius: 16,
               spreadRadius: 0,

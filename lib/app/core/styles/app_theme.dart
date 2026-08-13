@@ -67,7 +67,7 @@ final ThemeData appTheme = ThemeData(
           borderRadius: BorderRadius.circular(10.sp),
           borderSide: const BorderSide(color: AppColors.white, width: 1)),
       errorMaxLines: 2),
-  dialogTheme: DialogTheme(
+  dialogTheme: DialogThemeData(
     backgroundColor: AppColors.lightGrey,
   ),
 );
@@ -78,7 +78,7 @@ final ThemeData darkAppTheme = ThemeData(
   appBarTheme: AppBarTheme(
     iconTheme: IconThemeData(color: AppColors.black),
     shadowColor: AppColors.white,
-    color: AppColors.darkGrey,
+    backgroundColor: AppColors.darkGrey,
     elevation: 0,
     toolbarTextStyle: const TextTheme(
       titleLarge: AppTextStyle.xxxLargeWhite,
@@ -142,7 +142,7 @@ final ThemeData darkAppTheme = ThemeData(
     ),
     errorMaxLines: 2,
   ),
-  dialogTheme: DialogTheme(
+  dialogTheme: DialogThemeData(
     backgroundColor: AppColors.primaryColor,
   ),
 );
