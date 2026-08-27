@@ -202,11 +202,12 @@ class ProductsCard extends StatelessWidget {
                 ),
                 15.verticalSpace,
                 TextPriceBold(price: formattedPrice),
-                5.verticalSpace,
-                if (formattedOriginalPrice.isEmpty)
-                  TextPriceLineThrough(price: 'Rp 0')
-                else if (formattedOriginalPrice.isNotEmpty)
-                  TextPriceLineThrough(price: formattedOriginalPrice),
+                Visibility(
+                    visible: formattedOriginalPrice.isNotEmpty,
+                    child: 5.verticalSpace),
+                Visibility(
+                    visible: formattedOriginalPrice.isNotEmpty,
+                    child: TextPriceLineThrough(price: formattedOriginalPrice)),
               ],
             ),
           ),

@@ -41,6 +41,13 @@ class HomeController extends GetxController {
   final int itemsPerPage = 10;
   var productErrorMessage = ''.obs;
 
+  double priceVal = 0.0;
+  double originalPriceVal = 0.0;
+
+  String formattedPrice = '';
+  String formattedOriginalPrice = '';
+  String imageUrl = '';
+
   @override
   void onInit() {
     super.onInit();
@@ -104,10 +111,10 @@ class HomeController extends GetxController {
 
       final result =
           await useCase.call(page: currentPage, itemsPerPage: itemsPerPage);
-      products.assignAll(result.data);
+      category.assignAll(result.data);
       hasMore.value = result.hasMore;
     } catch (e, stackTrace) {
-      logger.severe('❌ [HOME] Failed to fetch products: $e');
+      logger.severe('❌ [HOME] Failed to fetch category: $e');
       if (kDebugMode) {
         print('❌ [HOME] Error: $e');
         print(stackTrace);
@@ -136,7 +143,7 @@ class HomeController extends GetxController {
         arguments: result,
       );
     } catch (e, stackTrace) {
-      logger.severe('❌ [HOME] Failed to fetch products by ID: $e');
+      logger.severe('❌ [HOME] Failed to fetch detail products by ID: $e');
       if (kDebugMode) {
         print('❌ [HOME] Error: $e');
         print(stackTrace);

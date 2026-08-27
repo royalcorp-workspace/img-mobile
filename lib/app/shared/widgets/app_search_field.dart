@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pos_royal/app/core/helper/helper.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
@@ -15,9 +16,11 @@ class AppSearchField extends StatelessWidget {
       keyboardType: TextInputType.text,
       style: AppTextStyle.mediumBlack,
       decoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(horizontal: 8.w),
         suffixIcon: Container(
           padding: const EdgeInsets.all(4),
-          margin: const EdgeInsets.only(left: 5, top: 5, right: 15, bottom: 5),
+          margin:
+              EdgeInsets.only(left: 15.w, top: 5.h, right: 8.w, bottom: 5.h),
           child: SvgPicture.asset(
             Helper.getSvgPath('ic_search.svg'),
             colorFilter: ColorFilter.mode(

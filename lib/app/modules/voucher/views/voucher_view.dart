@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
 import 'package:pos_royal/app/modules/voucher/views/widgets/voucher_bottom_bar.dart';
-import 'package:pos_royal/app/modules/voucher/views/widgets/voucher_section.dart';
+import 'package:pos_royal/app/modules/voucher/views/widgets/voucher_card.dart';
 
 import '../controllers/voucher_controller.dart';
 
@@ -14,51 +14,76 @@ class VoucherView extends GetView<VoucherController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.shadowGrey,
-      appBar: AppBar(
-        backgroundColor: AppColors.primaryColor,
-        elevation: 2,
-        title: const Text(
-          'Pakai Voucher',
-          style: AppTextStyle.xxLargeWhiteBold,
+        backgroundColor: AppColors.shadowGrey,
+        appBar: AppBar(
+          backgroundColor: AppColors.primaryColor,
+          elevation: 2,
+          title: const Text(
+            'Voucher',
+            style: AppTextStyle.xLargeWhiteBold,
+          ),
+          // actions: const [
+          //   Padding(
+          //     padding: EdgeInsets.only(right: 12),
+          //     child: Center(
+          //       child: Text(
+          //         'Masukkan Kode',
+          //         style: AppTextStyle.largeWhiteBold,
+          //       ),
+          //     ),
+          //   )
+          // ],
         ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 12),
-            child: Center(
-              child: Text(
-                'Masukkan Kode',
-                style: AppTextStyle.largeWhiteBold,
-              ),
-            ),
-          )
-        ],
-      ),
-      body: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        itemCount: controller.vouchers.length,
-        itemBuilder: (context, index) {
-          final voucher = controller.vouchers[index];
-          return Padding(
-            padding: EdgeInsets.only(
-                bottom: index == controller.vouchers.length - 1 ? 20 : 16),
-            child: Obx(
-              () => VoucherSection(
-                titleVoucher: voucher.titleVoucher,
-                subtitleVoucher: voucher.subtitleVoucher,
-                title: voucher.title,
-                description: voucher.description,
-                codeVoucher: voucher.codeVoucher,
-                image: voucher.image,
-                itemCount: 1,
-                isSelected: controller.selectedIndex.value == index,
-                onTap: () => controller.selectedIndex.value = index,
-              ),
-            ),
-          );
-        },
-      ),
-      bottomNavigationBar: const VoucherBottomBar(),
-    );
+        body: Obx(
+          () {
+            if (controller.isLoading.value && controller.vouchers.isEmpty) {
+              return const Center(
+                child: CircularProgressIndicator(color: AppColors.primaryColor),
+              );
+            }
+            if (controller.vouchers.isEmpty) {
+              return const Center(
+                child: Text(
+                  'Tidak ada voucher tersedia',
+                  style: AppTextStyle.largeBlackBold,
+                ),
+              );
+            }
+            return ListView.builder(
+              controller: controller.pageScrollController,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              itemCount: controller.vouchers.length,
+              itemBuilder: (context, index) {
+                final data = controller.vouchers[index];
+                return Obx(
+                  () => VoucherCard(
+                    title: data.title,
+                    description: data.description,
+                    codeVoucher: data.code,
+                    isSelected: controller.selectedIndex.value == index,
+                    onTap: () => controller.selectedIndex.value = index,
+                  ),
+                  // VoucherSection(
+                  //   titleVoucher: data.title,
+                  //   subtitleVoucher: 'data.subtitle',
+                  //   title: data.title,
+                  //   description: data.description,
+                  //   codeVoucher: data.code,
+                  //   image: 'img_discount.png',
+                  //   itemCount: 1,
+                  //   isSelected: controller.selectedIndex.value == index,
+                  //   onTap: () => controller.selectedIndex.value = index,
+                  // ),
+                );
+              },
+            );
+          },
+        ),
+        bottomNavigationBar: Obx(
+          () => VoucherBottomBar(
+            value: controller.vouchers[controller.selectedIndex.value].value
+                .toInt(),
+          ),
+        ));
   }
 }

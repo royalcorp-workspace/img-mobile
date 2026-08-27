@@ -41,7 +41,7 @@ class HomeView extends GetView<HomeController> {
                 ),
                 20.verticalSpace,
                 SizedBox(
-                  height: 68.h,
+                  height: 70.h,
                   child: GridView.count(
                     physics: const NeverScrollableScrollPhysics(),
                     crossAxisCount: 4,
@@ -51,7 +51,7 @@ class HomeView extends GetView<HomeController> {
                         .toList(),
                   ),
                 ),
-                20.verticalSpace,
+                18.verticalSpace,
                 const SectionHeader(title: 'Kategori Pilihan', actionText: ''),
                 12.verticalSpace,
                 RPadding(
@@ -137,11 +137,10 @@ class HomeView extends GetView<HomeController> {
           delegate: SliverChildBuilderDelegate(
             (context, index) {
               final product = controller.products[index];
-              final String title = product?.name ?? "-";
-              double priceVal = 0.0;
-              double originalPriceVal = 0.0;
+              final title = product?.name ?? "-";
+
               if (product != null) {
-                priceVal = product!.finalPrice > 0
+                controller.priceVal = product!.finalPrice > 0
                     ? product!.finalPrice
                     : (product!.basePrice > 0
                         ? product!.basePrice
@@ -150,17 +149,18 @@ class HomeView extends GetView<HomeController> {
                                 ? product!.variants.first.finalPrice
                                 : product!.variants.first.price)
                             : 0.0));
-                if (product!.basePrice > priceVal) {
-                  originalPriceVal = product!.basePrice;
+                if (product!.basePrice > controller.priceVal) {
+                  controller.originalPriceVal = product!.basePrice;
                 }
               }
-              final String formattedPrice = product != null
-                  ? Helper.formatCurrency(priceVal.toInt())
-                  : 'Rp 0';
-              final String formattedOriginalPrice = originalPriceVal > 0
-                  ? Helper.formatCurrency(originalPriceVal.toInt())
+              controller.formattedPrice = product != null
+                  ? Helper.formatCurrency(controller.priceVal.toInt())
+                  : Helper.formatCurrency(0);
+              controller.formattedOriginalPrice = controller.originalPriceVal >
+                      0
+                  ? Helper.formatCurrency(controller.originalPriceVal.toInt())
                   : '';
-              final String imageUrl = product?.thumbnail ??
+              controller.imageUrl = product?.thumbnail ??
                   (product?.images.isNotEmpty == true
                       ? product!.images.first.image
                       : '');
@@ -169,9 +169,9 @@ class HomeView extends GetView<HomeController> {
               final String review = '(${product?.totalReviews ?? 128})';
 
               ImageProvider imageProvider;
-              if (imageUrl.startsWith('http://') ||
-                  imageUrl.startsWith('https://')) {
-                imageProvider = NetworkImage(imageUrl);
+              if (controller.imageUrl.startsWith('http://') ||
+                  controller.imageUrl.startsWith('https://')) {
+                imageProvider = NetworkImage(controller.imageUrl);
               } else {
                 imageProvider = AssetImage(
                   Helper.getImagePath('img_product1.jpg'),
@@ -179,8 +179,8 @@ class HomeView extends GetView<HomeController> {
               }
 
               return ProductsCard(
-                formattedOriginalPrice: formattedOriginalPrice,
-                formattedPrice: formattedPrice,
+                formattedOriginalPrice: controller.formattedOriginalPrice,
+                formattedPrice: controller.formattedPrice,
                 imageProvider: imageProvider,
                 rating: rating,
                 review: review,
@@ -194,7 +194,8 @@ class HomeView extends GetView<HomeController> {
             crossAxisCount: 2,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
-            childAspectRatio: .65,
+            childAspectRatio:
+                controller.formattedOriginalPrice.isEmpty ? .73 : .65,
           ),
         ),
       );

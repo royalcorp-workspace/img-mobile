@@ -1,4 +1,11 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pos_royal/app/core/utils/log/logger.dart';
+import 'package:pos_royal/app/data/datasources/voucher_remote_datasource.dart';
+import 'package:pos_royal/app/data/repositories/voucher_repository_impl.dart';
+import 'package:pos_royal/app/domain/entities/voucher_entity.dart';
+import 'package:pos_royal/app/domain/usecases/get_voucher_usecase.dart';
 
 class Voucher {
   final String image;
@@ -19,25 +26,94 @@ class Voucher {
 }
 
 class VoucherController extends GetxController {
-  RxInt selectedIndex = 0.obs;
+  VoucherController({this.getVoucherUsecase});
 
-  final List<Voucher> vouchers = [
-    Voucher(
-      image: 'img_free_ongkir.png',
-      title: 'Diskon 10% Semua Produk',
-      description: 'Min. belanja Rp. 500.000',
-      titleVoucher: 'DISKON BELANJA',
-      subtitleVoucher: '10%',
-      codeVoucher: 'IMG10OFF',
-    ),
-    Voucher(
-      image: 'img_discount.png',
-      title: 'Gratis Ongkir',
-      description: 'Min. belanja Rp. 300.000',
-      titleVoucher: 'GRATIS ONGKIR',
-      subtitleVoucher: '',
-      codeVoucher: 'IMGFREESHIP',
-    ),
-    // Add more dummy vouchers as needed for testing large lists.
-  ];
+  final GetVoucherUsecase? getVoucherUsecase;
+
+  RxInt selectedIndex = 0.obs;
+  final ScrollController pageScrollController = ScrollController();
+  var isLoading = false.obs;
+  var isLoadingMore = false.obs;
+  var hasMore = true.obs;
+  var currentPage = 1;
+  final int itemsPerPage = 10;
+  var voucherErrorMessage = ''.obs;
+  var vouchers = <VoucherEntity>[].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _initScrollListener();
+    fetchVouchers();
+  }
+
+  void _initScrollListener() {
+    pageScrollController.addListener(() {
+      if (pageScrollController.position.pixels >=
+          pageScrollController.position.maxScrollExtent - 300) {
+        loadNextPage();
+      }
+    });
+  }
+
+  Future<void> fetchVouchers() async {
+    try {
+      isLoading.value = true;
+      voucherErrorMessage.value = '';
+      currentPage = 1;
+      hasMore.value = true;
+
+      final useCase = getVoucherUsecase ??
+          GetVoucherUsecase(
+            VoucherRepositoryImpl(
+              remoteDataSource: VoucherRemoteDataSourceImpl(),
+            ),
+          );
+
+      final result =
+          await useCase.call(page: currentPage, itemsPerPage: itemsPerPage);
+      vouchers.assignAll(result.data);
+      hasMore.value = result.hasMore;
+    } catch (e, stackTrace) {
+      logger.severe('❌ [VOUCHER] Failed to fetch vouchers: $e');
+      if (kDebugMode) {
+        print('❌ [VOUCHER] Error: $e');
+        print(stackTrace);
+      }
+      voucherErrorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> loadNextPage() async {
+    if (isLoadingMore.value || isLoading.value || !hasMore.value) {
+      return;
+    }
+
+    try {
+      isLoadingMore.value = true;
+      final nextPage = currentPage + 1;
+      logger.info('🔍 [VOUCHER] Loading next page: $nextPage');
+
+      final useCase = getVoucherUsecase ??
+          GetVoucherUsecase(
+            VoucherRepositoryImpl(
+              remoteDataSource: VoucherRemoteDataSourceImpl(),
+            ),
+          );
+
+      final result =
+          await useCase.call(page: nextPage, itemsPerPage: itemsPerPage);
+      if (result.data.isNotEmpty) {
+        vouchers.addAll(result.data);
+        currentPage = nextPage;
+      }
+      hasMore.value = result.hasMore;
+    } catch (e) {
+      logger.severe('❌ [VOUCHER] Failed to load next page: $e');
+    } finally {
+      isLoadingMore.value = false;
+    }
+  }
 }

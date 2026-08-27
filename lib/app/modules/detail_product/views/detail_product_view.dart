@@ -40,11 +40,8 @@ class DetailProductView extends GetView<DetailProductController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              RPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                child: DetailProductCard(
-                  widgetKey: controller.widgetKey,
-                ),
+              DetailProductCard(
+                widgetKey: controller.widgetKey,
               ),
               10.verticalSpace,
               RPadding(
@@ -76,7 +73,7 @@ class DetailProductView extends GetView<DetailProductController> {
                         5.horizontalSpace,
                         const Text(
                           '(128)',
-                          style: AppTextStyle.mediumGrey,
+                          style: AppTextStyle.smallGrey,
                         ),
                       ],
                     ),
@@ -96,7 +93,7 @@ class DetailProductView extends GetView<DetailProductController> {
                         5.horizontalSpace,
                         const Text(
                           'Terjual',
-                          style: AppTextStyle.mediumGrey,
+                          style: AppTextStyle.smallGrey,
                         ),
                       ],
                     ),
@@ -118,7 +115,7 @@ class DetailProductView extends GetView<DetailProductController> {
                         5.horizontalSpace,
                         const Text(
                           'Stok',
-                          style: AppTextStyle.mediumGrey,
+                          style: AppTextStyle.smallGrey,
                         ),
                       ],
                     )
@@ -146,68 +143,127 @@ class DetailProductView extends GetView<DetailProductController> {
                     ),
                     8.horizontalSpace,
                     Obx(
-                      () => TextPriceLineThrough(
-                          price: Helper.formatCurrency(controller
-                                  .productByID
-                                  .value
-                                  .variants?[controller.selectedIndex.value]
-                                  .price
-                                  .toInt() ??
-                              0)),
+                      () => Visibility(
+                        visible: controller
+                                .productByID
+                                .value
+                                .variants?[controller.selectedIndex.value]
+                                .finalPrice !=
+                            controller
+                                .productByID
+                                .value
+                                .variants?[controller.selectedIndex.value]
+                                .price,
+                        child: TextPriceLineThrough(
+                            price: Helper.formatCurrency(controller
+                                    .productByID
+                                    .value
+                                    .variants?[controller.selectedIndex.value]
+                                    .price
+                                    .toInt() ??
+                                0)),
+                      ),
                     ),
                     8.horizontalSpace,
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: AppColors.shadeRed,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(8),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.remove,
-                            size: 12,
-                            color: AppColors.orange,
+                    Visibility(
+                      visible: controller
+                              .productByID
+                              .value
+                              .variants?[controller.selectedIndex.value]
+                              .finalPrice !=
+                          controller.productByID.value
+                              .variants?[controller.selectedIndex.value].price,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: AppColors.shadeRed,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8),
                           ),
-                          Obx(
-                            () => Text(
-                              '${controller.productByID.value.variants?[controller.selectedIndex.value].priceProductSettings.first.discountValue.toInt()}%',
-                              style: AppTextStyle.mediumBlackBold.copyWith(
-                                color: AppColors.orange,
-                              ),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.remove,
+                              size: 12,
+                              color: AppColors.orange,
                             ),
-                          )
-                        ],
+                            Obx(
+                              () => Text(
+                                controller
+                                        .productByID
+                                        .value
+                                        .variants![
+                                            controller.selectedIndex.value]
+                                        .priceProductSettings
+                                        .isEmpty
+                                    ? ''
+                                    : '${controller.productByID.value.variants?[controller.selectedIndex.value].priceProductSettings.first.discountValue.toInt()}%',
+                                style: AppTextStyle.mediumBlackBold.copyWith(
+                                  color: AppColors.orange,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     )
                   ],
                 ),
               ),
               10.verticalSpace,
-              const Divider(color: AppColors.lightGrey, thickness: 1.2),
-              ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  minLeadingWidth: 0,
-                  horizontalTitleGap: 5,
-                  leading: Image.asset(
-                    height: 60,
-                    width: 60,
-                    Helper.getImagePath('img_special_promo.png'),
-                  ),
-                  title: Obx(
-                    () => Text(
-                      '${controller.productByID.value.variants?[controller.selectedIndex.value].priceProductSettings.first.title}',
-                      style: AppTextStyle.mediumBlackBold,
+              Visibility(
+                  visible: controller
+                      .productByID
+                      .value
+                      .variants![controller.selectedIndex.value]
+                      .priceProductSettings
+                      .isNotEmpty,
+                  child: const Divider(
+                      color: AppColors.lightGrey, thickness: 1.2)),
+              Visibility(
+                visible: controller
+                    .productByID
+                    .value
+                    .variants![controller.selectedIndex.value]
+                    .priceProductSettings
+                    .isNotEmpty,
+                child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    minLeadingWidth: 0,
+                    horizontalTitleGap: 5,
+                    leading: Image.asset(
+                      height: 60,
+                      width: 60,
+                      Helper.getImagePath('img_special_promo.png'),
                     ),
-                  ),
-                  subtitle: Obx(
-                    () => Text(
-                      '${controller.productByID.value.variants?[controller.selectedIndex.value].priceProductSettings.first.description}',
-                      style: AppTextStyle.mediumBlack,
+                    title: Obx(
+                      () => Text(
+                        controller
+                                .productByID
+                                .value
+                                .variants![controller.selectedIndex.value]
+                                .priceProductSettings
+                                .isEmpty
+                            ? '-'
+                            : '${controller.productByID.value.variants?[controller.selectedIndex.value].priceProductSettings.first.title}',
+                        style: AppTextStyle.mediumBlackBold,
+                      ),
                     ),
-                  )),
+                    subtitle: Obx(
+                      () => Text(
+                        controller
+                                .productByID
+                                .value
+                                .variants![controller.selectedIndex.value]
+                                .priceProductSettings
+                                .isEmpty
+                            ? '-'
+                            : '${controller.productByID.value.variants?[controller.selectedIndex.value].priceProductSettings.first.description}',
+                        style: AppTextStyle.mediumBlack,
+                      ),
+                    )),
+              ),
               AppDivider(),
               10.verticalSpace,
               RPadding(
@@ -317,7 +373,7 @@ ${controller.productByID.value.description}
                     ),
                     Text(
                       'Lihat Semua',
-                      style: AppTextStyle.mediumBlackBold,
+                      style: AppTextStyle.smallBlackBold,
                     ),
                   ],
                 ),
@@ -349,7 +405,7 @@ ${controller.productByID.value.description}
                           12.verticalSpace,
                           Text(
                             '128 Rating\ndan 24 Review',
-                            style: AppTextStyle.mediumGrey,
+                            style: AppTextStyle.smallGrey,
                           )
                         ],
                       ),
@@ -364,7 +420,7 @@ ${controller.productByID.value.description}
                             children: [
                               Text(
                                 '5',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                               5.horizontalSpace,
                               Icon(
@@ -383,7 +439,7 @@ ${controller.productByID.value.description}
                               5.horizontalSpace,
                               Text(
                                 '67%',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                             ],
                           ),
@@ -392,7 +448,7 @@ ${controller.productByID.value.description}
                             children: [
                               Text(
                                 '4',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                               5.horizontalSpace,
                               Icon(
@@ -411,7 +467,7 @@ ${controller.productByID.value.description}
                               5.horizontalSpace,
                               Text(
                                 '20%',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                             ],
                           ),
@@ -420,7 +476,7 @@ ${controller.productByID.value.description}
                             children: [
                               Text(
                                 '3',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                               5.horizontalSpace,
                               Icon(
@@ -439,7 +495,7 @@ ${controller.productByID.value.description}
                               5.horizontalSpace,
                               Text(
                                 '7%',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                             ],
                           ),
@@ -448,7 +504,7 @@ ${controller.productByID.value.description}
                             children: [
                               Text(
                                 '2',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                               5.horizontalSpace,
                               Icon(
@@ -467,7 +523,7 @@ ${controller.productByID.value.description}
                               5.horizontalSpace,
                               Text(
                                 '0%',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                             ],
                           ),
@@ -476,7 +532,7 @@ ${controller.productByID.value.description}
                             children: [
                               Text(
                                 '1',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                               5.horizontalSpace,
                               Icon(
@@ -495,7 +551,7 @@ ${controller.productByID.value.description}
                               5.horizontalSpace,
                               Text(
                                 '2%',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                             ],
                           )
@@ -524,7 +580,7 @@ ${controller.productByID.value.description}
                     ),
                     Text(
                       'Lihat Semua',
-                      style: AppTextStyle.mediumBlackBold,
+                      style: AppTextStyle.smallBlackBold,
                     ),
                   ],
                 ),

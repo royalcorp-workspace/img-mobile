@@ -90,8 +90,11 @@ class CheckoutView extends GetView<CheckoutController> {
                                   .variantName ??
                               '',
                           promoDesc: controller.productByID.value
-                                  .priceProductSettings?.first.title ??
-                              '',
+                                      .priceProductSettings?.isNotEmpty ==
+                                  true
+                              ? controller.productByID.value
+                                  .priceProductSettings!.first.title
+                              : '',
                           price: controller.productByID.value.finalPrice ?? 0,
                           onTapDecrement: controller.selectedQty.value == 1
                               ? null

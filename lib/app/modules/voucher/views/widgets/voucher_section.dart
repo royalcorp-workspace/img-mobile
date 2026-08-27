@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pos_royal/app/core/helper/helper.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
 import 'package:pos_royal/app/modules/voucher/views/widgets/voucher_card.dart';
 
 class VoucherSection extends StatelessWidget {
@@ -32,26 +29,12 @@ class VoucherSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          children: [
-            Image.asset(
-              Helper.getImagePath(image),
-              height: 60,
-              width: 60,
-            ),
-            10.horizontalSpace,
-            Text(
-              title,
-              style: AppTextStyle.largeBlackBold,
-            ),
-          ],
-        ),
         const SizedBox(height: 10),
         ...List.generate(
           itemCount,
           (index) => VoucherCard(
-            titleVoucher: titleVoucher,
-            subtitleVoucher: subtitleVoucher,
+            // titleVoucher: titleVoucher,
+            // subtitleVoucher: subtitleVoucher,
             title: title,
             description: description,
             codeVoucher: codeVoucher,

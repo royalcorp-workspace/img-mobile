@@ -16,6 +16,7 @@ class CheckoutBinding extends Bindings {
     );
     Get.lazyPut<GetShippingAddressesUsecase>(
       () => GetShippingAddressesUsecase(Get.find()),
+      fenix: true,
     );
     Get.lazyPut<CheckoutController>(
       () => CheckoutController(getShippingAddressesUsecase: Get.find()),

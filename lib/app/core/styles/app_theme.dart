@@ -78,7 +78,7 @@ final ThemeData darkAppTheme = ThemeData(
   appBarTheme: AppBarTheme(
     iconTheme: IconThemeData(color: AppColors.black),
     shadowColor: AppColors.white,
-    color: AppColors.darkGrey,
+    backgroundColor: AppColors.darkGrey,
     elevation: 0,
     toolbarTextStyle: const TextTheme(
       titleLarge: AppTextStyle.xxxLargeWhite,

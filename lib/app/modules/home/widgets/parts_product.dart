@@ -30,7 +30,7 @@ class PartsProduct extends StatelessWidget {
         4.verticalSpace,
         Text(
           title,
-          style: AppTextStyle.mediumBlack,
+          style: AppTextStyle.smallBlack,
         )
       ],
     );

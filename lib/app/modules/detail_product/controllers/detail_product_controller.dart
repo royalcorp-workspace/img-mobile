@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:add_to_cart_animation/add_to_cart_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,19 +15,11 @@ class DetailProductController extends GetxController {
 
   var productByID = ProductByIdEntity().obs;
 
-  /// List Size Product
-  List sizeProduct = [
-    "100x200",
-    "120x200",
-    "160x200",
-    "180x200",
-    "200x200",
-  ];
-
   @override
   void onInit() {
     super.onInit();
     productByID(Get.arguments);
+    log('HERE ${productByID.value.description}');
   }
 
   Future<void> addToCart(GlobalKey widgetKey) async {

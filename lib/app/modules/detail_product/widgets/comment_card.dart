@@ -17,7 +17,7 @@ class CommentCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Erric Hoffman', style: AppTextStyle.mediumBlackBold),
-            Text('11-Mar 2026', style: AppTextStyle.mediumGrey),
+            Text('11-Mar 2026', style: AppTextStyle.smallGrey),
           ],
         ),
         5.verticalSpace,
@@ -25,13 +25,13 @@ class CommentCard extends StatelessWidget {
           children: [
             Icon(
               Icons.star,
-              size: 18,
+              size: 15,
               color: AppColors.yellow,
             ),
             2.horizontalSpace,
             Text(
               '5.0',
-              style: AppTextStyle.mediumGrey,
+              style: AppTextStyle.smallGrey,
             ),
           ],
         ),
