@@ -24,9 +24,12 @@ void main() async {
     Flavor.development => dev_opts.DefaultFirebaseOptions.currentPlatform,
   };
 
-  await Firebase.initializeApp(options: options);
-
-
+  if (Firebase.apps.isEmpty) {
+    final flavor = AppFlavor.current;
+    await Firebase.initializeApp(
+        name: flavor != Flavor.production ? 'IMG' : 'IMG DEV',
+        options: options);
+  }
 
   // Initialize dependencies
   await initInjections();
