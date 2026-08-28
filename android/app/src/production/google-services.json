@@ -7,14 +7,14 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:122681934982:android:9f44dac247624fc3267d07",
+        "mobilesdk_app_id": "1:122681934982:android:df149bfc68415d61267d07",
         "android_client_info": {
-          "package_name": "posroyal.pos_royal"
+          "package_name": "com.img.royalcorp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "122681934982-ilfedk4jjpragbqpm9dvhlq6g2ss73hb.apps.googleusercontent.com",
+          "client_id": "122681934982-b6imj5a4lcb6l6e2mtnvq643lnaj7brs.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -27,8 +27,59 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "122681934982-ilfedk4jjpragbqpm9dvhlq6g2ss73hb.apps.googleusercontent.com",
+              "client_id": "122681934982-b6imj5a4lcb6l6e2mtnvq643lnaj7brs.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "122681934982-ke7rukvluc5qsuqnaprvto6alfp76h0t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "posroyal.posRoyal"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:122681934982:android:9f44dac247624fc3267d07",
+        "android_client_info": {
+          "package_name": "posroyal.pos_royal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "122681934982-r3vvnv5glnb36bnha85l8bs66v5ev5o1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "posroyal.pos_royal",
+            "certificate_hash": "4ed4df795dd45a580448a6bf4b51acc0ef1e89e4"
+          }
+        },
+        {
+          "client_id": "122681934982-b6imj5a4lcb6l6e2mtnvq643lnaj7brs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQnMZziIJ4II_cpVvUU2aGDu-1CatWjc8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "122681934982-b6imj5a4lcb6l6e2mtnvq643lnaj7brs.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "122681934982-ke7rukvluc5qsuqnaprvto6alfp76h0t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "posroyal.posRoyal"
+              }
             }
           ]
         }

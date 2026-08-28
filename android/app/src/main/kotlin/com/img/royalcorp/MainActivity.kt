@@ -1,4 +1,4 @@
-package posroyal.pos_royal
+package com.img.royalcorp
 
 import io.flutter.embedding.android.FlutterActivity
 

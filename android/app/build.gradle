@@ -8,8 +8,14 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localProperties.load(new FileInputStream(localPropertiesFile))
+}
+
 android {
-    namespace = "posroyal.pos_royal"
+    namespace = "com.img.royalcorp"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -24,7 +30,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "posroyal.pos_royal"
+        applicationId = "com.img.royalcorp"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 23
@@ -53,27 +59,35 @@ android {
 
     signingConfigs {
         debug {
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
-            storeFile file('/Users/alghanykennedyadam/.android/debug.keystore')
-            storePassword 'android'
+            if (localProperties['STORE_FILE_PATH']) {
+                storeFile file(localProperties['STORE_FILE_PATH'])
+                storePassword localProperties['DEV_STORE_PASSWORD']
+                keyAlias localProperties['DEV_KEY_ALIAS']
+                keyPassword localProperties['DEV_KEY_PASSWORD']
+            }
         }
         
         release {
-            keyAlias 'pos_royal_prod'
-            keyPassword System.getenv("KEY_PASSWORD") ?: '@royalcorp26'
-            storeFile file(System.getenv("KEYSTORE_PATH") ?: '/Users/alghanykennedyadam/key.jks')
-            storePassword System.getenv("STORE_PASSWORD") ?: '@royalcorp26'
+            if (localProperties['STORE_FILE_PATH']) {
+                storeFile file(localProperties['STORE_FILE_PATH'])
+                storePassword localProperties['PROD_STORE_PASSWORD']
+                keyAlias localProperties['PROD_KEY_ALIAS']
+                keyPassword localProperties['PROD_KEY_PASSWORD']
+            }
         }
     }
 
     buildTypes {
         debug {
-            signingConfig signingConfigs.debug
+            if (localProperties['STORE_FILE_PATH']) {
+                signingConfig signingConfigs.debug
+            }
         }
         
         release {
-            signingConfig signingConfigs.release
+            if (localProperties['STORE_FILE_PATH']) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }
