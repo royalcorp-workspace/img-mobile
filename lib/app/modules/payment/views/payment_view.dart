@@ -34,7 +34,7 @@ class PaymentView extends GetView<PaymentController> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Total Pembayaran',
+                    'Total Tagihan',
                     style: AppTextStyle.mediumBlack,
                   ),
                   Text(

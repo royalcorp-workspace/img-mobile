@@ -95,18 +95,20 @@ class HomeView extends GetView<HomeController> {
       title: const AppSearchField(),
       // backgroundColor: AppColors.primaryColor,
       actions: [
-        const IconBadge(
+        IconBadge(
           iconPath: 'ic_notification.svg',
-          count: 0,
+          count: 1,
         ),
         2.horizontalSpace,
         AddToCartIcon(
           key: controller.cartKey,
           icon: InkWell(
             onTap: () => Get.toNamed(Routes.CART),
-            child: IconBadge(
-              iconPath: 'ic_cart.svg',
-              count: 1,
+            child: Obx(
+              () => IconBadge(
+                iconPath: 'ic_cart.svg',
+                count: controller.carts.length,
+              ),
             ),
           ),
           badgeOptions: const BadgeOptions(

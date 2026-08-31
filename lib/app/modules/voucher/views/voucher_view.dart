@@ -80,10 +80,23 @@ class VoucherView extends GetView<VoucherController> {
           },
         ),
         bottomNavigationBar: Obx(
-          () => VoucherBottomBar(
-            value: controller.vouchers[controller.selectedIndex.value].value
-                .toInt(),
-          ),
+          () {
+            if (controller.vouchers.isEmpty ||
+                controller.selectedIndex.value < 0 ||
+                controller.selectedIndex.value >= controller.vouchers.length) {
+              return const SizedBox.shrink();
+            }
+            return VoucherBottomBar(
+              value: controller
+                  .vouchers[controller.selectedIndex.value].value
+                  .toInt(),
+              onTap: () {
+                final selectedVoucher =
+                    controller.vouchers[controller.selectedIndex.value];
+                Get.back(result: selectedVoucher);
+              },
+            );
+          },
         ));
   }
 }

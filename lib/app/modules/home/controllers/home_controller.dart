@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:add_to_cart_animation/add_to_cart_animation.dart';
 import 'package:pos_royal/app/core/utils/log/logger.dart';
+import 'package:pos_royal/app/data/datasources/cart_remote_datasource.dart';
 import 'package:pos_royal/app/data/datasources/category_remote_datasource.dart';
 import 'package:pos_royal/app/data/datasources/product_remote_datasource.dart';
+import 'package:pos_royal/app/data/repositories/cart_repository_impl.dart';
 import 'package:pos_royal/app/data/repositories/category_repository_impl.dart';
 import 'package:pos_royal/app/data/repositories/product_repository_impl.dart';
+import 'package:pos_royal/app/domain/usecases/get_cart_usecase.dart';
 import 'package:pos_royal/app/domain/usecases/get_category_usecase.dart';
 import 'package:pos_royal/app/domain/usecases/get_product_by_id_usecase.dart';
 import 'package:pos_royal/app/domain/usecases/get_products_usecase.dart';
@@ -20,20 +23,22 @@ class HomeController extends GetxController {
     this.getProductsUseCase,
     this.getProductByIdUsecase,
     this.getCategoryUsecase,
+    this.getCartUsecase,
   });
 
   final GetProductsUseCase? getProductsUseCase;
   final GetProductByIdUsecase? getProductByIdUsecase;
   final GetCategoryUsecase? getCategoryUsecase;
+  final GetCartUsecase? getCartUsecase;
 
   GlobalKey<CartIconKey> cartKey = GlobalKey<CartIconKey>();
   late Function(GlobalKey) runAddToCartAnimation;
-  var cartQuantityItems = 0.obs;
 
   // Products Infinite Scroll State
   final ScrollController pageScrollController = ScrollController(); // renamed
   var products = [].obs;
   var category = [].obs;
+  var carts = [].obs;
   var isLoadingProducts = false.obs;
   var isLoadingMore = false.obs;
   var hasMore = true.obs;
@@ -53,6 +58,7 @@ class HomeController extends GetxController {
     super.onInit();
     _initScrollListener();
     fetchProducts();
+    _fetchCart();
     fetchCategory();
   }
 
@@ -90,6 +96,34 @@ class HomeController extends GetxController {
         print(stackTrace);
       }
       productErrorMessage.value = e.toString();
+    } finally {
+      isLoadingProducts.value = false;
+    }
+  }
+
+  Future<void> _fetchCart() async {
+    try {
+      isLoadingProducts.value = true;
+      currentPage = 1;
+      hasMore.value = true;
+
+      final useCase = getCartUsecase ??
+          GetCartUsecase(
+            CartRepositoryImpl(
+              remoteDataSource: CartRemoteDataSourceImpl(),
+            ),
+          );
+
+      final result =
+          await useCase.call(page: currentPage, itemsPerPage: itemsPerPage);
+      carts.assignAll(result.data);
+      hasMore.value = result.hasMore;
+    } catch (e, stackTrace) {
+      logger.severe('❌ [HOME] Failed to fetch carts: $e');
+      if (kDebugMode) {
+        print('❌ [HOME] Error: $e');
+        print(stackTrace);
+      }
     } finally {
       isLoadingProducts.value = false;
     }
@@ -140,7 +174,7 @@ class HomeController extends GetxController {
       final result = await useCase.call(productID);
       Get.toNamed(
         Routes.DETAIL_PRODUCT,
-        arguments: result,
+        arguments: [result, carts],
       );
     } catch (e, stackTrace) {
       logger.severe('❌ [HOME] Failed to fetch detail products by ID: $e');
@@ -230,9 +264,9 @@ class HomeController extends GetxController {
     await runAddToCartAnimation(widgetKey);
 
     // Update state after animation completes
-    cartQuantityItems++;
+    await _fetchCart();
 
     // Run the cart badge animation
-    await cartKey.currentState!.runCartAnimation(cartQuantityItems.toString());
+    await cartKey.currentState!.runCartAnimation(carts.length.toString());
   }
 }

@@ -1,13 +1,67 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
+import 'package:pos_royal/app/core/utils/log/logger.dart';
+import 'package:pos_royal/app/data/datasources/cart_remote_datasource.dart';
+import 'package:pos_royal/app/data/repositories/cart_repository_impl.dart';
+import 'package:pos_royal/app/domain/entities/cart_entity.dart';
+import 'package:pos_royal/app/domain/usecases/get_cart_usecase.dart';
 
 class CartController extends GetxController {
+  CartController({
+    this.getCartUsecase,
+  });
+
+  final GetCartUsecase? getCartUsecase;
+
   RxBool selectedCart = false.obs;
   RxInt selectedQty = 1.obs;
   RxInt selectedPrice = 1087210.obs;
+  var carts = <CartEntity>[].obs;
+  var isLoading = false.obs;
+  var isLoadingMore = false.obs;
+  var hasMore = true.obs;
+  var currentPage = 1;
+  final int itemsPerPage = 10;
+
+  final ScrollController pageScrollController = ScrollController();
+
+  @override
+  void onInit() {
+    super.onInit();
+    _fetchCart();
+  }
+
+  Future<void> _fetchCart() async {
+    try {
+      isLoading.value = true;
+      currentPage = 1;
+      hasMore.value = true;
+
+      final useCase = getCartUsecase ??
+          GetCartUsecase(
+            CartRepositoryImpl(
+              remoteDataSource: CartRemoteDataSourceImpl(),
+            ),
+          );
+
+      final result =
+          await useCase.call(page: currentPage, itemsPerPage: itemsPerPage);
+      carts.assignAll(result.data);
+      hasMore.value = result.hasMore;
+    } catch (e, stackTrace) {
+      logger.severe('❌ [HOME] Failed to fetch carts: $e');
+      if (kDebugMode) {
+        print('❌ [HOME] Error: $e');
+        print(stackTrace);
+      }
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   void incrementQty() {
     selectedQty.value++;

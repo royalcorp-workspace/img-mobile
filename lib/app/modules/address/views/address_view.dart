@@ -16,7 +16,7 @@ class AddressView extends GetView<AddressController> {
         backgroundColor: AppColors.primaryColor,
         elevation: 2,
         title: const Text(
-          'Tambah Alamat',
+          'Daftar Alamat',
           style: AppTextStyle.xxLargeWhiteBold,
         ),
         centerTitle: true,

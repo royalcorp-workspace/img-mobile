@@ -10,7 +10,6 @@ import 'package:pos_royal/app/core/styles/app_text_style.dart';
 import 'package:pos_royal/app/modules/detail_product/widgets/cart_badge.dart';
 import 'package:pos_royal/app/modules/detail_product/widgets/comment_card.dart';
 import 'package:pos_royal/app/modules/detail_product/widgets/detail_product_card.dart';
-import 'package:pos_royal/app/modules/home/widgets/product_card.dart';
 import 'package:pos_royal/app/routes/app_pages.dart';
 import 'package:pos_royal/app/shared/widgets/app_divider.dart';
 import 'package:pos_royal/app/shared/widgets/text/text_price_line_through.dart';
@@ -148,12 +147,8 @@ class DetailProductView extends GetView<DetailProductController> {
                                 .productByID
                                 .value
                                 .variants?[controller.selectedIndex.value]
-                                .finalPrice !=
-                            controller
-                                .productByID
-                                .value
-                                .variants?[controller.selectedIndex.value]
-                                .price,
+                                .price !=
+                            0,
                         child: TextPriceLineThrough(
                             price: Helper.formatCurrency(controller
                                     .productByID
@@ -170,9 +165,8 @@ class DetailProductView extends GetView<DetailProductController> {
                               .productByID
                               .value
                               .variants?[controller.selectedIndex.value]
-                              .finalPrice !=
-                          controller.productByID.value
-                              .variants?[controller.selectedIndex.value].price,
+                              .price !=
+                          0,
                       child: Container(
                         padding: const EdgeInsets.all(4),
                         decoration: const BoxDecoration(
@@ -191,12 +185,13 @@ class DetailProductView extends GetView<DetailProductController> {
                             Obx(
                               () => Text(
                                 controller
-                                        .productByID
-                                        .value
-                                        .variants![
-                                            controller.selectedIndex.value]
-                                        .priceProductSettings
-                                        .isEmpty
+                                            .productByID
+                                            .value
+                                            .variants?[
+                                                controller.selectedIndex.value]
+                                            .priceProductSettings
+                                            .isEmpty ==
+                                        true
                                     ? ''
                                     : '${controller.productByID.value.variants?[controller.selectedIndex.value].priceProductSettings.first.discountValue.toInt()}%',
                                 style: AppTextStyle.mediumBlackBold.copyWith(
@@ -214,20 +209,22 @@ class DetailProductView extends GetView<DetailProductController> {
               10.verticalSpace,
               Visibility(
                   visible: controller
-                      .productByID
-                      .value
-                      .variants![controller.selectedIndex.value]
-                      .priceProductSettings
-                      .isNotEmpty,
+                          .productByID
+                          .value
+                          .variants?[controller.selectedIndex.value]
+                          .priceProductSettings
+                          .isNotEmpty ==
+                      true,
                   child: const Divider(
                       color: AppColors.lightGrey, thickness: 1.2)),
               Visibility(
                 visible: controller
-                    .productByID
-                    .value
-                    .variants![controller.selectedIndex.value]
-                    .priceProductSettings
-                    .isNotEmpty,
+                        .productByID
+                        .value
+                        .variants?[controller.selectedIndex.value]
+                        .priceProductSettings
+                        .isNotEmpty ==
+                    true,
                 child: ListTile(
                     contentPadding: EdgeInsets.zero,
                     minLeadingWidth: 0,
@@ -294,10 +291,12 @@ class DetailProductView extends GetView<DetailProductController> {
                 ),
               ),
               Visibility(
-                  visible: controller.productByID.value.colors!.isNotEmpty,
+                  visible:
+                      controller.productByID.value.colors?.isNotEmpty == true,
                   child: 10.verticalSpace),
               Visibility(
-                visible: controller.productByID.value.colors!.isNotEmpty,
+                visible:
+                    controller.productByID.value.colors?.isNotEmpty == true,
                 child: RPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   child: const Text(
@@ -307,10 +306,12 @@ class DetailProductView extends GetView<DetailProductController> {
                 ),
               ),
               Visibility(
-                  visible: controller.productByID.value.colors!.isNotEmpty,
+                  visible:
+                      controller.productByID.value.colors?.isNotEmpty == true,
                   child: 10.verticalSpace),
               Visibility(
-                visible: controller.productByID.value.colors!.isNotEmpty,
+                visible:
+                    controller.productByID.value.colors?.isNotEmpty == true,
                 child: RPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   child: SizedBox(
@@ -567,83 +568,84 @@ ${controller.productByID.value.description}
                 child: CommentCard(),
               ),
               10.verticalSpace,
-              AppDivider(),
-              10.verticalSpace,
-              RPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Produk Serupa',
-                      style: AppTextStyle.largeBlackBold,
-                    ),
-                    Text(
-                      'Lihat Semua',
-                      style: AppTextStyle.smallBlackBold,
-                    ),
-                  ],
-                ),
-              ),
-              10.verticalSpace,
-              GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(14),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 0.7,
-                  ),
-                  itemCount: 4,
-                  itemBuilder: (context, index) {
-                    //               final String title = product?.name ?? "-";
-                    // double priceVal = 0.0;
-                    // double originalPriceVal = 0.0;
-                    // if (product != null) {
-                    //   priceVal = product!.finalPrice > 0
-                    //       ? product!.finalPrice
-                    //       : (product!.basePrice > 0
-                    //           ? product!.basePrice
-                    //           : (product!.variants.isNotEmpty
-                    //               ? (product!.variants.first.finalPrice > 0
-                    //                   ? product!.variants.first.finalPrice
-                    //                   : product!.variants.first.price)
-                    //               : 0.0));
-                    //   if (product!.basePrice > priceVal) {
-                    //     originalPriceVal = product!.basePrice;
-                    //   }
-                    // }
-                    // final String formattedPrice =
-                    //     product != null ? Helper.formatCurrency(priceVal.toInt()) : 'Rp 0';
-                    // final String formattedOriginalPrice = originalPriceVal > 0
-                    //     ? Helper.formatCurrency(originalPriceVal.toInt())
-                    //     : '';
-                    // final String imageUrl = product?.thumbnail ??
-                    //     (product?.images.isNotEmpty == true ? product!.images.first.image : '');
-                    // final String ratingStr = (product?.avgRating ?? 4.2).toStringAsFixed(1);
-                    // final String reviewsStr = '(${product?.totalReviews ?? 128})';
+              // Similiar Product
+              // AppDivider(),
+              // 10.verticalSpace,
+              // RPadding(
+              //   padding: const EdgeInsets.symmetric(horizontal: 14),
+              //   child: const Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: [
+              //       Text(
+              //         'Produk Serupa',
+              //         style: AppTextStyle.largeBlackBold,
+              //       ),
+              //       Text(
+              //         'Lihat Semua',
+              //         style: AppTextStyle.smallBlackBold,
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              // 10.verticalSpace,
+              // GridView.builder(
+              //     shrinkWrap: true,
+              //     physics: const NeverScrollableScrollPhysics(),
+              //     padding: const EdgeInsets.all(14),
+              //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              //       crossAxisCount: 2,
+              //       crossAxisSpacing: 10,
+              //       mainAxisSpacing: 10,
+              //       childAspectRatio: 0.7,
+              //     ),
+              //     itemCount: 4,
+              //     itemBuilder: (context, index) {
+              //       //               final String title = product?.name ?? "-";
+              //       // double priceVal = 0.0;
+              //       // double originalPriceVal = 0.0;
+              //       // if (product != null) {
+              //       //   priceVal = product!.finalPrice > 0
+              //       //       ? product!.finalPrice
+              //       //       : (product!.basePrice > 0
+              //       //           ? product!.basePrice
+              //       //           : (product!.variants.isNotEmpty
+              //       //               ? (product!.variants.first.finalPrice > 0
+              //       //                   ? product!.variants.first.finalPrice
+              //       //                   : product!.variants.first.price)
+              //       //               : 0.0));
+              //       //   if (product!.basePrice > priceVal) {
+              //       //     originalPriceVal = product!.basePrice;
+              //       //   }
+              //       // }
+              //       // final String formattedPrice =
+              //       //     product != null ? Helper.formatCurrency(priceVal.toInt()) : 'Rp 0';
+              //       // final String formattedOriginalPrice = originalPriceVal > 0
+              //       //     ? Helper.formatCurrency(originalPriceVal.toInt())
+              //       //     : '';
+              //       // final String imageUrl = product?.thumbnail ??
+              //       //     (product?.images.isNotEmpty == true ? product!.images.first.image : '');
+              //       // final String ratingStr = (product?.avgRating ?? 4.2).toStringAsFixed(1);
+              //       // final String reviewsStr = '(${product?.totalReviews ?? 128})';
 
-                    // ImageProvider imageProvider;
-                    // if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-                    //   imageProvider = NetworkImage(imageUrl);
-                    // } else {
-                    //   imageProvider = AssetImage(
-                    //     Helper.getImagePath('img_product1.jpg'),
-                    //   );
-                    // }
-                    return ProductsCard(
-                      title: '',
-                      formattedOriginalPrice: '',
-                      formattedPrice: '',
-                      imageProvider:
-                          AssetImage(Helper.getImagePath('img_product1.jpg')),
-                      rating: '',
-                      review: '',
-                      onTap: (p0) => Get.toNamed(Routes.DETAIL_PRODUCT),
-                    );
-                  })
+              //       // ImageProvider imageProvider;
+              //       // if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+              //       //   imageProvider = NetworkImage(imageUrl);
+              //       // } else {
+              //       //   imageProvider = AssetImage(
+              //       //     Helper.getImagePath('img_product1.jpg'),
+              //       //   );
+              //       // }
+              //       return ProductsCard(
+              //         title: '',
+              //         formattedOriginalPrice: '',
+              //         formattedPrice: '',
+              //         imageProvider:
+              //             AssetImage(Helper.getImagePath('img_product1.jpg')),
+              //         rating: '',
+              //         review: '',
+              //         onTap: (p0) => Get.toNamed(Routes.DETAIL_PRODUCT),
+              //       );
+              //     })
             ],
           ),
         ),
@@ -763,7 +765,7 @@ ${controller.productByID.value.description}
               onTap: () => Get.toNamed(Routes.CART),
               child: CartBadge(
                 iconPath: 'ic_cart.svg',
-                count: controller.cartQuantityItems.value,
+                count: controller.carts.length,
               ),
             ),
             badgeOptions: const BadgeOptions(

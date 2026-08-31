@@ -6,9 +6,10 @@ import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
 
 class VoucherBottomBar extends StatelessWidget {
-  const VoucherBottomBar({super.key, required this.value});
+  const VoucherBottomBar({super.key, required this.value, this.onTap});
 
   final int value;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,7 @@ class VoucherBottomBar extends StatelessWidget {
               ],
             ),
             InkWell(
-              onTap: () => Get.back(),
+              onTap: onTap ?? () => Get.back(),
               child: Container(
                 height: 40,
                 width: 150,

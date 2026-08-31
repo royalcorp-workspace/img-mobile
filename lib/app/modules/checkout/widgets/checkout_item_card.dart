@@ -80,13 +80,11 @@ class CheckoutItemCard extends StatelessWidget {
           bottom: 10,
           right: 12,
           child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 8,
-            ),
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             width: 100.w,
             decoration: BoxDecoration(
               border: Border.all(color: AppColors.lightGrey),
-              borderRadius: BorderRadius.circular(21),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -95,18 +93,20 @@ class CheckoutItemCard extends StatelessWidget {
                   onTap: onTapDecrement,
                   child: Icon(
                     Icons.remove,
+                    size: 20,
                     color: AppColors.blackSecondary,
                   ),
                 ),
                 Text(
                   '$qty',
-                  style: AppTextStyle.largeBlackBold,
+                  style: AppTextStyle.mediumBlack,
                 ),
                 InkWell(
                   onTap: onTapIncrement,
                   child: Icon(
                     Icons.add,
-                    color: AppColors.blackSecondary,
+                    size: 20,
+                    color: AppColors.black,
                   ),
                 )
               ],

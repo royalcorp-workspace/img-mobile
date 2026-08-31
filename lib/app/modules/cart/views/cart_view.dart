@@ -37,8 +37,35 @@ class CartView extends GetView<CartController> {
           )
         ],
       ),
-      body: Column(
-        children: [CartItemCard(controller: controller)],
+      body: CustomScrollView(
+        controller: controller.pageScrollController,
+        slivers: [
+          SliverList.builder(
+            itemCount: controller.carts.length,
+            itemBuilder: (context, index) => CartItemCard(
+              name: controller.carts[index].items?[index].name ?? '',
+              description: '',
+              price:
+                  controller.carts[index].items?[index].unitPrice.toString() ??
+                      '',
+              quantity: controller.carts[index].items?[index].quantity ?? 0,
+              fillColor: WidgetStatePropertyAll(
+                controller.selectedCart.value
+                    ? AppColors.primaryColor
+                    : AppColors.lightGrey,
+              ),
+              value: controller.selectedCart.value,
+              onChanged: (e) {
+                controller.selectedCart.value = e ?? false;
+              },
+              decrement: controller.selectedQty.value == 1
+                  ? controller.showDeleteConfirmationDialog
+                  : controller.decrementQty,
+              increment: controller.incrementQty,
+            ),
+          ),
+          _buildLoadMoreIndicator()
+        ],
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -107,7 +134,7 @@ class CartView extends GetView<CartController> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Total Pembayaran',
+                            'Total Tagihan',
                             style: AppTextStyle.mediumBlack,
                           ),
                           Obx(
@@ -160,5 +187,24 @@ class CartView extends GetView<CartController> {
         ),
       ),
     );
+  }
+
+  Widget _buildLoadMoreIndicator() {
+    return Obx(() {
+      if (!controller.isLoadingMore.value) return const SliverToBoxAdapter();
+      return SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 16.h),
+          child: const Center(
+            child: SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(
+                  color: AppColors.primaryColor, strokeWidth: 2.5),
+            ),
+          ),
+        ),
+      );
+    });
   }
 }

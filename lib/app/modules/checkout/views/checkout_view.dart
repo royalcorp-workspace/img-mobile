@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 
 import 'package:get/get.dart';
 import 'package:pos_royal/app/core/helper/helper.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
-import 'package:pos_royal/app/modules/checkout/widgets/add_message_widget.dart';
+import 'package:pos_royal/app/modules/checkout/widgets/add_notes_widget.dart';
 import 'package:pos_royal/app/modules/checkout/widgets/checkout_item_card.dart';
+import 'package:pos_royal/app/domain/entities/voucher_entity.dart';
+import 'package:pos_royal/app/modules/payment_method/views/payment_method_view.dart';
 import 'package:pos_royal/app/routes/app_pages.dart';
 import 'package:pos_royal/app/shared/widgets/app_divider.dart';
 import 'package:pos_royal/app/shared/widgets/text/text_price_bold.dart';
-import 'package:pos_royal/app/shared/widgets/text/text_price_line_through.dart';
 
 import '../controllers/checkout_controller.dart';
 
@@ -95,7 +95,13 @@ class CheckoutView extends GetView<CheckoutController> {
                               ? controller.productByID.value
                                   .priceProductSettings!.first.title
                               : '',
-                          price: controller.productByID.value.finalPrice ?? 0,
+                          price: controller
+                                  .productByID
+                                  .value
+                                  .variants?[controller.selectedIndex.value]
+                                  .finalPrice
+                                  .toInt() ??
+                              0,
                           onTapDecrement: controller.selectedQty.value == 1
                               ? null
                               : controller.decrementQty,
@@ -107,7 +113,9 @@ class CheckoutView extends GetView<CheckoutController> {
                     15.verticalSpace,
                     RPadding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
-                      child: AddMessageWidget(),
+                      child: AddNotesWidget(
+                        controller: controller.notesC,
+                      ),
                     ),
                     15.verticalSpace,
                     AppDivider(),
@@ -117,55 +125,56 @@ class CheckoutView extends GetView<CheckoutController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Icon(
-                                      Icons.inventory_2_outlined,
-                                      size: 18,
-                                      color: AppColors.primaryColor,
-                                    ),
-                                    5.horizontalSpace,
-                                    Expanded(
-                                      child: RichText(
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        text: TextSpan(
-                                          text: 'Akan dikirim dari ',
-                                          style: AppTextStyle.mediumGrey,
-                                          children: [
-                                            TextSpan(
-                                              text: 'Royal Pusat',
-                                              style:
-                                                  AppTextStyle.mediumBlackBold,
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Icon(
-                                Icons.arrow_forward_ios_outlined,
-                                color: AppColors.blackSecondary,
-                                size: 15,
-                              )
-                            ],
-                          ),
-                          10.verticalSpace,
-                          Text(
-                            'Jl.Raya Barat, Cimareme, Kec. Ngamprah, Kabupaten Bandung Barat, Jawa Barat 40552',
-                            style: AppTextStyle.mediumBlackSecondary,
-                          ),
-                          10.verticalSpace,
-                          const Divider(
-                              color: AppColors.lightGrey, thickness: 1.2),
-                          15.verticalSpace,
+                          // Phase 2
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
+                          //     Expanded(
+                          //       child: Row(
+                          //         crossAxisAlignment: CrossAxisAlignment.start,
+                          //         children: [
+                          //           Icon(
+                          //             Icons.inventory_2_outlined,
+                          //             size: 18,
+                          //             color: AppColors.primaryColor,
+                          //           ),
+                          //           5.horizontalSpace,
+                          //           Expanded(
+                          //             child: RichText(
+                          //               maxLines: 2,
+                          //               overflow: TextOverflow.ellipsis,
+                          //               text: TextSpan(
+                          //                 text: 'Akan dikirim dari ',
+                          //                 style: AppTextStyle.mediumGrey,
+                          //                 children: [
+                          //                   TextSpan(
+                          //                     text: 'Royal Pusat',
+                          //                     style:
+                          //                         AppTextStyle.mediumBlackBold,
+                          //                   )
+                          //                 ],
+                          //               ),
+                          //             ),
+                          //           ),
+                          //         ],
+                          //       ),
+                          //     ),
+                          //     Icon(
+                          //       Icons.arrow_forward_ios_outlined,
+                          //       color: AppColors.blackSecondary,
+                          //       size: 15,
+                          //     )
+                          //   ],
+                          // ),
+                          // 10.verticalSpace,
+                          // Text(
+                          //   'Jl.Raya Barat, Cimareme, Kec. Ngamprah, Kabupaten Bandung Barat, Jawa Barat 40552',
+                          //   style: AppTextStyle.mediumBlackSecondary,
+                          // ),
+                          // 10.verticalSpace,
+                          // const Divider(
+                          //     color: AppColors.lightGrey, thickness: 1.2),
+                          // 15.verticalSpace,
                           InkWell(
                             onTap: () {
                               showModalBottomSheet(
@@ -186,362 +195,98 @@ class CheckoutView extends GetView<CheckoutController> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 12,
-                                                    horizontal: 40),
-                                                decoration: BoxDecoration(
-                                                  color: AppColors.white,
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.black
-                                                          .withOpacity(0.08),
-                                                      offset:
-                                                          const Offset(0, -1),
-                                                      blurRadius: 12,
-                                                      spreadRadius: 0,
-                                                    ),
-                                                  ],
-                                                  border: Border.all(
-                                                    color:
-                                                        AppColors.primaryColor,
-                                                    width: 1.2,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                ),
-                                                child: Row(
-                                                  children: [
-                                                    SvgPicture.asset(
-                                                      Helper.getSvgPath(
-                                                        'ic_delivery.svg',
-                                                      ),
-                                                    ),
-                                                    10.horizontalSpace,
-                                                    Text(
-                                                      'Di antar',
-                                                      style: AppTextStyle
-                                                          .mediumBlack
-                                                          .copyWith(
-                                                        color: AppColors
-                                                            .primaryColor,
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                              Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 12,
-                                                    horizontal: 40),
-                                                decoration: BoxDecoration(
-                                                  color: AppColors.white,
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.black
-                                                          .withOpacity(0.08),
-                                                      offset:
-                                                          const Offset(0, -1),
-                                                      blurRadius: 12,
-                                                      spreadRadius: 0,
-                                                    ),
-                                                  ],
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                ),
-                                                child: Row(
-                                                  children: [
-                                                    SvgPicture.asset(
-                                                      Helper.getSvgPath(
-                                                        'ic_pickup.svg',
-                                                      ),
-                                                    ),
-                                                    10.horizontalSpace,
-                                                    Text(
-                                                      'Ambil',
-                                                      style: AppTextStyle
-                                                          .mediumBlack
-                                                          .copyWith(
-                                                        color: AppColors
-                                                            .primaryColor,
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              )
-                                            ],
+                                          Text(
+                                            'Pilih Kurir',
+                                            style: AppTextStyle.largeBlackBold,
                                           ),
                                           10.verticalSpace,
                                           const Divider(
-                                            color: AppColors.lightGrey,
-                                            thickness: 1.2,
-                                          ),
-                                          // 10.verticalSpace,
-                                          // Text(
-                                          //   'Pilih Pengiriman',
-                                          //   style: AppTextStyle.largeBlack,
-                                          // ),
-                                          // 5.verticalSpace,
-                                          // Text(
-                                          //   'Kami berusaha dengan maksimal untuk menyiapkan dan melakukan pengemasan dengan cepat dan tepat, agar produk sampai dilokasi kamu secepatnya.',
-                                          //   style: AppTextStyle.mediumBlack,
-                                          // ),
-                                          // 10.verticalSpace,
-                                          // const Divider(
-                                          //     color: AppColors.lightGrey,
-                                          //     thickness: 1.2),
-                                          InkWell(
-                                            onTap: () {
-                                              controller.selectedShippingMethod
-                                                  .value = 'Instant';
-                                              showModalBottomSheet(
-                                                  barrierColor:
-                                                      Colors.transparent,
-                                                  constraints:
-                                                      BoxConstraints.loose(
-                                                    Size(
-                                                        MediaQuery.of(context)
-                                                            .size
-                                                            .width,
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .height *
-                                                            0.8),
-                                                  ),
-                                                  isScrollControlled: true,
-                                                  showDragHandle: true,
-                                                  context: context,
-                                                  builder: (_) {
-                                                    return RPadding(
-                                                      padding: const EdgeInsets
-                                                          .fromLTRB(
-                                                          14, 0, 14, 0),
-                                                      child: SizedBox(
-                                                        width: Get.width,
-                                                        child: Column(
-                                                          children: [
-                                                            Text(
-                                                              'Pilih Kurir',
-                                                              style: AppTextStyle
-                                                                  .largeBlackBold,
-                                                            ),
-                                                            10.verticalSpace,
-                                                            const Divider(
-                                                                color: AppColors
-                                                                    .lightGrey,
-                                                                thickness: 1.2),
-                                                            10.verticalSpace,
-                                                            SizedBox(
-                                                              height: 100.h,
-                                                              child: ListView
-                                                                  .separated(
-                                                                      itemCount: controller
-                                                                          .shippingAddresses
-                                                                          .length,
-                                                                      separatorBuilder: (_, __) => const Divider(
-                                                                          color: AppColors
-                                                                              .lightGrey,
-                                                                          thickness:
-                                                                              1.2),
-                                                                      itemBuilder:
-                                                                          (context,
-                                                                              index) {
-                                                                        final data =
-                                                                            controller.shippingAddresses[index];
+                                              color: AppColors.lightGrey,
+                                              thickness: 1.2),
+                                          10.verticalSpace,
+                                          SizedBox(
+                                            height: 100.h,
+                                            child: ListView.separated(
+                                                itemCount: controller
+                                                    .shippingAddresses.length,
+                                                separatorBuilder: (_, __) =>
+                                                    const Divider(
+                                                        color:
+                                                            AppColors.lightGrey,
+                                                        thickness: 1.2),
+                                                itemBuilder: (context, index) {
+                                                  final data = controller
+                                                      .shippingAddresses[index];
 
-                                                                        return InkWell(
-                                                                          onTap:
-                                                                              () {
-                                                                            controller.selectedShipping.value =
-                                                                                data.courier.name;
-                                                                            controller.selectedShippingImg.value =
-                                                                                'img_jne_express.png';
-                                                                            controller.selectedShippingPrice.value =
-                                                                                data.price.toInt();
-                                                                            Get.back();
-                                                                            Get.back();
-                                                                          },
-                                                                          child:
-                                                                              Column(
-                                                                            children: [
-                                                                              Row(
-                                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                children: [
-                                                                                  Row(
-                                                                                    children: [
-                                                                                      Image.asset(
-                                                                                        height: 18,
-                                                                                        width: 18,
-                                                                                        Helper.getImagePath('img_jne_express.png'),
-                                                                                      ),
-                                                                                      6.horizontalSpace,
-                                                                                      Text(
-                                                                                        data.courier.name,
-                                                                                        style: AppTextStyle.largeBlack,
-                                                                                      ),
-                                                                                    ],
-                                                                                  ),
-                                                                                  TextPriceLineThrough(price: 'Rp. 400.000')
-                                                                                ],
-                                                                              ),
-                                                                              8.verticalSpace,
-                                                                              Row(
-                                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                children: [
-                                                                                  Text(
-                                                                                    'Estimasi tiba sebelum jam 12:00 WIB',
-                                                                                    style: AppTextStyle.mediumBlack.copyWith(
-                                                                                      color: AppColors.grey,
-                                                                                    ),
-                                                                                  ),
-                                                                                  TextPriceBold(
-                                                                                    price: Helper.formatCurrency(data.price.toInt()),
-                                                                                    color: AppColors.primaryColor,
-                                                                                  )
-                                                                                ],
-                                                                              )
-                                                                            ],
-                                                                          ),
-                                                                        );
-                                                                      }),
+                                                  return InkWell(
+                                                    onTap: () {
+                                                      controller
+                                                              .selectedShipping
+                                                              .value =
+                                                          data.courier.name;
+                                                      controller
+                                                              .selectedShippingImg
+                                                              .value =
+                                                          'img_jne_express.png';
+                                                      controller
+                                                              .selectedShippingPrice
+                                                              .value =
+                                                          data.price.toInt();
+                                                      Get.back();
+                                                    },
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            Row(
+                                                              children: [
+                                                                Image.asset(
+                                                                  height: 18,
+                                                                  width: 18,
+                                                                  Helper.getImagePath(
+                                                                      'img_jne_express.png'),
+                                                                ),
+                                                                6.horizontalSpace,
+                                                                Text(
+                                                                  data.courier
+                                                                      .name,
+                                                                  style: AppTextStyle
+                                                                      .largeBlack,
+                                                                ),
+                                                              ],
                                                             ),
-                                                            10.verticalSpace,
+                                                            TextPriceBold(
+                                                              price: Helper
+                                                                  .formatCurrency(data
+                                                                      .price
+                                                                      .toInt()),
+                                                              color: AppColors
+                                                                  .primaryColor,
+                                                            )
                                                           ],
                                                         ),
-                                                      ),
-                                                    );
-                                                  });
-                                            },
-                                            child: Column(
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                      'Instant',
-                                                      style: AppTextStyle
-                                                          .largeBlack,
+                                                        8.verticalSpace,
+                                                        Text(
+                                                          'Estimasi tiba sebelum jam 12:00 WIB',
+                                                          style: AppTextStyle
+                                                              .mediumBlack
+                                                              .copyWith(
+                                                            color:
+                                                                AppColors.grey,
+                                                          ),
+                                                        )
+                                                      ],
                                                     ),
-                                                    TextPriceLineThrough(
-                                                        price: 'Rp. 400.000')
-                                                  ],
-                                                ),
-                                                8.verticalSpace,
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                      'Estimasi tiba sebelum 12.00 WIB',
-                                                      style: AppTextStyle
-                                                          .mediumBlack
-                                                          .copyWith(
-                                                        color: AppColors.grey,
-                                                      ),
-                                                    ),
-                                                    TextPriceBold(
-                                                      price: 'Rp. 200.000',
-                                                      color: AppColors
-                                                          .primaryColor,
-                                                    )
-                                                  ],
-                                                )
-                                              ],
-                                            ),
+                                                  );
+                                                }),
                                           ),
                                           10.verticalSpace,
-                                          const Divider(
-                                              color: AppColors.lightGrey,
-                                              thickness: 1.2),
-                                          Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    'Same Day',
-                                                    style:
-                                                        AppTextStyle.largeBlack,
-                                                  ),
-                                                  TextPriceLineThrough(
-                                                      price: 'Rp. 400.000')
-                                                ],
-                                              ),
-                                              8.verticalSpace,
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    'Diterima di hari yang sama',
-                                                    style: AppTextStyle
-                                                        .mediumBlack
-                                                        .copyWith(
-                                                      color: AppColors.grey,
-                                                    ),
-                                                  ),
-                                                  TextPriceBold(
-                                                    price: 'Rp. 200.000',
-                                                    color:
-                                                        AppColors.primaryColor,
-                                                  )
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                          10.verticalSpace,
-                                          const Divider(
-                                              color: AppColors.lightGrey,
-                                              thickness: 1.2),
-                                          Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    'Reguler',
-                                                    style:
-                                                        AppTextStyle.largeBlack,
-                                                  ),
-                                                  TextPriceLineThrough(
-                                                      price: 'Rp. 400.000')
-                                                ],
-                                              ),
-                                              8.verticalSpace,
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    'Estimasi tiba sebelum tanggal 7-8 Sep',
-                                                    style: AppTextStyle
-                                                        .mediumBlack
-                                                        .copyWith(
-                                                      color: AppColors.grey,
-                                                    ),
-                                                  ),
-                                                  TextPriceBold(
-                                                    price: 'Rp. 200.000',
-                                                    color:
-                                                        AppColors.primaryColor,
-                                                  )
-                                                ],
-                                              )
-                                            ],
-                                          ),
                                         ],
                                       ),
                                     );
@@ -596,6 +341,7 @@ class CheckoutView extends GetView<CheckoutController> {
                               ),
                             ),
                           ),
+
                           Obx(
                             () => Visibility(
                               visible: controller
@@ -655,8 +401,89 @@ class CheckoutView extends GetView<CheckoutController> {
                             ),
                           ),
                           20.verticalSpace,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Metode Pembayaran',
+                                style: AppTextStyle.mediumBlackBold,
+                              ),
+                              GestureDetector(
+                                onTap: () async {
+                                  final result = await Get.toNamed(
+                                      Routes.PAYMENT_METHOD,
+                                      arguments: [
+                                        controller.total.value,
+                                        controller.selectedQty.value,
+                                        controller.productByID.value,
+                                      ]);
+                                  if (result != null) {
+                                    controller.setSelectedPaymentMethodFromPage(
+                                        result);
+                                  }
+                                },
+                                child: Text(
+                                  'Lihat Semua',
+                                  style: AppTextStyle.mediumBlackBold
+                                      .copyWith(color: AppColors.primaryColor),
+                                ),
+                              ),
+                            ],
+                          ),
+                          10.verticalSpace,
+                          Obx(
+                            () => controller.paymentMethod.isEmpty
+                                ? SizedBox()
+                                : ListView.separated(
+                                    physics: NeverScrollableScrollPhysics(),
+                                    padding: EdgeInsets.zero,
+                                    shrinkWrap: true,
+                                    itemCount:
+                                        controller.paymentMethod.length > 3
+                                            ? 3
+                                            : controller.paymentMethod.length,
+                                    separatorBuilder: (context, index) =>
+                                        const Divider(
+                                          color: AppColors.lightGrey,
+                                          thickness: 1.2,
+                                        ),
+                                    itemBuilder: (contex, index) {
+                                      final data =
+                                          controller.paymentMethod[index];
+                                      final itemCode = data.code ?? '';
+                                      return Obx(
+                                        () {
+                                          final isSelected =
+                                              controller.selectedOption.value ==
+                                                      itemCode ||
+                                                  (controller.selectedOption
+                                                          .value.isEmpty &&
+                                                      index == 0);
+                                          return VirtualAccountListTile(
+                                            imgPath: 'img_dana.png',
+                                            title: data.name ?? '',
+                                            index: index,
+                                            code: itemCode,
+                                            isSelected: isSelected,
+                                            onChanged: (val) {
+                                              if (val != null) {
+                                                controller
+                                                    .selectedOption.value = val;
+                                              }
+                                            },
+                                            onTap: () {
+                                              controller.selectedOption.value =
+                                                  itemCode;
+                                            },
+                                          );
+                                        },
+                                      );
+                                    }),
+                          ),
+
+                          20.verticalSpace,
                           Text(
-                            'Rincian Pembayaran',
+                            'Ringkasan Transaksi',
                             style: AppTextStyle.mediumBlackBold,
                           ),
                           10.verticalSpace,
@@ -669,9 +496,14 @@ class CheckoutView extends GetView<CheckoutController> {
                               ),
                               Obx(
                                 () => Text(
-                                  Helper.formatCurrency(
-                                      controller.productByID.value.finalPrice! *
-                                          controller.selectedQty.value),
+                                  Helper.formatCurrency(controller
+                                          .productByID
+                                          .value
+                                          .variants![
+                                              controller.selectedIndex.value]
+                                          .finalPrice
+                                          .toInt() *
+                                      controller.selectedQty.value),
                                   style: AppTextStyle.mediumBlack,
                                 ),
                               ),
@@ -682,7 +514,7 @@ class CheckoutView extends GetView<CheckoutController> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Ongkos Kirim',
+                                'Total Ongkos Kirim',
                                 style: AppTextStyle.mediumGrey,
                               ),
                               Obx(
@@ -703,11 +535,33 @@ class CheckoutView extends GetView<CheckoutController> {
                                 style: AppTextStyle.mediumGrey,
                               ),
                               Obx(
-                                () => Text(
-                                  '- ${Helper.formatCurrency(controller.selectedShippingPrice.value)}',
-                                  style: AppTextStyle.mediumBlack
-                                      .copyWith(color: AppColors.red),
-                                ),
+                                () {
+                                  final discount =
+                                      controller.selectedVoucher.value != null
+                                          ? controller
+                                              .selectedVoucher.value!.value
+                                              .toInt()
+                                          : 0;
+                                  return Text(
+                                    '- ${Helper.formatCurrency(discount)}',
+                                    style: AppTextStyle.mediumBlack
+                                        .copyWith(color: AppColors.red),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                          10.verticalSpace,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Biaya Layanan',
+                                style: AppTextStyle.mediumGrey,
+                              ),
+                              Text(
+                                Helper.formatCurrency(0),
+                                style: AppTextStyle.mediumBlack,
                               ),
                             ],
                           ),
@@ -720,16 +574,47 @@ class CheckoutView extends GetView<CheckoutController> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Total Pembayaran',
+                                'Total Tagihan',
                                 style: AppTextStyle.mediumBlack,
                               ),
                               Obx(
-                                () => Text(
-                                  Helper.formatCurrency(
-                                      controller.productByID.value.finalPrice! *
-                                          controller.selectedQty.value),
-                                  style: AppTextStyle.mediumBlackBold,
-                                ),
+                                () {
+                                  final hasVariant = controller.productByID
+                                              .value.variants?.isNotEmpty ==
+                                          true &&
+                                      controller.selectedIndex.value <
+                                          controller.productByID.value.variants!
+                                              .length;
+                                  final itemPrice = hasVariant
+                                      ? controller
+                                          .productByID
+                                          .value
+                                          .variants![
+                                              controller.selectedIndex.value]
+                                          .finalPrice
+                                          .toInt()
+                                      : (controller.productByID.value.finalPrice
+                                              ?.toInt() ??
+                                          0);
+                                  final subtotal =
+                                      itemPrice * controller.selectedQty.value;
+                                  final shipping =
+                                      controller.selectedShippingPrice.value;
+                                  final discount =
+                                      controller.selectedVoucher.value != null
+                                          ? controller
+                                              .selectedVoucher.value!.value
+                                              .toInt()
+                                          : 0;
+                                  final total =
+                                      (subtotal + shipping - discount) < 0
+                                          ? 0
+                                          : (subtotal + shipping - discount);
+                                  return Text(
+                                    Helper.formatCurrency(total),
+                                    style: AppTextStyle.mediumBlackBold,
+                                  );
+                                },
                               ),
                             ],
                           ),
@@ -763,37 +648,91 @@ class CheckoutView extends GetView<CheckoutController> {
               child: Column(
                 children: [
                   15.verticalSpace,
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-                    width: Get.width,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.lightGrey),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.discount_outlined,
-                              size: 20,
-                              color: AppColors.primaryColor,
-                            ),
-                            15.horizontalSpace,
-                            Text(
-                              '1 Voucher terpasang',
-                              style: AppTextStyle.mediumBlackBold,
-                            ),
-                          ],
+                  Obx(
+                    () {
+                      if (controller.selectedVoucher.value != null) {
+                        return Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 10),
+                          width: Get.width,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.lightGrey),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.discount_outlined,
+                                    size: 20,
+                                    color: AppColors.primaryColor,
+                                  ),
+                                  15.horizontalSpace,
+                                  Text(
+                                    '1 Voucher terpasang',
+                                    style: AppTextStyle.mediumBlackBold,
+                                  ),
+                                ],
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  controller.selectedVoucher.value = null;
+                                },
+                                child: Icon(
+                                  Icons.close_rounded,
+                                  size: 20,
+                                  color: AppColors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      return InkWell(
+                        radius: 12,
+                        onTap: () async {
+                          final result = await Get.toNamed(Routes.VOUCHER);
+                          if (result != null && result is VoucherEntity) {
+                            controller.selectedVoucher.value = result;
+                          }
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 10),
+                          width: Get.width,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.lightGrey),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.discount_outlined,
+                                    size: 20,
+                                    color: AppColors.primaryColor,
+                                  ),
+                                  15.horizontalSpace,
+                                  Text(
+                                    'Lebih hemat pakai voucher',
+                                    style: AppTextStyle.mediumBlackBold,
+                                  ),
+                                ],
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios_outlined,
+                                size: 20,
+                                color: AppColors.black,
+                              ),
+                            ],
+                          ),
                         ),
-                        Icon(
-                          Icons.close_rounded,
-                          size: 20,
-                          color: AppColors.black,
-                        ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
                   15.verticalSpace,
                   Row(
@@ -803,26 +742,50 @@ class CheckoutView extends GetView<CheckoutController> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Total Pembayaran',
+                            'Total Tagihan',
                             style: AppTextStyle.mediumBlack,
                           ),
                           Obx(
-                            () => Text(
-                              Helper.formatCurrency(
-                                  controller.productByID.value.finalPrice! *
-                                      controller.selectedQty.value),
-                              style: AppTextStyle.largeBlackBold,
-                            ),
+                            () {
+                              final hasVariant = controller.productByID.value
+                                          .variants?.isNotEmpty ==
+                                      true &&
+                                  controller.selectedIndex.value <
+                                      controller
+                                          .productByID.value.variants!.length;
+                              final itemPrice = hasVariant
+                                  ? controller
+                                      .productByID
+                                      .value
+                                      .variants![controller.selectedIndex.value]
+                                      .finalPrice
+                                      .toInt()
+                                  : (controller.productByID.value.finalPrice
+                                          ?.toInt() ??
+                                      0);
+                              final subtotal =
+                                  itemPrice * controller.selectedQty.value;
+                              final shipping =
+                                  controller.selectedShippingPrice.value;
+                              final discount =
+                                  controller.selectedVoucher.value != null
+                                      ? controller.selectedVoucher.value!.value
+                                          .toInt()
+                                      : 0;
+                              controller.total.value =
+                                  (subtotal + shipping - discount) < 0
+                                      ? 0
+                                      : (subtotal + shipping - discount);
+                              return Text(
+                                Helper.formatCurrency(controller.total.value),
+                                style: AppTextStyle.largeBlackBold,
+                              );
+                            },
                           ),
                         ],
                       ),
                       InkWell(
-                        onTap: () =>
-                            Get.toNamed(Routes.PAYMENT_METHOD, arguments: [
-                          controller.productByID.value.finalPrice!,
-                          controller.selectedQty.value,
-                          controller.productByID.value,
-                        ]),
+                        onTap: () => controller.createOrder(),
                         child: Container(
                           height: 35.h,
                           width: 148.w,
@@ -833,7 +796,7 @@ class CheckoutView extends GetView<CheckoutController> {
                           ),
                           child: Center(
                             child: Text(
-                              'Pilih Pembayaran',
+                              'Bayar',
                               style: AppTextStyle.largeWhiteBold,
                             ),
                           ),

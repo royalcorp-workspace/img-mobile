@@ -157,7 +157,7 @@ class CreateOrderParams {
   final double total;
   final String notes;
   final Map<String, dynamic> meta;
-  final List<CreateOrderItemParams> items;
+  final List<ItemParams> items;
 
   CreateOrderParams({
     required this.customerId,
@@ -190,7 +190,7 @@ class CreateOrderParams {
   }
 }
 
-class CreateOrderItemParams {
+class ItemParams {
   final String productId;
   final String productVariantId;
   final int quantity;
@@ -201,7 +201,7 @@ class CreateOrderItemParams {
   final double weight;
   final String name;
 
-  CreateOrderItemParams({
+  ItemParams({
     required this.productId,
     required this.productVariantId,
     required this.quantity,

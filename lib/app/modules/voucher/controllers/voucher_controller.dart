@@ -41,10 +41,11 @@ class VoucherController extends GetxController {
   var vouchers = <VoucherEntity>[].obs;
 
   @override
-  void onInit() {
+  void onInit() async {
+    await fetchVouchers();
+
     super.onInit();
     _initScrollListener();
-    fetchVouchers();
   }
 
   void _initScrollListener() {

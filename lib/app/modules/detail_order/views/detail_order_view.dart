@@ -189,7 +189,7 @@ class DetailOrderView extends GetView<DetailOrderController> {
                   ),
                   children: [
                     Text(
-                      'Rincian Pembayaran',
+                      'Ringkasan Transaksi',
                       style: AppTextStyle.largeBlackBold,
                     ),
                     10.verticalSpace,
@@ -257,7 +257,7 @@ class DetailOrderView extends GetView<DetailOrderController> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Total Pembayaran',
+                          'Total Tagihan',
                           style: AppTextStyle.mediumBlack,
                         ),
                         Text(
