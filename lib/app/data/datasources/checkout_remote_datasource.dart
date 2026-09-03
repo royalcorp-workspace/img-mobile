@@ -12,7 +12,9 @@ abstract class CheckoutRemoteDataSource {
 class CheckoutRemoteDataSourceImpl implements CheckoutRemoteDataSource {
   @override
   Future<CheckoutEntity> checkout(CheckoutParamsModel params) async {
-    print('🔍 [CHECKOUT-DS] CHECKOUT METHOD CALLED - params: $params');
+    if (kDebugMode) {
+      print('🔍 [CHECKOUT-DS] CHECKOUT METHOD CALLED - params: $params');
+    }
     logger.info('🔍 [CHECKOUT-DS] params checkout: $params');
     try {
       final response = await DioNetwork.appAPI.post(

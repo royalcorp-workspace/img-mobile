@@ -16,8 +16,6 @@ import 'package:pos_royal/app/modules/home/views/home_view.dart';
 import 'package:pos_royal/app/modules/home/widgets/parts_product.dart';
 import 'package:pos_royal/app/routes/app_pages.dart';
 import 'package:pos_royal/app/shared/widgets/app_banner.dart';
-
-import 'package:pos_royal/app/domain/entities/category_entity.dart';
 import 'package:pos_royal/app/domain/entities/product_entity.dart';
 
 class HomeController extends GetxController {

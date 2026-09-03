@@ -28,62 +28,72 @@ class HomeView extends GetView<HomeController> {
       body: CustomScrollView(
         controller: controller.pageScrollController,
         slivers: [
-          SliverToBoxAdapter(
-            child: Column(
-              children: [
-                5.verticalSpace,
-                CarouselSlider(
-                  items: controller.customBannerListSlider
-                      .map((e) => CustomBanner(imagePath: e.imagePath))
-                      .toList(),
-                  options: CarouselOptions(
-                    autoPlay: true,
-                    viewportFraction: 1,
-                    height: 122.h,
-                  ),
-                ),
-                20.verticalSpace,
-                SizedBox(
-                  height: 70.h,
-                  child: GridView.count(
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 4,
-                    children: controller.customPartsProduct
-                        .map((e) => PartsProduct(
-                            imagePath: e.imagePath, title: e.title))
-                        .toList(),
-                  ),
-                ),
-                18.verticalSpace,
-                const SectionHeader(title: 'Kategori Pilihan', actionText: ''),
-                12.verticalSpace,
-                RPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: SizedBox(
-                    height: 55.h,
-                    child: GridView.count(
-                      physics: const NeverScrollableScrollPhysics(),
-                      crossAxisCount: 6,
-                      crossAxisSpacing: 5.w,
-                      childAspectRatio: 0.95,
-                      shrinkWrap: true,
-                      children: controller.customBrand
-                          .map((e) => CategoryBrand(imagePath: e.imagePath))
-                          .toList(),
-                    ),
-                  ),
-                ),
-                15.verticalSpace,
-                const SectionHeader(
-                    title: 'Promo Spesial Untukmu', actionText: ''),
-                12.verticalSpace,
-              ],
-            ),
-          ),
+          _buildCarouselandCategory(),
           _buildActiveFilterHeader(),
           _buildProductGrid(),
           _buildLoadMoreIndicator()
         ],
+      ),
+    );
+  }
+
+  Widget _buildCarouselandCategory() {
+    return SliverToBoxAdapter(
+      child: Obx(
+        () => Visibility(
+          visible: controller.searchQuery.value.trim().isEmpty &&
+              controller.selectedCategoryId.value == null,
+          child: Column(
+            children: [
+              5.verticalSpace,
+              CarouselSlider(
+                items: controller.customBannerListSlider
+                    .map((e) => CustomBanner(imagePath: e.imagePath))
+                    .toList(),
+                options: CarouselOptions(
+                  autoPlay: true,
+                  viewportFraction: 1,
+                  height: 122.h,
+                ),
+              ),
+              20.verticalSpace,
+              SizedBox(
+                height: 70.h,
+                child: GridView.count(
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 4,
+                  children: controller.customPartsProduct
+                      .map((e) =>
+                          PartsProduct(imagePath: e.imagePath, title: e.title))
+                      .toList(),
+                ),
+              ),
+              18.verticalSpace,
+              const SectionHeader(title: 'Kategori Pilihan', actionText: ''),
+              12.verticalSpace,
+              RPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: SizedBox(
+                  height: 55.h,
+                  child: GridView.count(
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 6,
+                    crossAxisSpacing: 5.w,
+                    childAspectRatio: 0.95,
+                    shrinkWrap: true,
+                    children: controller.customBrand
+                        .map((e) => CategoryBrand(imagePath: e.imagePath))
+                        .toList(),
+                  ),
+                ),
+              ),
+              15.verticalSpace,
+              const SectionHeader(
+                  title: 'Promo Spesial Untukmu', actionText: ''),
+              12.verticalSpace,
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -108,6 +118,17 @@ class HomeView extends GetView<HomeController> {
             Get.back();
           },
         ),
+        viewTrailing: [
+          IconButton(
+            icon: const Icon(
+              Icons.clear,
+              color: AppColors.black,
+            ),
+            onPressed: () {
+              controller.searchAnchorController.clear();
+            },
+          ),
+        ],
         searchController: controller.searchAnchorController,
         builder: (context, searchController) {
           return InkWell(
@@ -210,14 +231,13 @@ class HomeView extends GetView<HomeController> {
                   ListTile(
                     leading: const Icon(Icons.shopping_bag_outlined,
                         color: AppColors.primaryColor),
-                    title: Text(prod.name ?? '',
-                        style: AppTextStyle.mediumBlackBold),
+                    title: Text(prod.name, style: AppTextStyle.mediumBlackBold),
                     subtitle: Text(
                       Helper.formatCurrency(prod.finalPrice.toInt()),
                       style: AppTextStyle.mediumBlackBold,
                     ),
                     onTap: () {
-                      sc.closeView(prod.name ?? '');
+                      sc.closeView(prod.name);
                       controller.fetchProductByID(prod.id);
                     },
                   ),
@@ -270,6 +290,7 @@ class HomeView extends GetView<HomeController> {
       }
 
       String filterText = '';
+
       if (hasSearch) {
         filterText = 'Pencarian: "${controller.searchQuery.value}"';
       }
