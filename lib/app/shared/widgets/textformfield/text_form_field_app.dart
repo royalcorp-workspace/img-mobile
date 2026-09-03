@@ -11,12 +11,14 @@ class TextFormfieldApp extends StatelessWidget {
     this.title,
     this.prefix,
     this.hintText,
+    this.maxLines = 1,
   });
 
   final String? title, hintText;
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final Widget? prefix;
+  final int? maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +45,10 @@ class TextFormfieldApp extends StatelessWidget {
             controller: controller,
             keyboardType: keyboardType,
             style: AppTextStyle.mediumBlack,
+            maxLines: maxLines,
             decoration: InputDecoration(
               hintText: hintText,
+              hintStyle: AppTextStyle.mediumGrey,
               fillColor: AppColors.white,
               filled: true,
               enabledBorder: OutlineInputBorder(

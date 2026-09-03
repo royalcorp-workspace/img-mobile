@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
+import 'package:pos_royal/app/modules/cart/controllers/cart_controller.dart';
 import 'package:pos_royal/app/modules/home/widgets/icon_badge.dart';
 import 'package:pos_royal/app/modules/wishlist/views/widgets/wishlist_card.dart';
 
@@ -41,21 +42,25 @@ class WishlistView extends GetView<WishlistController> {
       elevation: 2,
       centerTitle: true,
       actions: [
-        AddToCartIcon(
-          key: controller.cartKey,
-          icon: InkWell(
-            onTap: () => Get.back(),
-            child: IconBadge(
-              iconPath: 'ic_cart.svg',
-              count: 1,
-            ),
-          ),
-          badgeOptions: const BadgeOptions(
-            width: 0,
-            height: 0,
-            fontSize: 0,
-            active: false,
-          ),
+        GetBuilder<CartController>(
+          builder: (cartController) {
+            return AddToCartIcon(
+              key: controller.cartKey,
+              icon: InkWell(
+                onTap: () => Get.back(),
+                child: IconBadge(
+                  iconPath: 'ic_cart.svg',
+                  count: cartController.cartItemCount,
+                ),
+              ),
+              badgeOptions: const BadgeOptions(
+                width: 0,
+                height: 0,
+                fontSize: 0,
+                active: false,
+              ),
+            );
+          },
         ),
       ],
     );

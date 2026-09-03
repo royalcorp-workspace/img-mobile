@@ -6,6 +6,7 @@ import 'package:pos_royal/app/core/helper/helper.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
 import 'package:pos_royal/app/modules/cart/widgets/cart_item_card.dart';
+import 'package:pos_royal/app/modules/checkout/models/checkout_arguments.dart';
 import 'package:pos_royal/app/routes/app_pages.dart';
 
 import '../controllers/cart_controller.dart';
@@ -37,35 +38,60 @@ class CartView extends GetView<CartController> {
           )
         ],
       ),
-      body: CustomScrollView(
-        controller: controller.pageScrollController,
-        slivers: [
-          SliverList.builder(
-            itemCount: controller.carts.length,
-            itemBuilder: (context, index) => CartItemCard(
-              name: controller.carts[index].items?[index].name ?? '',
-              description: '',
-              price:
-                  controller.carts[index].items?[index].unitPrice.toString() ??
-                      '',
-              quantity: controller.carts[index].items?[index].quantity ?? 0,
-              fillColor: WidgetStatePropertyAll(
-                controller.selectedCart.value
-                    ? AppColors.primaryColor
-                    : AppColors.lightGrey,
+      body: Obx(
+        () {
+          if (controller.isLoading.value && controller.carts.isEmpty) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.primaryColor),
+            );
+          }
+
+          final items = controller.cartItems;
+          if (items.isEmpty) {
+            return const Center(
+              child: Text(
+                'Keranjang kamu kosong',
+                style: AppTextStyle.largeBlackBold,
               ),
-              value: controller.selectedCart.value,
-              onChanged: (e) {
-                controller.selectedCart.value = e ?? false;
-              },
-              decrement: controller.selectedQty.value == 1
-                  ? controller.showDeleteConfirmationDialog
-                  : controller.decrementQty,
-              increment: controller.incrementQty,
-            ),
-          ),
-          _buildLoadMoreIndicator()
-        ],
+            );
+          }
+
+          return CustomScrollView(
+            controller: controller.pageScrollController,
+            slivers: [
+              SliverList.builder(
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  final item = items[index];
+                  final itemId = item.id ?? controller.uniqueKeyForItem(item);
+
+                  return CartItemCard(
+                    name: item.name ?? item.product?.name ?? '',
+                    description: item.product?.slug ?? '',
+                    price: Helper.formatCurrency((item.unitPrice).toInt()),
+                    quantity: controller.getItemQuantity(itemId),
+                    fillColor: WidgetStatePropertyAll(
+                      controller.isItemSelected(itemId)
+                          ? AppColors.primaryColor
+                          : AppColors.lightGrey,
+                    ),
+                    value: controller.isItemSelected(itemId),
+                    onChanged: (e) {
+                      controller.toggleItemSelection(itemId, e ?? false);
+                    },
+                    decrement: () {
+                      controller.decrementQty(itemId);
+                    },
+                    increment: () {
+                      controller.incrementQty(itemId);
+                    },
+                  );
+                },
+              ),
+              _buildLoadMoreIndicator()
+            ],
+          );
+        },
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -85,47 +111,48 @@ class CartView extends GetView<CartController> {
           ),
           child: BottomAppBar(
               padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              height: 125.h,
+              height: 68.h,
               child: Column(
                 children: [
-                  15.verticalSpace,
-                  InkWell(
-                    radius: 12,
-                    onTap: () => Get.toNamed(Routes.VOUCHER),
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-                      width: Get.width,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.lightGrey),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.discount_outlined,
-                                size: 20,
-                                color: AppColors.primaryColor,
-                              ),
-                              15.horizontalSpace,
-                              Text(
-                                'Lebih hemat pakai voucher',
-                                style: AppTextStyle.mediumBlackBold,
-                              ),
-                            ],
-                          ),
-                          Icon(
-                            Icons.arrow_forward_ios_outlined,
-                            size: 20,
-                            color: AppColors.black,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  // 15.verticalSpace,
+                  // InkWell(
+                  //   radius: 12,
+                  //   onTap: () => Get.toNamed(Routes.VOUCHER),
+                  //   child: Container(
+                  //     padding:
+                  //         EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                  //     width: Get.width,
+                  //     decoration: BoxDecoration(
+                  //       border: Border.all(color: AppColors.lightGrey),
+                  //       borderRadius: BorderRadius.circular(12),
+                  //     ),
+                  //     child: Row(
+                  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //       children: [
+                  //         Row(
+                  //           children: [
+                  //             Icon(
+                  //               Icons.discount_outlined,
+                  //               size: 20,
+                  //               color: AppColors.primaryColor,
+                  //             ),
+                  //             15.horizontalSpace,
+                  //             Text(
+                  //               'Lebih hemat pakai voucher',
+                  //               style: AppTextStyle.mediumBlackBold,
+                  //             ),
+                  //           ],
+                  //         ),
+                  //         Icon(
+                  //           Icons.arrow_forward_ios_outlined,
+                  //           size: 20,
+                  //           color: AppColors.black,
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
+
                   15.verticalSpace,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -139,10 +166,9 @@ class CartView extends GetView<CartController> {
                           ),
                           Obx(
                             () => Text(
-                              controller.selectedCart.value
+                              controller.hasSelectedItems
                                   ? Helper.formatCurrency(
-                                      controller.selectedPrice.value *
-                                          controller.selectedQty.value)
+                                      controller.selectedTotalPrice.toInt())
                                   : '-',
                               style: AppTextStyle.largeBlackBold,
                             ),
@@ -150,12 +176,17 @@ class CartView extends GetView<CartController> {
                         ],
                       ),
                       InkWell(
-                        onTap: () => controller.selectedCart.value
-                            ? Get.toNamed(Routes.CHECKOUT, arguments: [
-                                controller.selectedPrice.value,
-                                controller.selectedQty.value,
-                              ])
-                            : null,
+                        onTap: () {
+                          final selectedItems = controller.selectedCartItems;
+                          if (selectedItems.isEmpty) return;
+
+                          Get.toNamed(
+                            Routes.CHECKOUT,
+                            arguments: CheckoutArguments.fromCart(
+                              selectedItems,
+                            ),
+                          );
+                        },
                         child: Obx(
                           () => Container(
                             height: 35.h,
@@ -163,11 +194,11 @@ class CartView extends GetView<CartController> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: controller.selectedCart.value
+                                color: controller.hasSelectedItems
                                     ? AppColors.primaryColor
                                     : AppColors.grey,
                               ),
-                              color: controller.selectedCart.value
+                              color: controller.hasSelectedItems
                                   ? AppColors.primaryColor
                                   : AppColors.grey,
                             ),

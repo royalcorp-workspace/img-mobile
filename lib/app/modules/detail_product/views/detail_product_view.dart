@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import 'package:pos_royal/app/core/helper/helper.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
+import 'package:pos_royal/app/modules/cart/controllers/cart_controller.dart';
+import 'package:pos_royal/app/modules/checkout/models/checkout_arguments.dart';
 import 'package:pos_royal/app/modules/detail_product/widgets/cart_badge.dart';
 import 'package:pos_royal/app/modules/detail_product/widgets/comment_card.dart';
 import 'package:pos_royal/app/modules/detail_product/widgets/detail_product_card.dart';
@@ -686,10 +688,13 @@ ${controller.productByID.value.description}
                   ),
                 ),
                 InkWell(
-                  onTap: () => Get.toNamed(Routes.CHECKOUT, arguments: [
-                    controller.productByID.value,
-                    controller.selectedIndex.value
-                  ]),
+                  onTap: () => Get.toNamed(
+                    Routes.CHECKOUT,
+                    arguments: CheckoutArguments.fromProduct(
+                      product: controller.productByID.value,
+                      selectedVariantIndex: controller.selectedIndex.value,
+                    ),
+                  ),
                   child: Container(
                     height: 35.h,
                     width: 148.w,
@@ -758,23 +763,25 @@ ${controller.productByID.value.description}
           ),
         ),
         2.horizontalSpace,
-        Obx(
-          () => AddToCartIcon(
-            key: controller.cartKey,
-            icon: InkWell(
-              onTap: () => Get.toNamed(Routes.CART),
-              child: CartBadge(
-                iconPath: 'ic_cart.svg',
-                count: controller.carts.length,
+        GetBuilder<CartController>(
+          builder: (cartController) {
+            return AddToCartIcon(
+              key: controller.cartKey,
+              icon: InkWell(
+                onTap: () => Get.toNamed(Routes.CART),
+                child: CartBadge(
+                  iconPath: 'ic_cart.svg',
+                  count: cartController.cartItemCount,
+                ),
               ),
-            ),
-            badgeOptions: const BadgeOptions(
-              width: 0,
-              height: 0,
-              fontSize: 0,
-              active: false,
-            ),
-          ),
+              badgeOptions: const BadgeOptions(
+                width: 0,
+                height: 0,
+                fontSize: 0,
+                active: false,
+              ),
+            );
+          },
         ),
         7.horizontalSpace,
       ],

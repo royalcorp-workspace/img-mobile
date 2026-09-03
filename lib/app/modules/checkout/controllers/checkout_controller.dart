@@ -6,21 +6,27 @@ import 'package:get/get.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/utils/log/logger.dart';
 import 'package:pos_royal/app/core/utils/token_storage.dart';
+import 'package:pos_royal/app/data/datasources/checkout_remote_datasource.dart';
 import 'package:pos_royal/app/data/datasources/order_remote_datasource.dart';
 import 'package:pos_royal/app/data/datasources/payment_method_remote_datasource.dart';
 import 'package:pos_royal/app/data/datasources/shipping_addresses_remote_datasource.dart';
+import 'package:pos_royal/app/data/models/checkout_params_model.dart';
 import 'package:pos_royal/app/data/models/user_model.dart';
+import 'package:pos_royal/app/data/repositories/checkout_repository_impl.dart';
 import 'package:pos_royal/app/data/repositories/order_repository_impl.dart';
 import 'package:pos_royal/app/data/repositories/payment_method_repository_impl.dart';
 import 'package:pos_royal/app/data/repositories/shipping_addresses_repository_impl.dart';
+import 'package:pos_royal/app/domain/entities/add_to_cart_entity.dart';
 import 'package:pos_royal/app/domain/entities/order_entity.dart';
 
 import 'package:pos_royal/app/domain/entities/payment_method_entity.dart';
 import 'package:pos_royal/app/domain/entities/product_by_id_entity.dart';
 import 'package:pos_royal/app/domain/entities/voucher_entity.dart';
+import 'package:pos_royal/app/domain/usecases/checkout_usecase.dart';
 import 'package:pos_royal/app/domain/usecases/create_order_usecase.dart';
 import 'package:pos_royal/app/domain/usecases/get_payment_methods_usecase.dart';
 import 'package:pos_royal/app/domain/usecases/get_shipping_addresses_usecase.dart';
+import 'package:pos_royal/app/modules/checkout/models/checkout_arguments.dart';
 import 'package:pos_royal/app/routes/app_pages.dart';
 
 class CheckoutController extends GetxController {
@@ -28,11 +34,13 @@ class CheckoutController extends GetxController {
     this.getShippingAddressesUsecase,
     this.getPaymentMethodsUsecase,
     this.createOrderUseCase,
+    this.checkoutUsecase,
   });
 
   final GetShippingAddressesUsecase? getShippingAddressesUsecase;
   final GetPaymentMethodsUsecase? getPaymentMethodsUsecase;
   final CreateOrderUseCase? createOrderUseCase;
+  final CheckoutUsecase? checkoutUsecase;
 
   RxString selectedShippingMethod = ''.obs;
   RxString selectedShipping = ''.obs;
@@ -58,17 +66,194 @@ class CheckoutController extends GetxController {
   var paymentMethod = [].obs;
   var productByID = ProductByIdEntity().obs;
   var shippingAddresses = [].obs;
+  CheckoutSource? checkoutSource;
 
   @override
   void onInit() {
-    // selectedPrice.value = Get.arguments[0];
-    // selectedQty.value = Get.arguments[1];
-    productByID.value = Get.arguments[0];
-    selectedIndex.value = Get.arguments[1];
+    super.onInit();
+
+    final args = Get.arguments;
+
+    if (args is CheckoutArguments) {
+      _handleCheckoutArguments(args);
+    } else if (args is List && args.isNotEmpty) {
+      logger.warning(
+        '⚠️ [CHECKOUT] Legacy positional arguments detected; use CheckoutArguments instead.',
+      );
+
+      if (args.first is ProductByIdEntity) {
+        final product = args.first as ProductByIdEntity;
+        final variantIndex = args.length > 1
+            ? (args[1] is num ? (args[1] as num).toInt() : 0)
+            : 0;
+        _handleProductCheckout(
+          CheckoutArguments(
+            source: CheckoutSource.product,
+            product: product,
+            selectedVariantIndex: variantIndex,
+          ),
+        );
+      } else if (args.first is List<ItemCart>) {
+        _handleCartCheckout(
+          CheckoutArguments(
+            source: CheckoutSource.cart,
+            cartItems: args.first as List<ItemCart>,
+          ),
+        );
+      } else {
+        logger.warning('⚠️ [CHECKOUT] Invalid legacy checkout arguments');
+      }
+    } else {
+      logger.warning('⚠️ [CHECKOUT] No arguments received');
+    }
+
     fetchShippingAddresses();
     fetchPaymentMethod();
+  }
 
-    super.onInit();
+  void _handleCheckoutArguments(CheckoutArguments args) {
+    checkoutSource = args.source;
+
+    switch (args.source) {
+      case CheckoutSource.cart:
+        _handleCartCheckout(args);
+        break;
+      case CheckoutSource.product:
+        _handleProductCheckout(args);
+        break;
+    }
+  }
+
+  void _handleCartCheckout(CheckoutArguments args) {
+    itemParams.clear();
+
+    final items = args.cartItems ?? [];
+    if (items.isEmpty) {
+      logger.warning('⚠️ [CHECKOUT] Cart checkout has no selected items');
+      return;
+    }
+
+    itemParams = items.map((item) {
+      final productId = item.productId ?? '';
+      final variantId = item.productVariantId ?? item.product?.id ?? '1';
+      final quantity = item.quantity;
+      final unitPrice = item.unitPrice;
+      final discountNominal = item.discountNominal;
+      final discountPercent = item.discountPercent;
+      final total = item.total;
+      final variant = item.variant;
+
+      return ItemParams(
+        productId: productId,
+        productVariantId: variantId,
+        quantity: quantity,
+        unitPrice: unitPrice,
+        discountNominal: discountNominal,
+        discountPercent: discountPercent,
+        total: total,
+        weight: 0,
+        name: item.name ?? item.product?.name ?? '',
+        variant: variant,
+      );
+    }).toList();
+
+    logger.info(
+      '🛒 [CHECKOUT] Cart checkout with ${itemParams.length} items',
+    );
+  }
+
+  void _handleProductCheckout(CheckoutArguments args) {
+    final productValue = args.product;
+
+    if (productValue == null) {
+      logger.warning('⚠️ [CHECKOUT] Product is missing');
+      return;
+    }
+
+    productByID.value = productValue;
+
+    final targetIndex = args.selectedVariantIndex ?? 0;
+
+    if (productValue.variants == null || productValue.variants!.isEmpty) {
+      selectedIndex.value = 0;
+      logger.warning('⚠️ [CHECKOUT] Product has no available variants');
+      return;
+    }
+
+    final safeIndex =
+        targetIndex >= 0 && targetIndex < productValue.variants!.length
+            ? targetIndex
+            : 0;
+
+    selectedIndex.value = safeIndex;
+
+    final selectedVariant = productValue.variants![safeIndex];
+
+    itemParams.clear();
+
+    final itemQty = selectedQty.value > 0 ? selectedQty.value : 1;
+    final itemUnitPrice = selectedVariant.finalPrice.toDouble();
+
+    itemParams.add(
+      ItemParams(
+        productId: productValue.id ?? '',
+        productVariantId: selectedVariant.id,
+        quantity: itemQty,
+        unitPrice: itemUnitPrice,
+        discountNominal: 0,
+        discountPercent: 0,
+        total: itemUnitPrice * itemQty,
+        weight: selectedVariant.weight.toDouble(),
+        name: productValue.name ?? '',
+        variant: selectedVariant,
+      ),
+    );
+
+    logger.info(
+      '🛍️ [CHECKOUT] Product detail checkout '
+      'product=${productValue.id}, '
+      'variant=${selectedVariant.id}, '
+      'variantName=${selectedVariant.variantName}',
+    );
+  }
+
+  double get checkoutTotal {
+    if (checkoutSource == CheckoutSource.cart) {
+      return itemParams.fold<double>(
+        0,
+        (sum, item) => sum + item.total,
+      );
+    }
+
+    if (checkoutSource == CheckoutSource.product) {
+      final variants = productByID.value.variants;
+
+      if (variants == null || variants.isEmpty) {
+        return 0;
+      }
+
+      final index = selectedIndex.value;
+
+      if (index < 0 || index >= variants.length) {
+        return 0;
+      }
+
+      return variants[index].finalPrice.toDouble() * selectedQty.value;
+    }
+
+    return 0;
+  }
+
+  double get shippingCost => selectedShippingPrice.value.toDouble();
+
+  double get voucherDiscount => selectedVoucher.value?.value.toDouble() ?? 0;
+
+  double get serviceFee => 0;
+
+  double get totalBill {
+    final result = checkoutTotal + shippingCost - voucherDiscount + serviceFee;
+
+    return result < 0 ? 0 : result;
   }
 
   void incrementQty() {
@@ -200,12 +385,16 @@ class CheckoutController extends GetxController {
     return "3fa85f64-5717-4562-b3fc-2c963f66afa6";
   }
 
+  double calculateSubtotal(List<ItemParams> items) {
+    return items.fold(0.0, (sum, item) => sum + item.total);
+  }
+
   Future<void> createOrder() async {
     if (isCreatingOrder.value) return;
 
     try {
       isCreatingOrder.value = true;
-      logger.info('🔍 [PAYMENT_METHOD] Initiating order creation...');
+      logger.info('🔍 [CREATE-ORDER] Initiating order creation...');
 
       final customerId = await _getOrFetchCustomerId();
       String chosenPaymentMethod = "credit_card";
@@ -223,45 +412,65 @@ class CheckoutController extends GetxController {
             paymentMethod.first.code ?? paymentMethod.first.name;
       }
 
-      // Support multi-item orders (e.g. from Cart) or single-item fallback
-      List<ItemParams> payloadItems = [];
+      final List<ItemParams> payloadItems;
 
-      if (itemParams.isNotEmpty) {
+      if (checkoutSource == CheckoutSource.cart) {
         payloadItems = itemParams;
       } else {
-        final productId = productByID.value.id.toString();
-        final variantId = productByID.value.variants?.isNotEmpty == true
-            ? (productByID.value.variants!.first.id)
-            : "1";
+        final productId = productByID.value.id?.toString() ?? '';
+        if (productByID.value.id == null || productByID.value.id!.isEmpty) {
+          logger.warning(
+              '⚠️ [CREATE-ORDER] Missing product ID for product checkout');
+          return;
+        }
+
+        if (productByID.value.variants == null ||
+            productByID.value.variants!.isEmpty) {
+          logger
+              .warning('⚠️ [CREATE-ORDER] Product has no variants to checkout');
+          return;
+        }
+
+        final variantIndex = selectedIndex.value >= 0 &&
+                selectedIndex.value < productByID.value.variants!.length
+            ? selectedIndex.value
+            : 0;
+        final selectedVariant = productByID.value.variants![variantIndex];
         final itemQty = selectedQty.value > 0 ? selectedQty.value : 1;
-        final itemUnitPrice =
-            productByID.value.variants![selectedIndex.value].finalPrice;
+        final itemUnitPrice = selectedVariant.finalPrice.toDouble();
         final discountNominal =
             selectedVoucher.value != null ? selectedVoucher.value!.value : 0.0;
-        final shippingPrice = selectedShippingPrice.value;
-        final itemTotal = itemUnitPrice + shippingPrice - discountNominal;
+        final itemTotal = itemUnitPrice * itemQty;
+
         final productName = productByID.value.name.toString();
 
         payloadItems = [
           ItemParams(
             productId: productId,
-            productVariantId: variantId,
+            productVariantId: selectedVariant.id,
             quantity: itemQty,
             unitPrice: itemUnitPrice,
             discountNominal: discountNominal,
             discountPercent: 0,
             total: itemTotal,
-            weight: 0,
+            weight: selectedVariant.weight.toDouble(),
             name: productName,
+            variant: selectedVariant,
           ),
         ];
       }
 
-      final subtotal = payloadItems.fold(
-          0.0, (previousValue, element) => previousValue + element.total);
-      // const adminFee = 2500.0;
-      // final total = subtotal + adminFee;
-      final total = subtotal;
+      if (payloadItems.isEmpty) {
+        logger.warning('⚠️ [CREATE-ORDER] No create order items were prepared');
+        return;
+      }
+
+      final subtotal = checkoutTotal;
+      final shipping = shippingCost;
+      final discount = voucherDiscount;
+      final serviceFee = 0.0;
+
+      final total = subtotal + shipping - discount + serviceFee;
 
       final params = CreateOrderParams(
         customerId: customerId,
@@ -270,8 +479,8 @@ class CheckoutController extends GetxController {
         paymentStatus: 0,
         subtotal: subtotal,
         tax: 0,
-        discount: 0,
-        total: total,
+        discount: discount,
+        total: total < 0 ? 0 : total,
         notes: notesC.text,
         meta: {},
         items: payloadItems,
@@ -286,22 +495,60 @@ class CheckoutController extends GetxController {
 
       final orderResult = await useCase.call(params);
       logger.info(
-          '✅ [CHECKOUT] Order created successfully! Order ID: ${orderResult.id}');
+          '✅ [ORDER] Order created successfully! Order ID: ${orderResult.id}');
 
-      Get.toNamed(Routes.PAYMENT, arguments: [
-        orderResult,
-        total,
-        selectedQty.value,
-      ]);
+      await checkout(orderResult.id, orderResult.paymentMethod);
     } catch (e, stackTrace) {
-      logger.severe('❌ [CHECKOUT] Failed to create order: $e');
+      isCreatingOrder.value = false;
+      logger.severe('❌ [CREATE-ORDER] Failed to create order: $e');
       if (kDebugMode) {
-        print('❌ [CHECKOUT] Error creating order: $e');
+        print('❌ [CREATE-ORDER] Error creating order: $e');
         print(stackTrace);
       }
       Get.snackbar(
         'Gagal membuat pesanan',
         'Terjadi kesalahan saat memproses pesanan. Silakan coba lagi.',
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
+      );
+    }
+  }
+
+  Future<void> checkout(String orderID, String paymentMethodCode) async {
+    try {
+      logger.info('🔍 [CHECKOUT] Initiating checkout creation...');
+
+      final params = CheckoutParamsModel(
+        orderId: orderID,
+        paymentMethodCode: paymentMethodCode,
+      );
+
+      final useCase = checkoutUsecase ??
+          CheckoutUsecase(
+            CheckoutRepositoryImpl(
+              remoteDataSource: CheckoutRemoteDataSourceImpl(),
+            ),
+          );
+
+      final checkoutResult = await useCase.call(params);
+      logger.info(
+          '✅ [CHECKOUT] Checkout created successfully! Checkout status: ${checkoutResult.success}');
+      isCreatingOrder.value = false;
+
+      Get.offAllNamed(
+        Routes.PAYMENT,
+        arguments: [checkoutResult, orderID],
+      );
+    } catch (e, stackTrace) {
+      isCreatingOrder.value = false;
+      logger.severe('❌ [CHECKOUT] Failed to checkout: $e');
+      if (kDebugMode) {
+        print('❌ [CHECKOUT] Error checkout: $e');
+        print(stackTrace);
+      }
+      Get.snackbar(
+        'Gagal membayar tagihan',
+        'Terjadi kesalahan saat menyiapkan proses pembayaran. Silakan coba lagi.',
         backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
         colorText: AppColors.white,
       );

@@ -48,17 +48,15 @@ class CartItemCard extends StatelessWidget {
           width: Get.width,
           child: Row(
             children: [
-              Obx(
-                () => Checkbox(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                  side: BorderSide(color: AppColors.lightGrey),
-                  fillColor: fillColor,
-                  value: value,
-                  checkColor: AppColors.white,
-                  onChanged: onChanged,
+              Checkbox(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(3),
                 ),
+                side: BorderSide(color: AppColors.lightGrey),
+                fillColor: fillColor,
+                value: value,
+                checkColor: AppColors.white,
+                onChanged: onChanged,
               ),
               Image.asset(
                 height: 85.h,
@@ -106,32 +104,30 @@ class CartItemCard extends StatelessWidget {
               border: Border.all(color: AppColors.lightGrey),
               borderRadius: BorderRadius.circular(21),
             ),
-            child: Obx(
-              () => Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  InkWell(
-                    onTap: decrement,
-                    child: Icon(
-                      quantity == 1 ? Icons.delete_outline : Icons.remove,
-                      color: quantity == 1
-                          ? AppColors.red
-                          : AppColors.blackSecondary,
-                    ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InkWell(
+                  onTap: decrement,
+                  child: Icon(
+                    quantity == 1 ? Icons.delete_outline : Icons.remove,
+                    color: quantity == 1
+                        ? AppColors.red
+                        : AppColors.blackSecondary,
                   ),
-                  Text(
-                    '$quantity',
-                    style: AppTextStyle.largeBlackBold,
+                ),
+                Text(
+                  '$quantity',
+                  style: AppTextStyle.largeBlackBold,
+                ),
+                InkWell(
+                  onTap: increment,
+                  child: Icon(
+                    Icons.add,
+                    color: AppColors.blackSecondary,
                   ),
-                  InkWell(
-                    onTap: increment,
-                    child: Icon(
-                      Icons.add,
-                      color: AppColors.blackSecondary,
-                    ),
-                  )
-                ],
-              ),
+                )
+              ],
             ),
           ),
         ),

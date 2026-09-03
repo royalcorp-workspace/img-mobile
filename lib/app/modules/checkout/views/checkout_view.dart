@@ -5,12 +5,14 @@ import 'package:get/get.dart';
 import 'package:pos_royal/app/core/helper/helper.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
+import 'package:pos_royal/app/modules/checkout/models/checkout_arguments.dart';
 import 'package:pos_royal/app/modules/checkout/widgets/add_notes_widget.dart';
 import 'package:pos_royal/app/modules/checkout/widgets/checkout_item_card.dart';
 import 'package:pos_royal/app/domain/entities/voucher_entity.dart';
 import 'package:pos_royal/app/modules/payment_method/views/payment_method_view.dart';
 import 'package:pos_royal/app/routes/app_pages.dart';
 import 'package:pos_royal/app/shared/widgets/app_divider.dart';
+import 'package:pos_royal/app/shared/widgets/button/primary_button.dart';
 import 'package:pos_royal/app/shared/widgets/text/text_price_bold.dart';
 
 import '../controllers/checkout_controller.dart';
@@ -78,38 +80,68 @@ class CheckoutView extends GetView<CheckoutController> {
                       ),
                     ),
                     15.verticalSpace,
-                    RPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                      child: Obx(
-                        () => CheckoutItemCard(
-                          name: controller.productByID.value.name ?? '',
-                          attributes: controller
-                                  .productByID
-                                  .value
-                                  .variants?[controller.selectedIndex.value]
-                                  .variantName ??
-                              '',
-                          promoDesc: controller.productByID.value
-                                      .priceProductSettings?.isNotEmpty ==
-                                  true
-                              ? controller.productByID.value
-                                  .priceProductSettings!.first.title
-                              : '',
-                          price: controller
-                                  .productByID
-                                  .value
-                                  .variants?[controller.selectedIndex.value]
-                                  .finalPrice
-                                  .toInt() ??
-                              0,
-                          onTapDecrement: controller.selectedQty.value == 1
-                              ? null
-                              : controller.decrementQty,
-                          qty: controller.selectedQty.value,
-                          onTapIncrement: controller.incrementQty,
-                        ),
-                      ),
-                    ),
+
+                    // Product
+                    controller.checkoutSource == CheckoutSource.product
+                        ? RPadding(
+                            padding: const EdgeInsets.symmetric(horizontal: 14),
+                            child: Obx(
+                              () => CheckoutItemCard(
+                                source: true,
+                                name: controller.productByID.value.name ?? '',
+                                attributes: controller
+                                        .productByID
+                                        .value
+                                        .variants?[
+                                            controller.selectedIndex.value]
+                                        .variantName ??
+                                    '',
+                                promoDesc: controller.productByID.value
+                                            .priceProductSettings?.isNotEmpty ==
+                                        true
+                                    ? controller.productByID.value
+                                        .priceProductSettings!.first.title
+                                    : '',
+                                price: controller
+                                        .productByID
+                                        .value
+                                        .variants?[
+                                            controller.selectedIndex.value]
+                                        .finalPrice
+                                        .toInt() ??
+                                    0,
+                                onTapDecrement:
+                                    controller.selectedQty.value == 1
+                                        ? null
+                                        : controller.decrementQty,
+                                qty: controller.selectedQty.value,
+                                onTapIncrement: controller.incrementQty,
+                              ),
+                            ),
+                          )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: controller.itemParams.length,
+                            itemBuilder: (context, index) {
+                              final data = controller.itemParams[index];
+                              return RPadding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 14),
+                                child: CheckoutItemCard(
+                                  source: false,
+                                  name: data.name,
+                                  attributes:
+                                      data.variant?.variantName?.toString() ??
+                                          '',
+                                  promoDesc: '',
+                                  price: data.unitPrice.toInt(),
+                                  onTapDecrement: null,
+                                  qty: data.quantity,
+                                  onTapIncrement: null,
+                                ),
+                              );
+                            }),
                     15.verticalSpace,
                     RPadding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -175,6 +207,7 @@ class CheckoutView extends GetView<CheckoutController> {
                           // const Divider(
                           //     color: AppColors.lightGrey, thickness: 1.2),
                           // 15.verticalSpace,
+
                           InkWell(
                             onTap: () {
                               showModalBottomSheet(
@@ -401,6 +434,8 @@ class CheckoutView extends GetView<CheckoutController> {
                             ),
                           ),
                           20.verticalSpace,
+
+                          // Payment Method
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -494,18 +529,11 @@ class CheckoutView extends GetView<CheckoutController> {
                                 'Total Pembelian',
                                 style: AppTextStyle.mediumGrey,
                               ),
-                              Obx(
-                                () => Text(
-                                  Helper.formatCurrency(controller
-                                          .productByID
-                                          .value
-                                          .variants![
-                                              controller.selectedIndex.value]
-                                          .finalPrice
-                                          .toInt() *
-                                      controller.selectedQty.value),
-                                  style: AppTextStyle.mediumBlack,
+                              Text(
+                                Helper.formatCurrency(
+                                  controller.checkoutTotal.toInt(),
                                 ),
+                                style: AppTextStyle.mediumBlack,
                               ),
                             ],
                           ),
@@ -520,7 +548,8 @@ class CheckoutView extends GetView<CheckoutController> {
                               Obx(
                                 () => Text(
                                   Helper.formatCurrency(
-                                      controller.selectedShippingPrice.value),
+                                    controller.shippingCost.toInt(),
+                                  ),
                                   style: AppTextStyle.mediumBlack,
                                 ),
                               ),
@@ -531,23 +560,18 @@ class CheckoutView extends GetView<CheckoutController> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Voucher Diskon (%)',
+                                'Voucher Diskon',
                                 style: AppTextStyle.mediumGrey,
                               ),
                               Obx(
-                                () {
-                                  final discount =
-                                      controller.selectedVoucher.value != null
-                                          ? controller
-                                              .selectedVoucher.value!.value
-                                              .toInt()
-                                          : 0;
-                                  return Text(
-                                    '- ${Helper.formatCurrency(discount)}',
-                                    style: AppTextStyle.mediumBlack
-                                        .copyWith(color: AppColors.red),
-                                  );
-                                },
+                                () => Text(
+                                  '- ${Helper.formatCurrency(
+                                    controller.voucherDiscount.toInt(),
+                                  )}',
+                                  style: AppTextStyle.mediumBlack.copyWith(
+                                    color: AppColors.red,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -560,7 +584,9 @@ class CheckoutView extends GetView<CheckoutController> {
                                 style: AppTextStyle.mediumGrey,
                               ),
                               Text(
-                                Helper.formatCurrency(0),
+                                Helper.formatCurrency(
+                                  controller.serviceFee.toInt(),
+                                ),
                                 style: AppTextStyle.mediumBlack,
                               ),
                             ],
@@ -578,43 +604,12 @@ class CheckoutView extends GetView<CheckoutController> {
                                 style: AppTextStyle.mediumBlack,
                               ),
                               Obx(
-                                () {
-                                  final hasVariant = controller.productByID
-                                              .value.variants?.isNotEmpty ==
-                                          true &&
-                                      controller.selectedIndex.value <
-                                          controller.productByID.value.variants!
-                                              .length;
-                                  final itemPrice = hasVariant
-                                      ? controller
-                                          .productByID
-                                          .value
-                                          .variants![
-                                              controller.selectedIndex.value]
-                                          .finalPrice
-                                          .toInt()
-                                      : (controller.productByID.value.finalPrice
-                                              ?.toInt() ??
-                                          0);
-                                  final subtotal =
-                                      itemPrice * controller.selectedQty.value;
-                                  final shipping =
-                                      controller.selectedShippingPrice.value;
-                                  final discount =
-                                      controller.selectedVoucher.value != null
-                                          ? controller
-                                              .selectedVoucher.value!.value
-                                              .toInt()
-                                          : 0;
-                                  final total =
-                                      (subtotal + shipping - discount) < 0
-                                          ? 0
-                                          : (subtotal + shipping - discount);
-                                  return Text(
-                                    Helper.formatCurrency(total),
-                                    style: AppTextStyle.mediumBlackBold,
-                                  );
-                                },
+                                () => Text(
+                                  Helper.formatCurrency(
+                                    controller.totalBill.toInt(),
+                                  ),
+                                  style: AppTextStyle.mediumBlackBold,
+                                ),
                               ),
                             ],
                           ),
@@ -644,10 +639,10 @@ class CheckoutView extends GetView<CheckoutController> {
           ),
           child: BottomAppBar(
               padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              height: 125.h,
+              height: 128.h,
               child: Column(
                 children: [
-                  15.verticalSpace,
+                  10.verticalSpace,
                   Obx(
                     () {
                       if (controller.selectedVoucher.value != null) {
@@ -746,59 +741,22 @@ class CheckoutView extends GetView<CheckoutController> {
                             style: AppTextStyle.mediumBlack,
                           ),
                           Obx(
-                            () {
-                              final hasVariant = controller.productByID.value
-                                          .variants?.isNotEmpty ==
-                                      true &&
-                                  controller.selectedIndex.value <
-                                      controller
-                                          .productByID.value.variants!.length;
-                              final itemPrice = hasVariant
-                                  ? controller
-                                      .productByID
-                                      .value
-                                      .variants![controller.selectedIndex.value]
-                                      .finalPrice
-                                      .toInt()
-                                  : (controller.productByID.value.finalPrice
-                                          ?.toInt() ??
-                                      0);
-                              final subtotal =
-                                  itemPrice * controller.selectedQty.value;
-                              final shipping =
-                                  controller.selectedShippingPrice.value;
-                              final discount =
-                                  controller.selectedVoucher.value != null
-                                      ? controller.selectedVoucher.value!.value
-                                          .toInt()
-                                      : 0;
-                              controller.total.value =
-                                  (subtotal + shipping - discount) < 0
-                                      ? 0
-                                      : (subtotal + shipping - discount);
-                              return Text(
-                                Helper.formatCurrency(controller.total.value),
-                                style: AppTextStyle.largeBlackBold,
-                              );
-                            },
+                            () => Text(
+                              Helper.formatCurrency(
+                                controller.totalBill.toInt(),
+                              ),
+                              style: AppTextStyle.largeBlackBold,
+                            ),
                           ),
                         ],
                       ),
-                      InkWell(
-                        onTap: () => controller.createOrder(),
-                        child: Container(
-                          height: 35.h,
-                          width: 148.w,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppColors.primaryColor),
-                            color: AppColors.primaryColor,
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Bayar',
-                              style: AppTextStyle.largeWhiteBold,
-                            ),
+                      SizedBox(
+                        width: 148.w,
+                        child: Obx(
+                          () => ButtonPrimary(
+                            text: 'Bayar',
+                            onPressed: controller.createOrder,
+                            isLoading: controller.isCreatingOrder.value,
                           ),
                         ),
                       ),

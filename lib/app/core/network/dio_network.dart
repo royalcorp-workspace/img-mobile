@@ -118,7 +118,7 @@ class DioNetwork {
     return BaseOptions(
         baseUrl: url,
         validateStatus: (s) {
-          return s! < 300;
+          return s != null && s < 300;
         },
         headers: headers..removeWhere((key, value) => value == null),
         responseType: ResponseType.json);

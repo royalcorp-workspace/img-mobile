@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pos_royal/app/core/helper/helper.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
+import 'package:pos_royal/app/modules/cart/controllers/cart_controller.dart';
 import 'package:pos_royal/app/modules/home/widgets/parts_product.dart';
 
 import 'package:get/get.dart';
@@ -100,23 +101,25 @@ class HomeView extends GetView<HomeController> {
           count: 1,
         ),
         2.horizontalSpace,
-        AddToCartIcon(
-          key: controller.cartKey,
-          icon: InkWell(
-            onTap: () => Get.toNamed(Routes.CART),
-            child: Obx(
-              () => IconBadge(
-                iconPath: 'ic_cart.svg',
-                count: controller.carts.length,
+        GetBuilder<CartController>(
+          builder: (cartController) {
+            return AddToCartIcon(
+              key: controller.cartKey,
+              icon: InkWell(
+                onTap: () => Get.toNamed(Routes.CART),
+                child: IconBadge(
+                  iconPath: 'ic_cart.svg',
+                  count: cartController.cartItemCount,
+                ),
               ),
-            ),
-          ),
-          badgeOptions: const BadgeOptions(
-            width: 0,
-            height: 0,
-            fontSize: 0,
-            active: false,
-          ),
+              badgeOptions: const BadgeOptions(
+                width: 0,
+                height: 0,
+                fontSize: 0,
+                active: false,
+              ),
+            );
+          },
         ),
         7.horizontalSpace,
       ],

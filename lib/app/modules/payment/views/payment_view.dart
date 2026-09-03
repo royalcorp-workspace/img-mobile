@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:pos_royal/app/core/helper/helper.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
+import 'package:pos_royal/app/shared/widgets/button/primary_button.dart';
 
 import '../controllers/payment_controller.dart';
 
@@ -38,9 +39,13 @@ class PaymentView extends GetView<PaymentController> {
                     style: AppTextStyle.mediumBlack,
                   ),
                   Text(
-                    Helper.formatCurrency((controller.selectedPrice.value *
-                            controller.selectedQty.value) +
-                        2500),
+                    Helper.formatCurrency(
+                      (double.tryParse(controller
+                                      .checkoutResult?.payment?.totalAmount ??
+                                  '0') ??
+                              0)
+                          .round(),
+                    ),
                     style: AppTextStyle.largeBlackBold.copyWith(
                       color: AppColors.red,
                     ),
@@ -69,8 +74,7 @@ class PaymentView extends GetView<PaymentController> {
                         ),
                       ),
                       Text(
-                        DateFormat('dd MMM yyyy hh:mm a').format(
-                            DateTime.now().add(const Duration(minutes: 5))),
+                        controller.formattedExpiredDate,
                         style: AppTextStyle.mediumBlack,
                       ),
                     ],
@@ -100,7 +104,7 @@ class PaymentView extends GetView<PaymentController> {
                         ),
                       ),
                       title: Text(
-                        'Transfer Bank (Virtual Account)',
+                        '${controller.checkoutResult?.payment?.typeName}',
                         style: AppTextStyle.mediumBlackBold,
                       ),
                     ),
@@ -123,7 +127,7 @@ class PaymentView extends GetView<PaymentController> {
                         ),
                       ),
                       title: Text(
-                        'Bank BCA',
+                        '${controller.checkoutResult?.payment?.bankName}',
                         style: AppTextStyle.mediumBlackBold,
                       ),
                       subtitle: Text(
@@ -135,17 +139,36 @@ class PaymentView extends GetView<PaymentController> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        50.horizontalSpace,
                         Text(
-                          '123 4567 8901 2345',
+                          controller.checkoutResult?.vaNumber ?? '',
                           style: AppTextStyle.xxLargeBlackBold
                               .copyWith(color: AppColors.primaryColor),
                         ),
-                        40.horizontalSpace,
-                        SvgPicture.asset(
-                          height: 25,
-                          width: 25,
-                          Helper.getSvgPath('ic_copy.svg'),
+                        5.horizontalSpace,
+                        GestureDetector(
+                          onTap: () async {
+                            await Clipboard.setData(
+                              ClipboardData(
+                                text: controller.checkoutResult?.vaNumber ?? '',
+                              ),
+                            );
+
+                            Get.snackbar(
+                              'Berhasil!',
+                              'Copied to clipboard!',
+                              backgroundColor: AppColors.green,
+                              colorText: Colors.white,
+                              snackPosition: SnackPosition.BOTTOM,
+                            );
+                          },
+                          child: SvgPicture.asset(
+                            height: 20,
+                            width: 20,
+                            Helper.getSvgPath(
+                              'ic_copy.svg',
+                            ),
+                            color: AppColors.grey,
+                          ),
                         )
                       ],
                     ),
@@ -164,117 +187,74 @@ class PaymentView extends GetView<PaymentController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Cara Pembayaran',
+                      'Cara Pembayaran:',
                       style: AppTextStyle.mediumBlackBold,
                     ),
                     10.verticalSpace,
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      minLeadingWidth: 0,
-                      minVerticalPadding: 5,
-                      horizontalTitleGap: 10,
-                      minTileHeight: 0,
-                      leading: CircleAvatar(
-                        radius: 8,
-                        backgroundColor: AppColors.primaryColor,
-                      ),
-                      title: Text(
-                        'Buka Aplikasi BCA Mobile dan Masuk ke akun anda',
-                        style: AppTextStyle.mediumBlack,
-                      ),
-                    ),
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      minLeadingWidth: 0,
-                      minVerticalPadding: 5,
-                      horizontalTitleGap: 10,
-                      minTileHeight: 0,
-                      leading: CircleAvatar(
-                          radius: 8, backgroundColor: AppColors.primaryColor),
-                      title: Text(
-                        'Pilih Menu BCA Virtual Account',
-                        style: AppTextStyle.mediumBlack,
-                      ),
-                    ),
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      minLeadingWidth: 0,
-                      minVerticalPadding: 5,
-                      horizontalTitleGap: 10,
-                      minTileHeight: 0,
-                      leading: CircleAvatar(
-                          radius: 8, backgroundColor: AppColors.primaryColor),
-                      title: Text(
-                        'Input No.Rek/Virtual Account & Jumlah Pembayaran',
-                        style: AppTextStyle.mediumBlack,
-                      ),
-                    ),
-                    Divider(color: AppColors.lightGrey, thickness: 1.2),
-                    10.verticalSpace,
-                    Text(
-                      'Proses verifikasi kurang dari 10 menit setelah pembayaran berhasil',
-                      style: AppTextStyle.mediumBlack,
-                    ),
-                    10.verticalSpace,
-                    Divider(color: AppColors.lightGrey, thickness: 1.2),
-                    10.verticalSpace,
-                    Text(
-                      'Bayar pesanan ke Virtual Account diatas sebelum membuat pesanan kembali agar nomor Virtual Account tetap sama',
-                      style: AppTextStyle.mediumGrey,
-                    ),
+                    ListView.builder(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: controller
+                            .checkoutResult?.payment?.caraBayar.length,
+                        itemBuilder: (context, index) {
+                          final data = controller
+                              .checkoutResult?.payment?.caraBayar[index];
+
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            minLeadingWidth: 0,
+                            minVerticalPadding: 5,
+                            horizontalTitleGap: 10,
+                            minTileHeight: 0,
+                            leading: CircleAvatar(
+                              radius: 8,
+                              backgroundColor: AppColors.primaryColor,
+                            ),
+                            title: Text(
+                              '$data',
+                              style: AppTextStyle.mediumBlack,
+                            ),
+                          );
+                        }),
+                    // Divider(color: AppColors.lightGrey, thickness: 1.2),
+                    // 10.verticalSpace,
+                    // Text(
+                    //   'Proses verifikasi kurang dari 10 menit setelah pembayaran berhasil',
+                    //   style: AppTextStyle.mediumBlack,
+                    // ),
+                    // 10.verticalSpace,
+                    // Divider(color: AppColors.lightGrey, thickness: 1.2),
+                    // 10.verticalSpace,
+                    // Text(
+                    //   'Bayar pesanan ke Virtual Account diatas sebelum membuat pesanan kembali agar nomor Virtual Account tetap sama',
+                    //   style: AppTextStyle.mediumGrey,
+                    // ),
                   ],
                 ),
               ),
               30.verticalSpace,
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                    side: const BorderSide(
-                        color: AppColors.primaryColor, width: 1.5),
-                  ),
+              Obx(
+                () => ButtonPrimary(
+                  fullWidth: true,
+                  color: AppColors.primaryColor,
+                  borderRadius: 28,
+                  borderSide:
+                      BorderSide(color: AppColors.primaryColor, width: 1.5),
+                  text: 'Cek Status Pembayaran',
                   onPressed: () => controller.checkPaymentStatus(),
-                  child: Obx(
-                    () => controller.isCheckingStatus.value
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                                color: AppColors.primaryColor, strokeWidth: 2),
-                          )
-                        : Text(
-                            'Cek Status Pembayaran',
-                            style: AppTextStyle.largeBlackBold
-                                .copyWith(color: AppColors.primaryColor),
-                          ),
-                  ),
+                  isLoading: controller.isCheckingStatus.value,
                 ),
               ),
-              12.verticalSpace,
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    shape: WidgetStatePropertyAll(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28),
-                      ),
-                    ),
-                    backgroundColor: WidgetStatePropertyAll(
-                      AppColors.primaryColor,
-                    ),
-                  ),
-                  onPressed: () => controller.finishPayment(),
-                  child: Text(
-                    'Selesai',
-                    style: AppTextStyle.largeWhiteBold,
-                  ),
-                ),
-              ),
-              30.verticalSpace,
+              // 12.verticalSpace,
+              // ButtonPrimary(
+              //   fullWidth: true,
+              //   color: AppColors.primaryColor,
+              //   borderRadius: 28,
+              //   text: 'Selesai',
+              //   onPressed: () => controller.finishPayment(),
+              // ),
+              50.verticalSpace,
             ],
           ),
         ),

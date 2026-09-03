@@ -70,10 +70,10 @@ class SettingView extends GetView<SettingController> {
                             ),
                           ),
                         ),
-                        IconButton(
-                          onPressed: () => Get.toNamed(Routes.PROFILE),
-                          icon: const Icon(Icons.edit, color: Colors.white),
-                        )
+                        // IconButton(
+                        //   onPressed: () => Get.toNamed(Routes.PROFILE),
+                        //   icon: const Icon(Icons.edit, color: Colors.white),
+                        // )
                       ],
                     ),
                   ),

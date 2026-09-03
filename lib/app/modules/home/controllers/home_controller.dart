@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:add_to_cart_animation/add_to_cart_animation.dart';
 import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/data/datasources/cart_remote_datasource.dart';
 import 'package:pos_royal/app/data/datasources/category_remote_datasource.dart';
 import 'package:pos_royal/app/data/datasources/product_remote_datasource.dart';
-import 'package:pos_royal/app/data/repositories/cart_repository_impl.dart';
+import 'package:pos_royal/app/modules/cart/controllers/cart_controller.dart';
 import 'package:pos_royal/app/data/repositories/category_repository_impl.dart';
 import 'package:pos_royal/app/data/repositories/product_repository_impl.dart';
 import 'package:pos_royal/app/domain/usecases/get_cart_usecase.dart';
@@ -38,7 +37,6 @@ class HomeController extends GetxController {
   final ScrollController pageScrollController = ScrollController(); // renamed
   var products = [].obs;
   var category = [].obs;
-  var carts = [].obs;
   var isLoadingProducts = false.obs;
   var isLoadingMore = false.obs;
   var hasMore = true.obs;
@@ -53,13 +51,53 @@ class HomeController extends GetxController {
   String formattedOriginalPrice = '';
   String imageUrl = '';
 
+  CartController get cartController {
+    if (!Get.isRegistered<CartController>()) {
+      Get.lazyPut<CartController>(() => CartController(), fenix: true);
+    }
+    return Get.find<CartController>();
+  }
+
+  List get carts => cartController.carts;
+
+  /// List Slider
+  List<CustomBanner> customBannerListSlider = [
+    const CustomBanner(imagePath: 'img_banner.jpeg'),
+    const CustomBanner(imagePath: 'img_banner.jpeg'),
+    const CustomBanner(imagePath: 'img_banner.jpeg'),
+  ];
+
+  /// List Parts Product
+  List<PartsProduct> customPartsProduct = [
+    const PartsProduct(imagePath: 'img_bed_home.png', title: 'Kasur'),
+    const PartsProduct(imagePath: 'img_pillow_home.png', title: 'Bantal'),
+    const PartsProduct(imagePath: 'img_rolls_home.png', title: 'Guling'),
+    const PartsProduct(imagePath: 'img_acc_home.png', title: 'Aksesoris'),
+  ];
+
+  /// List Brands
+  List<CategoryBrand> customBrand = [
+    const CategoryBrand(imagePath: 'img_brand1.png'),
+    const CategoryBrand(imagePath: 'img_brand2.png'),
+    const CategoryBrand(imagePath: 'img_brand3.png'),
+    const CategoryBrand(imagePath: 'img_brand4.png'),
+    const CategoryBrand(imagePath: 'img_brand5.png'),
+    const CategoryBrand(imagePath: 'img_brand6.png'),
+  ];
+
   @override
   void onInit() {
     super.onInit();
     _initScrollListener();
     fetchProducts();
-    _fetchCart();
+    refreshCart();
     fetchCategory();
+  }
+
+  @override
+  void onClose() {
+    pageScrollController.dispose();
+    super.onClose();
   }
 
   void _initScrollListener() {
@@ -69,6 +107,16 @@ class HomeController extends GetxController {
         loadNextPage();
       }
     });
+  }
+
+  void scrollToTop() {
+    if (pageScrollController.hasClients) {
+      pageScrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
   }
 
   Future<void> fetchProducts() async {
@@ -101,23 +149,13 @@ class HomeController extends GetxController {
     }
   }
 
-  Future<void> _fetchCart() async {
+  Future<void> refreshCart() async {
     try {
       isLoadingProducts.value = true;
       currentPage = 1;
       hasMore.value = true;
-
-      final useCase = getCartUsecase ??
-          GetCartUsecase(
-            CartRepositoryImpl(
-              remoteDataSource: CartRemoteDataSourceImpl(),
-            ),
-          );
-
-      final result =
-          await useCase.call(page: currentPage, itemsPerPage: itemsPerPage);
-      carts.assignAll(result.data);
-      hasMore.value = result.hasMore;
+      await cartController.fetchCart();
+      hasMore.value = cartController.hasMore.value;
     } catch (e, stackTrace) {
       logger.severe('❌ [HOME] Failed to fetch carts: $e');
       if (kDebugMode) {
@@ -219,54 +257,14 @@ class HomeController extends GetxController {
     }
   }
 
-  void scrollToTop() {
-    if (pageScrollController.hasClients) {
-      pageScrollController.animateTo(
-        0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
-  }
-
-  @override
-  void onClose() {
-    pageScrollController.dispose();
-    super.onClose();
-  }
-
-  /// List Slider
-  List<CustomBanner> customBannerListSlider = [
-    const CustomBanner(imagePath: 'img_banner.jpeg'),
-    const CustomBanner(imagePath: 'img_banner.jpeg'),
-    const CustomBanner(imagePath: 'img_banner.jpeg'),
-  ];
-
-  /// List Parts Product
-  List<PartsProduct> customPartsProduct = [
-    const PartsProduct(imagePath: 'img_bed_home.png', title: 'Kasur'),
-    const PartsProduct(imagePath: 'img_pillow_home.png', title: 'Bantal'),
-    const PartsProduct(imagePath: 'img_rolls_home.png', title: 'Guling'),
-    const PartsProduct(imagePath: 'img_acc_home.png', title: 'Aksesoris'),
-  ];
-
-  /// List Brands
-  List<CategoryBrand> customBrand = [
-    const CategoryBrand(imagePath: 'img_brand1.png'),
-    const CategoryBrand(imagePath: 'img_brand2.png'),
-    const CategoryBrand(imagePath: 'img_brand3.png'),
-    const CategoryBrand(imagePath: 'img_brand4.png'),
-    const CategoryBrand(imagePath: 'img_brand5.png'),
-    const CategoryBrand(imagePath: 'img_brand6.png'),
-  ];
-
   Future<void> addToCart(GlobalKey widgetKey) async {
     await runAddToCartAnimation(widgetKey);
 
     // Update state after animation completes
-    await _fetchCart();
+    await refreshCart();
 
     // Run the cart badge animation
-    await cartKey.currentState!.runCartAnimation(carts.length.toString());
+    await cartKey.currentState!
+        .runCartAnimation(cartController.cartItemCount.toString());
   }
 }

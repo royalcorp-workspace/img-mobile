@@ -14,6 +14,7 @@ import 'firebase_options_prod.dart' as prod_opts;
 import 'package:responsive_framework/responsive_framework.dart';
 
 import 'app/routes/app_pages.dart';
+import 'app/shared/initial_binding.dart';
 import 'app/shared/widgets/debug_widget.dart';
 
 void main() async {
@@ -22,6 +23,7 @@ void main() async {
     DeviceOrientation.portraitUp,
   ]);
   initRootLogger();
+  logger.info('✅ Logger initialized');
 
   final FirebaseOptions options = switch (AppFlavor.current) {
     Flavor.production => prod_opts.DefaultFirebaseOptions.currentPlatform,
@@ -43,6 +45,7 @@ void main() async {
           debugShowCheckedModeBanner: false,
           useInheritedMediaQuery: true,
           title: "IMG",
+          initialBinding: InitialBinding(),
           initialRoute: AppPages.INITIAL,
           getPages: AppPages.routes,
           theme: appTheme,

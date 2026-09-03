@@ -13,12 +13,14 @@ class CheckoutItemCard extends StatelessWidget {
     required this.promoDesc,
     required this.price,
     required this.qty,
+    this.source = true,
     required this.onTapDecrement,
     required this.onTapIncrement,
   });
 
   final String name, attributes, promoDesc;
   final int qty, price;
+  final bool source;
   final void Function()? onTapDecrement, onTapIncrement;
 
   @override
@@ -76,43 +78,52 @@ class CheckoutItemCard extends StatelessWidget {
             ],
           ),
         ),
-        Positioned(
-          bottom: 10,
-          right: 12,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            width: 100.w,
-            decoration: BoxDecoration(
-              border: Border.all(color: AppColors.lightGrey),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                InkWell(
-                  onTap: onTapDecrement,
-                  child: Icon(
-                    Icons.remove,
-                    size: 20,
-                    color: AppColors.blackSecondary,
+        source
+            ? Positioned(
+                bottom: 10,
+                right: 12,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  width: 100.w,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.lightGrey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      InkWell(
+                        onTap: onTapDecrement,
+                        child: Icon(
+                          Icons.remove,
+                          size: 20,
+                          color: AppColors.blackSecondary,
+                        ),
+                      ),
+                      Text(
+                        '$qty',
+                        style: AppTextStyle.mediumBlack,
+                      ),
+                      InkWell(
+                        onTap: onTapIncrement,
+                        child: Icon(
+                          Icons.add,
+                          size: 20,
+                          color: AppColors.black,
+                        ),
+                      )
+                    ],
                   ),
                 ),
-                Text(
-                  '$qty',
+              )
+            : Positioned(
+                bottom: 10,
+                right: 0,
+                child: Text(
+                  '$qty x',
                   style: AppTextStyle.mediumBlack,
                 ),
-                InkWell(
-                  onTap: onTapIncrement,
-                  child: Icon(
-                    Icons.add,
-                    size: 20,
-                    color: AppColors.black,
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
+              )
       ],
     );
   }

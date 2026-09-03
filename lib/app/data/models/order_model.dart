@@ -1,3 +1,6 @@
+import 'package:pos_royal/app/data/models/product_model.dart';
+import 'package:pos_royal/app/data/models/variant_model.dart';
+
 import '../../domain/entities/order_entity.dart';
 
 double _parseDouble(dynamic val) {
@@ -136,77 +139,11 @@ class OrderItemModel extends OrderItemEntity {
       createdAt: json['created_at']?.toString(),
       updatedAt: json['updated_at']?.toString(),
       product: json['product'] != null && json['product'] is Map
-          ? OrderProductModel.fromJson(json['product'] as Map<String, dynamic>)
+          ? ProductModel.fromJson(json['product'] as Map<String, dynamic>)
           : null,
       variant: json['variant'] != null && json['variant'] is Map
-          ? OrderVariantModel.fromJson(json['variant'] as Map<String, dynamic>)
+          ? VariantModel.fromJson(json['variant'] as Map<String, dynamic>)
           : null,
-    );
-  }
-}
-
-class OrderProductModel extends OrderProductEntity {
-  OrderProductModel({
-    required super.id,
-    required super.name,
-    required super.slug,
-    super.categoryId,
-    super.thumbnail,
-    super.altText,
-    super.shortDescription,
-    super.description,
-    required super.basePrice,
-    required super.bestSeller,
-    required super.isNew,
-    required super.sortOrder,
-    required super.status,
-    super.createdAt,
-    super.updatedAt,
-  });
-
-  factory OrderProductModel.fromJson(Map<String, dynamic> json) {
-    return OrderProductModel(
-      id: _parseString(json['id']),
-      name: _parseString(json['name']),
-      slug: _parseString(json['slug']),
-      categoryId: json['category_id']?.toString(),
-      thumbnail: json['thumbnail']?.toString(),
-      altText: json['alt_text']?.toString(),
-      shortDescription: json['short_description']?.toString(),
-      description: json['description']?.toString(),
-      basePrice: _parseDouble(json['base_price']),
-      bestSeller: _parseBool(json['best_seller']),
-      isNew: _parseBool(json['is_new']),
-      sortOrder: _parseInt(json['sort_order']),
-      status: _parseInt(json['status']),
-      createdAt: json['created_at']?.toString(),
-      updatedAt: json['updated_at']?.toString(),
-    );
-  }
-}
-
-class OrderVariantModel extends OrderVariantEntity {
-  OrderVariantModel({
-    required super.id,
-    required super.productId,
-    required super.sku,
-    required super.variantName,
-    required super.price,
-    required super.stockQty,
-    super.createdAt,
-    super.updatedAt,
-  });
-
-  factory OrderVariantModel.fromJson(Map<String, dynamic> json) {
-    return OrderVariantModel(
-      id: _parseString(json['id']),
-      productId: _parseString(json['product_id']),
-      sku: _parseString(json['sku']),
-      variantName: _parseString(json['variant_name']),
-      price: _parseDouble(json['price']),
-      stockQty: _parseInt(json['stock_qty']),
-      createdAt: json['created_at']?.toString(),
-      updatedAt: json['updated_at']?.toString(),
     );
   }
 }

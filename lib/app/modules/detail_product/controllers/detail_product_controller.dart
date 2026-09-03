@@ -10,6 +10,7 @@ import 'package:pos_royal/app/core/utils/log/logger.dart';
 import 'package:pos_royal/app/core/utils/token_storage.dart';
 import 'package:pos_royal/app/data/datasources/cart_remote_datasource.dart';
 import 'package:pos_royal/app/data/models/user_model.dart';
+import 'package:pos_royal/app/modules/cart/controllers/cart_controller.dart';
 import 'package:pos_royal/app/data/repositories/cart_repository_impl.dart';
 import 'package:pos_royal/app/domain/entities/add_to_cart_entity.dart';
 import 'package:pos_royal/app/domain/entities/order_entity.dart';
@@ -37,34 +38,34 @@ class DetailProductController extends GetxController {
   final int itemsPerPage = 10;
   var productByID = ProductByIdEntity().obs;
   var cartErrorMessage = ''.obs;
-  var carts = [].obs;
+
+  CartController get cartController {
+    if (!Get.isRegistered<CartController>()) {
+      Get.lazyPut<CartController>(() => CartController(), fenix: true);
+    }
+    return Get.find<CartController>();
+  }
+
+  List get carts => cartController.carts;
 
   @override
-  void onInit() async {
+  void onInit() {
     super.onInit();
     productByID(Get.arguments[0]);
-    carts(Get.arguments[1]);
+    if (cartController.carts.isEmpty) {
+      refreshCart();
+    }
     log('HERE ${productByID.value.description}');
   }
 
-  Future<void> _fetchCart() async {
+  Future<void> refreshCart() async {
     try {
       isLoadingCarts.value = true;
       cartErrorMessage.value = '';
       currentPage = 1;
       hasMore.value = true;
-
-      final useCase = getCartUsecase ??
-          GetCartUsecase(
-            CartRepositoryImpl(
-              remoteDataSource: CartRemoteDataSourceImpl(),
-            ),
-          );
-
-      final result =
-          await useCase.call(page: currentPage, itemsPerPage: itemsPerPage);
-      carts.assignAll(result.data);
-      hasMore.value = result.hasMore;
+      await cartController.fetchCart();
+      hasMore.value = cartController.hasMore.value;
     } catch (e, stackTrace) {
       logger.severe('❌ [HOME] Failed to fetch carts: $e');
       if (kDebugMode) {
@@ -108,7 +109,7 @@ class DetailProductController extends GetxController {
 
       final productId = productByID.value.id.toString();
       final variantId = productByID.value.variants?.isNotEmpty == true
-          ? (productByID.value.variants!.first.id)
+          ? (productByID.value.variants![selectedIndex.value].id)
           : "1";
       final itemQty = 1;
       final itemUnitPrice =
@@ -169,9 +170,9 @@ class DetailProductController extends GetxController {
 
       // Run the cart badge animation
       await cartKey.currentState!
-          .runCartAnimation(cartQuantityItems.toString());
+          .runCartAnimation(cartController.cartItemCount.toString());
 
-      _fetchCart();
+      await refreshCart();
     } catch (e, stackTrace) {
       logger.severe('❌ [ADD-TO-CART] Failed to create order: $e');
       if (kDebugMode) {

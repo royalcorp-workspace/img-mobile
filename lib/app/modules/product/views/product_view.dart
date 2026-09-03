@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
+import 'package:pos_royal/app/modules/cart/controllers/cart_controller.dart';
 import 'package:pos_royal/app/modules/home/widgets/icon_badge.dart';
 import 'package:pos_royal/app/modules/home/widgets/product_card.dart';
 import 'package:pos_royal/app/modules/product/widgets/countdown_container.dart';
@@ -141,7 +142,7 @@ class ProductView extends GetView<ProductController> {
                 shrinkWrap: true,
                 itemCount: 8,
                 itemBuilder: (context, index) => ProductCard(
-                  onTap: (p0) => Get.toNamed(Routes.DETAIL_PRODUCT),
+                  onTap: (e) {},
                 ),
               ),
             ),
@@ -168,21 +169,25 @@ class ProductView extends GetView<ProductController> {
           count: 3,
         ),
         2.horizontalSpace,
-        AddToCartIcon(
-          key: controller.cartKey,
-          icon: InkWell(
-            onTap: () => Get.toNamed(Routes.CART),
-            child: IconBadge(
-              iconPath: 'ic_cart.svg',
-              count: 1,
-            ),
-          ),
-          badgeOptions: const BadgeOptions(
-            width: 0,
-            height: 0,
-            fontSize: 0,
-            active: false,
-          ),
+        GetBuilder<CartController>(
+          builder: (cartController) {
+            return AddToCartIcon(
+              key: controller.cartKey,
+              icon: InkWell(
+                onTap: () => Get.toNamed(Routes.CART),
+                child: IconBadge(
+                  iconPath: 'ic_cart.svg',
+                  count: cartController.cartItemCount,
+                ),
+              ),
+              badgeOptions: const BadgeOptions(
+                width: 0,
+                height: 0,
+                fontSize: 0,
+                active: false,
+              ),
+            );
+          },
         ),
         7.horizontalSpace,
       ],

@@ -1,3 +1,6 @@
+import 'package:pos_royal/app/domain/entities/product_entity.dart';
+import 'package:pos_royal/app/domain/entities/variant_entity.dart';
+
 class OrderEntity {
   final String id;
   final String customerId;
@@ -66,8 +69,8 @@ class OrderItemEntity {
   final String name;
   final String? createdAt;
   final String? updatedAt;
-  final OrderProductEntity? product;
-  final OrderVariantEntity? variant;
+  final ProductEntity? product;
+  final VariantEntity? variant;
 
   OrderItemEntity({
     required this.id,
@@ -85,64 +88,6 @@ class OrderItemEntity {
     this.updatedAt,
     this.product,
     this.variant,
-  });
-}
-
-class OrderProductEntity {
-  final String id;
-  final String name;
-  final String slug;
-  final String? categoryId;
-  final String? thumbnail;
-  final String? altText;
-  final String? shortDescription;
-  final String? description;
-  final double basePrice;
-  final bool bestSeller;
-  final bool isNew;
-  final int sortOrder;
-  final int status;
-  final String? createdAt;
-  final String? updatedAt;
-
-  OrderProductEntity({
-    required this.id,
-    required this.name,
-    required this.slug,
-    this.categoryId,
-    this.thumbnail,
-    this.altText,
-    this.shortDescription,
-    this.description,
-    required this.basePrice,
-    required this.bestSeller,
-    required this.isNew,
-    required this.sortOrder,
-    required this.status,
-    this.createdAt,
-    this.updatedAt,
-  });
-}
-
-class OrderVariantEntity {
-  final String id;
-  final String productId;
-  final String sku;
-  final String variantName;
-  final double price;
-  final int stockQty;
-  final String? createdAt;
-  final String? updatedAt;
-
-  OrderVariantEntity({
-    required this.id,
-    required this.productId,
-    required this.sku,
-    required this.variantName,
-    required this.price,
-    required this.stockQty,
-    this.createdAt,
-    this.updatedAt,
   });
 }
 
@@ -193,37 +138,63 @@ class CreateOrderParams {
 class ItemParams {
   final String productId;
   final String productVariantId;
+  final String name;
   final int quantity;
   final double unitPrice;
+  final double total;
   final double discountNominal;
   final double discountPercent;
-  final double total;
+  final dynamic itemNotes;
+  final dynamic meta;
+  final String? id;
+  final String? addToCartId;
+  final ProductEntity? product;
+  final dynamic variant;
   final double weight;
-  final String name;
 
   ItemParams({
     required this.productId,
     required this.productVariantId,
+    required this.name,
     required this.quantity,
     required this.unitPrice,
+    required this.total,
     this.discountNominal = 0,
     this.discountPercent = 0,
-    required this.total,
+    this.itemNotes,
+    this.meta,
+    this.id,
+    this.addToCartId,
+    this.product,
+    this.variant,
     this.weight = 0,
-    required this.name,
   });
 
   Map<String, dynamic> toJson() {
+    dynamic serializedVariant;
+    if (variant == null) {
+      serializedVariant = null;
+    } else if (variant is Map) {
+      serializedVariant = variant;
+    } else if (variant is VariantEntity) {
+      serializedVariant = (variant as VariantEntity).toJson();
+    }
+
     return {
-      'product_id': productId,
-      'product_variant_id': productVariantId,
-      'quantity': quantity,
-      'unit_price': unitPrice,
-      'discount_nominal': discountNominal,
-      'discount_percent': discountPercent,
-      'total': total,
-      'weight': weight,
-      'name': name,
+      "product_id": productId,
+      "product_variant_id": productVariantId,
+      "name": name,
+      "quantity": quantity,
+      "unit_price": unitPrice,
+      "total": total,
+      "discount_nominal": discountNominal,
+      "discount_percent": discountPercent,
+      "item_notes": itemNotes,
+      "meta": meta,
+      "id": id,
+      "add_to_cart_id": addToCartId,
+      "product": product?.toJson(),
+      "variant": serializedVariant,
     };
   }
 }
