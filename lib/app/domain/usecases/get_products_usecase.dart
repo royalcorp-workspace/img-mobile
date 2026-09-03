@@ -10,10 +10,14 @@ class GetProductsUseCase {
   Future<PaginatedEntity<ProductEntity>> call({
     int page = 1,
     int itemsPerPage = 10,
+    String? categoryId,
+    String? search,
   }) {
     return repository.getProducts(
       page: page,
       itemsPerPage: itemsPerPage,
+      categoryId: categoryId,
+      search: search,
     );
   }
 }

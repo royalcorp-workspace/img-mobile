@@ -10,13 +10,16 @@ import 'package:pos_royal/app/data/repositories/cart_repository_impl.dart';
 import 'package:pos_royal/app/domain/entities/add_to_cart_entity.dart';
 import 'package:pos_royal/app/domain/entities/cart_entity.dart';
 import 'package:pos_royal/app/domain/usecases/get_cart_usecase.dart';
+import 'package:pos_royal/app/domain/usecases/delete_cart_item_usecase.dart';
 
 class CartController extends GetxController {
   CartController({
     this.getCartUsecase,
+    this.deleteCartItemUsecase,
   });
 
   final GetCartUsecase? getCartUsecase;
+  final DeleteCartItemUsecase? deleteCartItemUsecase;
 
   final RxMap<String, bool> selectedItems = <String, bool>{}.obs;
   final RxMap<String, int> itemQuantities = <String, int>{}.obs;
@@ -40,17 +43,8 @@ class CartController extends GetxController {
           await useCase.call(page: currentPage, itemsPerPage: itemsPerPage);
       carts.assignAll(result.data);
       hasMore.value = result.hasMore;
+      _syncItemState();
       update();
-
-      for (final item in cartItems) {
-        final itemId = item.id ?? uniqueKeyForItem(item);
-        if (!itemQuantities.containsKey(itemId)) {
-          itemQuantities[itemId] = item.quantity;
-        }
-        if (!selectedItems.containsKey(itemId)) {
-          selectedItems[itemId] = false;
-        }
-      }
     } catch (e, stackTrace) {
       logger.severe('❌ [HOME] Failed to fetch carts: $e');
       if (kDebugMode) {
@@ -81,17 +75,6 @@ class CartController extends GetxController {
         items.addAll(cart.items!);
       }
     }
-
-    for (final item in items) {
-      final itemId = item.id ?? uniqueKeyForItem(item);
-      if (!itemQuantities.containsKey(itemId)) {
-        itemQuantities[itemId] = item.quantity;
-      }
-      if (!selectedItems.containsKey(itemId)) {
-        selectedItems[itemId] = false;
-      }
-    }
-
     return items;
   }
 
@@ -102,9 +85,6 @@ class CartController extends GetxController {
       (element) => (element.id ?? uniqueKeyForItem(element)) == itemId,
     );
     final fallback = item?.quantity ?? 1;
-    if (!itemQuantities.containsKey(itemId)) {
-      itemQuantities[itemId] = fallback;
-    }
     return itemQuantities[itemId] ?? fallback;
   }
 
@@ -196,6 +176,19 @@ class CartController extends GetxController {
     return '$productId-$name-$addToCartId';
   }
 
+  void _syncItemState() {
+    final currentItemIds = <String>{};
+    for (final item in cartItems) {
+      final itemId = item.id ?? uniqueKeyForItem(item);
+      currentItemIds.add(itemId);
+      itemQuantities.putIfAbsent(itemId, () => item.quantity);
+      selectedItems.putIfAbsent(itemId, () => false);
+    }
+
+    itemQuantities.removeWhere((itemId, _) => !currentItemIds.contains(itemId));
+    selectedItems.removeWhere((itemId, _) => !currentItemIds.contains(itemId));
+  }
+
   void showDeleteConfirmationDialog(String itemId) {
     Get.dialog(
       Dialog(
@@ -239,11 +232,49 @@ class CartController extends GetxController {
                   16.horizontalSpace,
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
+                        final item = cartItems.firstWhereOrNull(
+                          (cartItem) =>
+                              (cartItem.id ?? uniqueKeyForItem(cartItem)) ==
+                              itemId,
+                        );
+                        if (item?.addToCartId == null || item?.id == null) {
+                          Get.snackbar(
+                            'Gagal menghapus produk',
+                            'Data produk tidak lengkap.',
+                            backgroundColor: AppColors.red,
+                            colorText: AppColors.white,
+                          );
+                          return;
+                        }
+
+                        final useCase = deleteCartItemUsecase ??
+                            DeleteCartItemUsecase(
+                              CartRepositoryImpl(
+                                remoteDataSource: CartRemoteDataSourceImpl(),
+                              ),
+                            );
+                        try {
+                          await useCase.call(
+                            addToCartId: item!.addToCartId!,
+                            itemId: item.id!,
+                          );
+                        } catch (e) {
+                          Get.back();
+                          Get.snackbar(
+                            'Gagal menghapus produk',
+                            'Terjadi kesalahan saat menghapus produk.',
+                            backgroundColor: AppColors.red,
+                            colorText: AppColors.white,
+                          );
+                          return;
+                        }
+
                         selectedItems.remove(itemId);
                         itemQuantities.remove(itemId);
                         selectedItems.refresh();
                         itemQuantities.refresh();
+                        await fetchCart();
                         update();
                         Get.back();
                       },

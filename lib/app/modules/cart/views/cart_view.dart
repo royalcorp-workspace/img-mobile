@@ -65,26 +65,28 @@ class CartView extends GetView<CartController> {
                   final item = items[index];
                   final itemId = item.id ?? controller.uniqueKeyForItem(item);
 
-                  return CartItemCard(
-                    name: item.name ?? item.product?.name ?? '',
-                    description: item.product?.slug ?? '',
-                    price: Helper.formatCurrency((item.unitPrice).toInt()),
-                    quantity: controller.getItemQuantity(itemId),
-                    fillColor: WidgetStatePropertyAll(
-                      controller.isItemSelected(itemId)
-                          ? AppColors.primaryColor
-                          : AppColors.lightGrey,
+                  return Obx(
+                    () => CartItemCard(
+                      name: item.name ?? item.product?.name ?? '',
+                      description: item.product?.slug ?? '',
+                      price: Helper.formatCurrency((item.unitPrice).toInt()),
+                      quantity: controller.getItemQuantity(itemId),
+                      fillColor: WidgetStatePropertyAll(
+                        controller.isItemSelected(itemId)
+                            ? AppColors.primaryColor
+                            : AppColors.lightGrey,
+                      ),
+                      value: controller.isItemSelected(itemId),
+                      onChanged: (e) {
+                        controller.toggleItemSelection(itemId, e ?? false);
+                      },
+                      decrement: () {
+                        controller.decrementQty(itemId);
+                      },
+                      increment: () {
+                        controller.incrementQty(itemId);
+                      },
                     ),
-                    value: controller.isItemSelected(itemId),
-                    onChanged: (e) {
-                      controller.toggleItemSelection(itemId, e ?? false);
-                    },
-                    decrement: () {
-                      controller.decrementQty(itemId);
-                    },
-                    increment: () {
-                      controller.incrementQty(itemId);
-                    },
                   );
                 },
               ),
@@ -93,102 +95,100 @@ class CartView extends GetView<CartController> {
           );
         },
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              offset: const Offset(0, -8),
-              blurRadius: 16,
-              spreadRadius: 0,
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topRight: Radius.circular(30),
-            topLeft: Radius.circular(30),
+      bottomNavigationBar: Obx(
+        () => Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                offset: const Offset(0, -8),
+                blurRadius: 16,
+                spreadRadius: 0,
+              ),
+            ],
           ),
-          child: BottomAppBar(
-              padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              height: 68.h,
-              child: Column(
-                children: [
-                  // 15.verticalSpace,
-                  // InkWell(
-                  //   radius: 12,
-                  //   onTap: () => Get.toNamed(Routes.VOUCHER),
-                  //   child: Container(
-                  //     padding:
-                  //         EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-                  //     width: Get.width,
-                  //     decoration: BoxDecoration(
-                  //       border: Border.all(color: AppColors.lightGrey),
-                  //       borderRadius: BorderRadius.circular(12),
-                  //     ),
-                  //     child: Row(
-                  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //       children: [
-                  //         Row(
-                  //           children: [
-                  //             Icon(
-                  //               Icons.discount_outlined,
-                  //               size: 20,
-                  //               color: AppColors.primaryColor,
-                  //             ),
-                  //             15.horizontalSpace,
-                  //             Text(
-                  //               'Lebih hemat pakai voucher',
-                  //               style: AppTextStyle.mediumBlackBold,
-                  //             ),
-                  //           ],
-                  //         ),
-                  //         Icon(
-                  //           Icons.arrow_forward_ios_outlined,
-                  //           size: 20,
-                  //           color: AppColors.black,
-                  //         ),
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topRight: Radius.circular(30),
+              topLeft: Radius.circular(30),
+            ),
+            child: BottomAppBar(
+                padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                height: 68.h,
+                child: Column(
+                  children: [
+                    // 15.verticalSpace,
+                    // InkWell(
+                    //   radius: 12,
+                    //   onTap: () => Get.toNamed(Routes.VOUCHER),
+                    //   child: Container(
+                    //     padding:
+                    //         EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                    //     width: Get.width,
+                    //     decoration: BoxDecoration(
+                    //       border: Border.all(color: AppColors.lightGrey),
+                    //       borderRadius: BorderRadius.circular(12),
+                    //     ),
+                    //     child: Row(
+                    //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //       children: [
+                    //         Row(
+                    //           children: [
+                    //             Icon(
+                    //               Icons.discount_outlined,
+                    //               size: 20,
+                    //               color: AppColors.primaryColor,
+                    //             ),
+                    //             15.horizontalSpace,
+                    //             Text(
+                    //               'Lebih hemat pakai voucher',
+                    //               style: AppTextStyle.mediumBlackBold,
+                    //             ),
+                    //           ],
+                    //         ),
+                    //         Icon(
+                    //           Icons.arrow_forward_ios_outlined,
+                    //           size: 20,
+                    //           color: AppColors.black,
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
 
-                  15.verticalSpace,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Total Tagihan',
-                            style: AppTextStyle.mediumBlack,
-                          ),
-                          Obx(
-                            () => Text(
+                    15.verticalSpace,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Total Tagihan',
+                              style: AppTextStyle.mediumBlack,
+                            ),
+                            Text(
                               controller.hasSelectedItems
                                   ? Helper.formatCurrency(
                                       controller.selectedTotalPrice.toInt())
                                   : '-',
                               style: AppTextStyle.largeBlackBold,
                             ),
-                          )
-                        ],
-                      ),
-                      InkWell(
-                        onTap: () {
-                          final selectedItems = controller.selectedCartItems;
-                          if (selectedItems.isEmpty) return;
+                          ],
+                        ),
+                        InkWell(
+                          onTap: () {
+                            final selectedItems = controller.selectedCartItems;
+                            if (selectedItems.isEmpty) return;
 
-                          Get.toNamed(
-                            Routes.CHECKOUT,
-                            arguments: CheckoutArguments.fromCart(
-                              selectedItems,
-                            ),
-                          );
-                        },
-                        child: Obx(
-                          () => Container(
+                            Get.toNamed(
+                              Routes.CHECKOUT,
+                              arguments: CheckoutArguments.fromCart(
+                                selectedItems,
+                              ),
+                            );
+                          },
+                          child: Container(
                             height: 35.h,
                             width: 148.w,
                             decoration: BoxDecoration(
@@ -210,32 +210,31 @@ class CartView extends GetView<CartController> {
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  )
-                ],
-              )),
+                      ],
+                    )
+                  ],
+                )),
+          ),
         ),
       ),
     );
   }
 
   Widget _buildLoadMoreIndicator() {
-    return Obx(() {
-      if (!controller.isLoadingMore.value) return const SliverToBoxAdapter();
-      return SliverToBoxAdapter(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 16.h),
-          child: const Center(
-            child: SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(
-                  color: AppColors.primaryColor, strokeWidth: 2.5),
+    return !controller.isLoadingMore.value
+        ? SliverToBoxAdapter()
+        : SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 16.h),
+              child: const Center(
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                      color: AppColors.primaryColor, strokeWidth: 2.5),
+                ),
+              ),
             ),
-          ),
-        ),
-      );
-    });
+          );
   }
 }

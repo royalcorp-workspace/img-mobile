@@ -6,6 +6,8 @@ abstract class ProductRepository {
   Future<PaginatedEntity<ProductEntity>> getProducts({
     int page = 1,
     int itemsPerPage = 10,
+    String? categoryId,
+    String? search,
   });
   Future<ProductByIdEntity> getProudctByID(String productID);
 }

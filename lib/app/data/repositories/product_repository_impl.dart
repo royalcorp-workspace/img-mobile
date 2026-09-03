@@ -14,10 +14,14 @@ class ProductRepositoryImpl implements ProductRepository {
   Future<PaginatedEntity<ProductEntity>> getProducts({
     int page = 1,
     int itemsPerPage = 10,
+    String? categoryId,
+    String? search,
   }) {
     return remoteDataSource.getProducts(
       page: page,
       itemsPerPage: itemsPerPage,
+      categoryId: categoryId,
+      search: search,
     );
   }
 

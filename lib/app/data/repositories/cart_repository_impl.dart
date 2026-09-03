@@ -15,6 +15,17 @@ class CartRepositoryImpl implements CartRepository {
   }
 
   @override
+  Future<void> deleteCartItem({
+    required String addToCartId,
+    required String itemId,
+  }) {
+    return remoteDataSource.deleteCartItem(
+      addToCartId: addToCartId,
+      itemId: itemId,
+    );
+  }
+
+  @override
   Future<PaginatedEntity<CartEntity>> getCart(
       {int page = 1, int itemsPerPage = 10}) {
     return remoteDataSource.getCart(

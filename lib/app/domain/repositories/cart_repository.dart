@@ -4,6 +4,10 @@ import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
 
 abstract class CartRepository {
   Future<AddToCartEntity> addToCart(AddToCartEntityParams params);
+  Future<void> deleteCartItem({
+    required String addToCartId,
+    required String itemId,
+  });
   Future<PaginatedEntity<CartEntity>> getCart({
     int page = 1,
     int itemsPerPage = 10,

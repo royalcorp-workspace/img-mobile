@@ -13,6 +13,8 @@ import 'package:pos_royal/app/modules/home/widgets/product_card.dart';
 import 'package:pos_royal/app/modules/home/widgets/section_header.dart';
 import 'package:pos_royal/app/routes/app_pages.dart';
 import 'package:pos_royal/app/shared/widgets/app_banner.dart';
+import 'package:pos_royal/app/core/styles/app_text_style.dart';
+import 'package:pos_royal/app/domain/entities/category_entity.dart';
 import 'package:pos_royal/app/shared/widgets/app_search_field.dart';
 
 import '../controllers/home_controller.dart';
@@ -78,6 +80,7 @@ class HomeView extends GetView<HomeController> {
               ],
             ),
           ),
+          _buildActiveFilterHeader(),
           _buildProductGrid(),
           _buildLoadMoreIndicator()
         ],
@@ -93,8 +96,139 @@ class HomeView extends GetView<HomeController> {
       leading: Image.asset(
         Helper.getImagePath('img_logo.webp'),
       ),
-      title: const AppSearchField(),
-      // backgroundColor: AppColors.primaryColor,
+      title: SearchAnchor(
+        viewBackgroundColor: AppColors.white,
+        viewShape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(16.0)),
+        ),
+        viewLeading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.black, // Change to your desired color
+          onPressed: () {
+            Get.back();
+          },
+        ),
+        searchController: controller.searchAnchorController,
+        builder: (context, searchController) {
+          return InkWell(
+            onTap: () => searchController.openView(),
+            child: const IgnorePointer(
+              child: AppSearchField(),
+            ),
+          );
+        },
+        suggestionsBuilder: (BuildContext context, SearchController sc) async {
+          final String keyword = sc.text.trim();
+          final List<Widget> suggestions = [];
+
+          if (keyword.isNotEmpty) {
+            suggestions.add(
+              ListTile(
+                leading:
+                    const Icon(Icons.search, color: AppColors.primaryColor),
+                title: Text(
+                  'Cari "$keyword"',
+                  style: AppTextStyle.mediumBlackBold,
+                ),
+                subtitle: Text(
+                  'Cari produk berdasarkan kata kunci',
+                  style: AppTextStyle.mediumBlack,
+                ),
+                onTap: () {
+                  sc.closeView(keyword);
+                  controller.fetchProducts(search: keyword, categoryId: null);
+                },
+              ),
+            );
+            suggestions
+                .add(const Divider(color: AppColors.lightGrey, thickness: 1.2));
+          }
+
+          // Category Suggestions
+          final matchingCategories = controller.category.where((cat) {
+            final name = cat is CategoryEntity ? cat.name : cat.toString();
+            return keyword.isEmpty ||
+                name.toLowerCase().contains(keyword.toLowerCase());
+          }).toList();
+
+          if (matchingCategories.isNotEmpty) {
+            suggestions.add(
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                child: Text(
+                  'Kategori',
+                  style: AppTextStyle.mediumBlackBold,
+                ),
+              ),
+            );
+            for (final cat in matchingCategories) {
+              final catName = cat is CategoryEntity ? cat.name : cat.toString();
+              final catId = cat is CategoryEntity ? cat.id : null;
+              suggestions.add(
+                ListTile(
+                  leading: const Icon(Icons.trending_up_outlined,
+                      color: AppColors.grey),
+                  title: Text(catName, style: AppTextStyle.mediumBlack),
+                  onTap: () {
+                    sc.closeView(catName);
+                    controller.fetchProducts(categoryId: catId, search: '');
+                  },
+                ),
+              );
+            }
+            suggestions.add(
+              const Divider(color: AppColors.lightGrey, thickness: 1.2),
+            );
+          }
+
+          // Live Product Suggestions from API
+          if (keyword.isNotEmpty) {
+            suggestions.add(
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                child: Text(
+                  'Hasil Produk',
+                  style: AppTextStyle.mediumGreyBold,
+                ),
+              ),
+            );
+
+            final apiProducts = await controller.searchProductsFromApi(keyword);
+            if (apiProducts.isEmpty) {
+              suggestions.add(
+                Padding(
+                  padding: EdgeInsets.all(16.r),
+                  child: Text(
+                    'Tidak ada produk ditemukan',
+                    style: AppTextStyle.mediumGrey,
+                  ),
+                ),
+              );
+            } else {
+              for (final prod in apiProducts) {
+                suggestions.add(
+                  ListTile(
+                    leading: const Icon(Icons.shopping_bag_outlined,
+                        color: AppColors.primaryColor),
+                    title: Text(prod.name ?? '',
+                        style: AppTextStyle.mediumBlackBold),
+                    subtitle: Text(
+                      Helper.formatCurrency(prod.finalPrice.toInt()),
+                      style: AppTextStyle.mediumBlackBold,
+                    ),
+                    onTap: () {
+                      sc.closeView(prod.name ?? '');
+                      controller.fetchProductByID(prod.id);
+                    },
+                  ),
+                );
+              }
+            }
+          }
+
+          return suggestions;
+        },
+      ),
       actions: [
         IconBadge(
           iconPath: 'ic_notification.svg',
@@ -124,6 +258,73 @@ class HomeView extends GetView<HomeController> {
         7.horizontalSpace,
       ],
     );
+  }
+
+  Widget _buildActiveFilterHeader() {
+    return Obx(() {
+      final hasSearch = controller.searchQuery.value.isNotEmpty;
+      final hasCategory = controller.selectedCategoryId.value != null;
+
+      if (!hasSearch && !hasCategory) {
+        return const SliverToBoxAdapter();
+      }
+
+      String filterText = '';
+      if (hasSearch) {
+        filterText = 'Pencarian: "${controller.searchQuery.value}"';
+      }
+      if (hasCategory) {
+        final cat = controller.category.firstWhereOrNull(
+          (c) =>
+              c is CategoryEntity &&
+              c.id == controller.selectedCategoryId.value,
+        );
+        final catName = cat is CategoryEntity ? cat.name : 'Kategori';
+        if (filterText.isNotEmpty) {
+          filterText += ' | Kategori: $catName';
+        } else {
+          filterText = 'Kategori: $catName';
+        }
+      }
+
+      return SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+            decoration: BoxDecoration(
+              color: AppColors.lightGrey.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    filterText,
+                    style: AppTextStyle.mediumBlackBold,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                InkWell(
+                  onTap: () => controller.fetchProducts(resetFilters: true),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Reset Filter',
+                        style: AppTextStyle.mediumBlack,
+                      ),
+                      4.horizontalSpace,
+                      const Icon(Icons.close, size: 18, color: AppColors.red),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
   }
 
   Widget _buildProductGrid() {

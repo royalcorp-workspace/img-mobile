@@ -17,6 +17,9 @@ import 'package:pos_royal/app/modules/home/widgets/parts_product.dart';
 import 'package:pos_royal/app/routes/app_pages.dart';
 import 'package:pos_royal/app/shared/widgets/app_banner.dart';
 
+import 'package:pos_royal/app/domain/entities/category_entity.dart';
+import 'package:pos_royal/app/domain/entities/product_entity.dart';
+
 class HomeController extends GetxController {
   HomeController({
     this.getProductsUseCase,
@@ -43,6 +46,10 @@ class HomeController extends GetxController {
   var currentPage = 1;
   final int itemsPerPage = 10;
   var productErrorMessage = ''.obs;
+
+  var selectedCategoryId = RxnString();
+  var searchQuery = ''.obs;
+  final SearchController searchAnchorController = SearchController();
 
   double priceVal = 0.0;
   double originalPriceVal = 0.0;
@@ -97,6 +104,7 @@ class HomeController extends GetxController {
   @override
   void onClose() {
     pageScrollController.dispose();
+    searchAnchorController.dispose();
     super.onClose();
   }
 
@@ -119,12 +127,25 @@ class HomeController extends GetxController {
     }
   }
 
-  Future<void> fetchProducts() async {
+  Future<void> fetchProducts({
+    String? search,
+    String? categoryId,
+    bool resetFilters = false,
+  }) async {
     try {
       isLoadingProducts.value = true;
       productErrorMessage.value = '';
       currentPage = 1;
       hasMore.value = true;
+
+      if (resetFilters) {
+        searchQuery.value = '';
+        selectedCategoryId.value = null;
+        searchAnchorController.clear();
+      } else {
+        if (search != null) searchQuery.value = search;
+        if (categoryId != null) selectedCategoryId.value = categoryId;
+      }
 
       final useCase = getProductsUseCase ??
           GetProductsUseCase(
@@ -133,8 +154,12 @@ class HomeController extends GetxController {
             ),
           );
 
-      final result =
-          await useCase.call(page: currentPage, itemsPerPage: itemsPerPage);
+      final result = await useCase.call(
+        page: currentPage,
+        itemsPerPage: itemsPerPage,
+        categoryId: selectedCategoryId.value,
+        search: searchQuery.value.isEmpty ? null : searchQuery.value,
+      );
       products.assignAll(result.data);
       hasMore.value = result.hasMore;
     } catch (e, stackTrace) {
@@ -243,8 +268,12 @@ class HomeController extends GetxController {
             ),
           );
 
-      final result =
-          await useCase.call(page: nextPage, itemsPerPage: itemsPerPage);
+      final result = await useCase.call(
+        page: nextPage,
+        itemsPerPage: itemsPerPage,
+        categoryId: selectedCategoryId.value,
+        search: searchQuery.value.isEmpty ? null : searchQuery.value,
+      );
       if (result.data.isNotEmpty) {
         products.addAll(result.data);
         currentPage = nextPage;
@@ -254,6 +283,27 @@ class HomeController extends GetxController {
       logger.severe('❌ [HOME] Failed to load next page: $e');
     } finally {
       isLoadingMore.value = false;
+    }
+  }
+
+  Future<List<ProductEntity>> searchProductsFromApi(String query) async {
+    if (query.trim().isEmpty) return [];
+    try {
+      final useCase = getProductsUseCase ??
+          GetProductsUseCase(
+            ProductRepositoryImpl(
+              remoteDataSource: ProductRemoteDataSourceImpl(),
+            ),
+          );
+      final result = await useCase.call(
+        page: 1,
+        itemsPerPage: 10,
+        search: query.trim(),
+      );
+      return result.data;
+    } catch (e) {
+      logger.warning('❌ [HOME] Error searching products suggestions: $e');
+      return [];
     }
   }
 

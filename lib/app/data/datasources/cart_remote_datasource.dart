@@ -9,6 +9,10 @@ import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
 
 abstract class CartRemoteDataSource {
   Future<AddToCartEntity> addToCart(Map<String, dynamic> body);
+  Future<void> deleteCartItem({
+    required String addToCartId,
+    required String itemId,
+  });
   Future<PaginatedEntity<CartEntity>> getCart({
     int page = 1,
     int itemsPerPage = 10,
@@ -16,6 +20,35 @@ abstract class CartRemoteDataSource {
 }
 
 class CartRemoteDataSourceImpl implements CartRemoteDataSource {
+  @override
+  Future<void> deleteCartItem({
+    required String addToCartId,
+    required String itemId,
+  }) async {
+    logger.info('🔍 [CART-DS] Deleting cart item: $itemId');
+    try {
+      final response = await DioNetwork.appAPI.delete(
+        '/add-to-cart/$addToCartId/items/$itemId',
+        queryParameters: {
+          'add_to_cart_id': addToCartId,
+          'item_id': itemId,
+        },
+      );
+
+      if (response.statusCode == null || response.statusCode! >= 300) {
+        throw Exception(
+            'Failed to delete cart item: status ${response.statusCode}');
+      }
+    } catch (e, stackTrace) {
+      logger.severe('❌ [CART-DS] Error deleting cart item: $e');
+      if (kDebugMode) {
+        print('❌ [CART-DS] Error: $e');
+        print(stackTrace);
+      }
+      rethrow;
+    }
+  }
+
   @override
   Future<AddToCartEntity> addToCart(Map<String, dynamic> body) async {
     logger.info('🔍 [ADD-TO-CART-DS] Add to Cart...');

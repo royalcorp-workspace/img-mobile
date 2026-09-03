@@ -12,6 +12,8 @@ abstract class ProductRemoteDataSource {
   Future<PaginatedEntity<ProductEntity>> getProducts({
     int page = 1,
     int itemsPerPage = 10,
+    String? categoryId,
+    String? search,
   });
   Future<ProductByIdEntity> getProductByID(String productID);
 }
@@ -21,16 +23,26 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   Future<PaginatedEntity<ProductEntity>> getProducts({
     int page = 1,
     int itemsPerPage = 10,
+    String? categoryId,
+    String? search,
   }) async {
     logger.info(
-        '🔍 [PRODUCT-DS] Fetching products: page=$page, itemsPerPage=$itemsPerPage');
+        '🔍 [PRODUCT-DS] Fetching products: page=$page, itemsPerPage=$itemsPerPage, categoryId=$categoryId, search=$search');
     try {
+      final Map<String, dynamic> queryParameters = {
+        'page': page,
+        'items_per_page': itemsPerPage,
+      };
+      if (categoryId != null && categoryId.isNotEmpty) {
+        queryParameters['category_id'] = categoryId;
+      }
+      if (search != null && search.isNotEmpty) {
+        queryParameters['search'] = search;
+      }
+
       final response = await DioNetwork.appAPI.get(
         '/products/',
-        queryParameters: {
-          'page': page,
-          'items_per_page': itemsPerPage,
-        },
+        queryParameters: queryParameters,
       );
 
       if (response.statusCode != null && response.statusCode! < 300) {
