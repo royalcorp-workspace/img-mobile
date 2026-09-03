@@ -8,7 +8,6 @@ import 'package:pos_royal/app/core/styles/app_color.dart';
 import 'package:pos_royal/app/core/styles/app_text_style.dart';
 import 'package:pos_royal/app/modules/cart/controllers/cart_controller.dart';
 import 'package:pos_royal/app/modules/home/widgets/icon_badge.dart';
-import 'package:pos_royal/app/modules/home/widgets/product_card.dart';
 import 'package:pos_royal/app/modules/product/widgets/countdown_container.dart';
 import 'package:pos_royal/app/modules/product/widgets/product_promotion_card.dart';
 import 'package:pos_royal/app/routes/app_pages.dart';
@@ -118,34 +117,26 @@ class ProductView extends GetView<ProductController> {
                 ],
               ),
             ),
-            const RPadding(
-              padding: EdgeInsets.symmetric(horizontal: 14),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Mungkin kamu tertarik',
-                  style: AppTextStyle.largeBlackBold,
-                ),
-              ),
-            ),
-            10.verticalSpace,
-            RPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: GridView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 0.64,
-                ),
-                shrinkWrap: true,
-                itemCount: 8,
-                itemBuilder: (context, index) => ProductCard(
-                  onTap: (e) {},
-                ),
-              ),
-            ),
+            _buildHomepageContent(),
+
+            // RPadding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 8),
+            //   child: GridView.builder(
+            //     physics: const NeverScrollableScrollPhysics(),
+            //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            //       crossAxisCount: 2,
+            //       crossAxisSpacing: 10,
+            //       mainAxisSpacing: 10,
+            //       childAspectRatio: 0.64,
+            //     ),
+            //     shrinkWrap: true,
+            //     itemCount: 8,
+            //     itemBuilder: (context, index) => ProductCard(
+            //       onTap: (e) {},
+            //     ),
+            //   ),
+            // ),
+
             20.verticalSpace,
           ],
         ),
@@ -153,14 +144,115 @@ class ProductView extends GetView<ProductController> {
     );
   }
 
-  // AppBar with search and action icons
+  Widget _buildHomepageContent() {
+    return Obx(() {
+      final sections = controller.homepageContent
+          .where((section) => section.items.data.isNotEmpty)
+          .toList();
+      if (sections.isEmpty) return const SizedBox();
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: sections.map((section) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  section.title,
+                  style: AppTextStyle.largeBlackBold,
+                ),
+              ),
+              10.verticalSpace,
+              SizedBox(
+                height: 92.h,
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: section.items.data.length,
+                  separatorBuilder: (_, __) => 10.horizontalSpace,
+                  itemBuilder: (context, index) {
+                    final item = section.items.data[index];
+                    return SizedBox(
+                      width: 82.w,
+                      child: Column(
+                        children: [
+                          CircleAvatar(
+                            radius: 30.r,
+                            backgroundColor: AppColors.greyWhite,
+                            backgroundImage: item.logo == null
+                                ? null
+                                : NetworkImage(item.logo!),
+                            child: item.logo == null
+                                ? Text(
+                                    item.name.isEmpty
+                                        ? '?'
+                                        : item.name[0].toUpperCase(),
+                                    style: AppTextStyle.mediumBlackBold,
+                                  )
+                                : null,
+                          ),
+                          5.verticalSpace,
+                          Text(
+                            item.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: AppTextStyle.mediumBlack,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+              15.verticalSpace,
+            ],
+          );
+        }).toList(),
+      );
+    });
+  }
+
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       toolbarHeight: 70.h,
       automaticallyImplyLeading: false,
       title: SizedBox(
         width: 260.w,
-        child: const AppSearchField(),
+        child: SearchAnchor(
+          viewBackgroundColor: AppColors.white,
+          searchController: controller.searchAnchorController,
+          viewLeading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.black),
+            onPressed: Get.back,
+          ),
+          viewTrailing: [
+            IconButton(
+              icon: const Icon(Icons.clear, color: AppColors.black),
+              onPressed: controller.searchAnchorController.clear,
+            ),
+          ],
+          builder: (context, searchController) => InkWell(
+            onTap: searchController.openView,
+            child: const IgnorePointer(child: AppSearchField()),
+          ),
+          suggestionsBuilder: (context, searchController) {
+            final keyword = searchController.text.trim();
+            if (keyword.isEmpty) return const <Widget>[];
+            return [
+              ListTile(
+                leading:
+                    const Icon(Icons.search, color: AppColors.primaryColor),
+                title: Text('Cari "$keyword"',
+                    style: AppTextStyle.mediumBlackBold),
+                onTap: () => searchController.closeView(keyword),
+              ),
+            ];
+          },
+        ),
       ),
       backgroundColor: AppColors.primaryColor,
       actions: [

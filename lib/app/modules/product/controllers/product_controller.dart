@@ -3,24 +3,39 @@ import 'dart:async';
 import 'package:add_to_cart_animation/add_to_cart_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pos_royal/app/core/utils/log/logger.dart';
+import 'package:pos_royal/app/data/datasources/homepage_content_remote_datasource.dart';
+import 'package:pos_royal/app/data/repositories/homepage_content_repository_impl.dart';
+import 'package:pos_royal/app/domain/entities/homepage_content_entity.dart';
+import 'package:pos_royal/app/domain/usecases/get_homepage_content_usecase.dart';
 
 class ProductController extends GetxController {
+  ProductController({
+    this.getHomepageContentUsecase,
+  });
+
+  final GetHomepageContentUsecase? getHomepageContentUsecase;
+
   GlobalKey<CartIconKey> cartKey = GlobalKey<CartIconKey>();
   late Timer _timer;
 
   RxInt selectedIndex = 0.obs;
   RxInt start = 3600.obs;
+  final SearchController searchAnchorController = SearchController();
+  final homepageContent = <HomepageContentSectionEntity>[].obs;
 
   @override
   void onInit() {
-    startTimer();
     super.onInit();
+    startTimer();
+    fetchHomepageContent();
   }
 
   @override
-  void dispose() {
+  void onClose() {
     _timer.cancel();
-    super.dispose();
+    searchAnchorController.dispose();
+    super.onClose();
   }
 
   String get formattedTime {
@@ -43,5 +58,22 @@ class ProductController extends GetxController {
         }
       },
     );
+  }
+
+  Future<void> fetchHomepageContent() async {
+    try {
+      final useCase = getHomepageContentUsecase ??
+          GetHomepageContentUsecase(
+            HomepageContentRepositoryImpl(
+              remoteDataSource: HomepageContentRemoteDataSourceImpl(),
+            ),
+          );
+      final result = await useCase.call();
+      homepageContent.assignAll(
+        result.data.where((section) => section.isVisible),
+      );
+    } catch (e) {
+      logger.warning('Failed to load homepage content: $e');
+    }
   }
 }

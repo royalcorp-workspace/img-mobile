@@ -32,12 +32,20 @@ class OrderController extends GetxController {
   final int itemsPerPage = 10;
   var orderHistoryErrorMessage = ''.obs;
   RxString customerId = ''.obs;
+  final SearchController searchAnchorController = SearchController();
 
   @override
   void onInit() {
     super.onInit();
     _initScrollListener();
     fetchOrderHistory();
+  }
+
+  @override
+  void onClose() {
+    pageScrollController.dispose();
+    searchAnchorController.dispose();
+    super.onClose();
   }
 
   void _initScrollListener() {

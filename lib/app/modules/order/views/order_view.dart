@@ -292,7 +292,37 @@ class OrderView extends GetView<OrderController> {
       automaticallyImplyLeading: false,
       title: SizedBox(
         width: 260.w,
-        child: const AppSearchField(),
+        child: SearchAnchor(
+          viewBackgroundColor: AppColors.white,
+          searchController: controller.searchAnchorController,
+          viewLeading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.black),
+            onPressed: Get.back,
+          ),
+          viewTrailing: [
+            IconButton(
+              icon: const Icon(Icons.clear, color: AppColors.black),
+              onPressed: controller.searchAnchorController.clear,
+            ),
+          ],
+          builder: (context, searchController) => InkWell(
+            onTap: searchController.openView,
+            child: const IgnorePointer(child: AppSearchField()),
+          ),
+          suggestionsBuilder: (context, searchController) {
+            final keyword = searchController.text.trim();
+            if (keyword.isEmpty) return const <Widget>[];
+            return [
+              ListTile(
+                leading:
+                    const Icon(Icons.search, color: AppColors.primaryColor),
+                title: Text('Cari "$keyword"',
+                    style: AppTextStyle.mediumBlackBold),
+                onTap: () => searchController.closeView(keyword),
+              ),
+            ];
+          },
+        ),
       ),
       backgroundColor: AppColors.primaryColor,
       actions: [

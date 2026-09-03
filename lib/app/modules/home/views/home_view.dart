@@ -252,7 +252,7 @@ class HomeView extends GetView<HomeController> {
       actions: [
         IconBadge(
           iconPath: 'ic_notification.svg',
-          count: 1,
+          count: 3,
         ),
         2.horizontalSpace,
         GetBuilder<CartController>(
