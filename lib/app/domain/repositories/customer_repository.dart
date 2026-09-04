@@ -1,6 +1,6 @@
-import 'package:pos_royal/app/data/models/customer_model.dart';
-import 'package:pos_royal/app/data/models/customer_update_request.dart';
-import 'package:pos_royal/app/data/models/primary_address_model.dart';
+import 'package:img/app/data/models/customer_model.dart';
+import 'package:img/app/data/models/customer_update_request.dart';
+import 'package:img/app/data/models/primary_address_model.dart';
 
 abstract class CustomerRepository {
   Future<CustomerModel> getCustomer(String customerId);

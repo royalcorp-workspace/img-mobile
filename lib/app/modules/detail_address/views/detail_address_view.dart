@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
-import 'package:pos_royal/app/domain/entities/city_entity.dart';
-import 'package:pos_royal/app/domain/entities/provincy_entity.dart';
-import 'package:pos_royal/app/domain/entities/sub_district_entity.dart';
-import 'package:pos_royal/app/shared/widgets/app_divider.dart';
-import 'package:pos_royal/app/shared/widgets/button/primary_button.dart';
-import 'package:pos_royal/app/shared/widgets/dropdown/dropdown_form_field_app.dart';
-import 'package:pos_royal/app/shared/widgets/textformfield/text_form_field_app.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:img/app/domain/entities/city_entity.dart';
+import 'package:img/app/domain/entities/provincy_entity.dart';
+import 'package:img/app/domain/entities/sub_district_entity.dart';
+import 'package:img/app/shared/widgets/app_divider.dart';
+import 'package:img/app/shared/widgets/button/primary_button.dart';
+import 'package:img/app/shared/widgets/dropdown/dropdown_form_field_app.dart';
+import 'package:img/app/shared/widgets/textformfield/text_form_field_app.dart';
 
 import '../controllers/detail_address_controller.dart';
 
@@ -237,9 +237,8 @@ class DetailAddressView extends GetView<DetailAddressController> {
                   text: 'Simpan',
                   fullWidth: true,
                   isLoading: controller.isLoading.value,
-                  onPressed: controller.isLoading.value
-                      ? null
-                      : controller.addAddress,
+                  onPressed:
+                      controller.isLoading.value ? null : controller.addAddress,
                 ),
               ),
             ),

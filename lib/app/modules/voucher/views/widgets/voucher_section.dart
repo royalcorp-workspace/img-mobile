@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pos_royal/app/modules/voucher/views/widgets/voucher_card.dart';
+import 'package:img/app/modules/voucher/views/widgets/voucher_card.dart';
 
 class VoucherSection extends StatelessWidget {
   final String image,

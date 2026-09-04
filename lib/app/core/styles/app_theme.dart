@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_color.dart';
 
 import 'app_text_style.dart';
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/services/auth_service.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/routes/app_pages.dart';
+import 'package:img/app/core/services/auth_service.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/routes/app_pages.dart';
 
 class AuthController extends GetxController {
   final AuthService _authService = AuthService();

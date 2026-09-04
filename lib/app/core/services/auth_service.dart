@@ -3,10 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:pos_royal/app/core/network/dio_network.dart';
-import 'package:pos_royal/app/core/utils/token_storage.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/data/models/auth_response_model.dart';
+import 'package:img/app/core/network/dio_network.dart';
+import 'package:img/app/core/utils/token_storage.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/data/models/auth_response_model.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;

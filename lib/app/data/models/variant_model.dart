@@ -1,4 +1,4 @@
-import 'package:pos_royal/app/domain/entities/variant_entity.dart';
+import 'package:img/app/domain/entities/variant_entity.dart';
 
 class VariantModel extends VariantEntity {
   VariantModel({

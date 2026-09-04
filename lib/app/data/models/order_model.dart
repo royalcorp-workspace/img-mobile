@@ -1,5 +1,5 @@
-import 'package:pos_royal/app/data/models/product_model.dart';
-import 'package:pos_royal/app/data/models/variant_model.dart';
+import 'package:img/app/data/models/product_model.dart';
+import 'package:img/app/data/models/variant_model.dart';
 
 import '../../domain/entities/order_entity.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_color.dart';
 
 class AppSimpleHorizontalStepIndicator extends StatelessWidget {
   const AppSimpleHorizontalStepIndicator(

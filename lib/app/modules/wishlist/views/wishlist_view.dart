@@ -2,11 +2,11 @@ import 'package:add_to_cart_animation/add_to_cart_icon.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
-import 'package:pos_royal/app/modules/cart/controllers/cart_controller.dart';
-import 'package:pos_royal/app/modules/home/widgets/icon_badge.dart';
-import 'package:pos_royal/app/modules/wishlist/views/widgets/wishlist_card.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:img/app/modules/cart/controllers/cart_controller.dart';
+import 'package:img/app/modules/home/widgets/icon_badge.dart';
+import 'package:img/app/modules/wishlist/views/widgets/wishlist_card.dart';
 
 import '../controllers/wishlist_controller.dart';
 

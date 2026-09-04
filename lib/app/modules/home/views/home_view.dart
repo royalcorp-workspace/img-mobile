@@ -2,20 +2,20 @@ import 'package:add_to_cart_animation/add_to_cart_animation.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pos_royal/app/core/helper/helper.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/modules/cart/controllers/cart_controller.dart';
-import 'package:pos_royal/app/modules/home/widgets/parts_product.dart';
+import 'package:img/app/core/helper/helper.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/modules/cart/controllers/cart_controller.dart';
+import 'package:img/app/modules/home/widgets/parts_product.dart';
 
 import 'package:get/get.dart';
-import 'package:pos_royal/app/modules/home/widgets/icon_badge.dart';
-import 'package:pos_royal/app/modules/home/widgets/product_card.dart';
-import 'package:pos_royal/app/modules/home/widgets/section_header.dart';
-import 'package:pos_royal/app/routes/app_pages.dart';
-import 'package:pos_royal/app/shared/widgets/app_banner.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
-import 'package:pos_royal/app/domain/entities/category_entity.dart';
-import 'package:pos_royal/app/shared/widgets/app_search_field.dart';
+import 'package:img/app/modules/home/widgets/icon_badge.dart';
+import 'package:img/app/modules/home/widgets/product_card.dart';
+import 'package:img/app/modules/home/widgets/section_header.dart';
+import 'package:img/app/routes/app_pages.dart';
+import 'package:img/app/shared/widgets/app_banner.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:img/app/domain/entities/category_entity.dart';
+import 'package:img/app/shared/widgets/app_search_field.dart';
 
 import '../controllers/home_controller.dart';
 

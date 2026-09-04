@@ -1,14 +1,14 @@
 import 'package:flutter/foundation.dart';
-import 'package:pos_royal/app/core/network/dio_network.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/data/models/city_model.dart';
-import 'package:pos_royal/app/data/models/paginated_model.dart';
-import 'package:pos_royal/app/data/models/provinces_model.dart';
-import 'package:pos_royal/app/data/models/sub_district_model.dart';
-import 'package:pos_royal/app/domain/entities/city_entity.dart';
-import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
-import 'package:pos_royal/app/domain/entities/provincy_entity.dart';
-import 'package:pos_royal/app/domain/entities/sub_district_entity.dart';
+import 'package:img/app/core/network/dio_network.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/data/models/city_model.dart';
+import 'package:img/app/data/models/paginated_model.dart';
+import 'package:img/app/data/models/provinces_model.dart';
+import 'package:img/app/data/models/sub_district_model.dart';
+import 'package:img/app/domain/entities/city_entity.dart';
+import 'package:img/app/domain/entities/paginated_entity.dart';
+import 'package:img/app/domain/entities/provincy_entity.dart';
+import 'package:img/app/domain/entities/sub_district_entity.dart';
 
 abstract class RegionRemoteDatasource {
   Future<PaginatedEntity<ProvincyEntity>> getProvinces({

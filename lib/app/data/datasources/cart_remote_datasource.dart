@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
-import 'package:pos_royal/app/core/network/dio_network.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/data/models/cart_model.dart';
-import 'package:pos_royal/app/data/models/paginated_model.dart';
-import 'package:pos_royal/app/domain/entities/add_to_cart_entity.dart';
-import 'package:pos_royal/app/domain/entities/cart_entity.dart';
-import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
+import 'package:img/app/core/network/dio_network.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/data/models/cart_model.dart';
+import 'package:img/app/data/models/paginated_model.dart';
+import 'package:img/app/domain/entities/add_to_cart_entity.dart';
+import 'package:img/app/domain/entities/cart_entity.dart';
+import 'package:img/app/domain/entities/paginated_entity.dart';
 
 abstract class CartRemoteDataSource {
   Future<AddToCartEntity> addToCart(Map<String, dynamic> body);

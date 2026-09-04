@@ -1,4 +1,4 @@
-import 'package:pos_royal/app/domain/entities/sub_district_entity.dart';
+import 'package:img/app/domain/entities/sub_district_entity.dart';
 
 class SubDistrictModel extends SubDistrictEntity {
   SubDistrictModel({

@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/data/datasources/payment_method_remote_datasource.dart';
-import 'package:pos_royal/app/data/repositories/payment_method_repository_impl.dart';
-import 'package:pos_royal/app/domain/entities/payment_method_entity.dart';
-import 'package:pos_royal/app/domain/usecases/create_order_usecase.dart';
-import 'package:pos_royal/app/domain/usecases/get_payment_methods_usecase.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/data/datasources/payment_method_remote_datasource.dart';
+import 'package:img/app/data/repositories/payment_method_repository_impl.dart';
+import 'package:img/app/domain/entities/payment_method_entity.dart';
+import 'package:img/app/domain/usecases/create_order_usecase.dart';
+import 'package:img/app/domain/usecases/get_payment_methods_usecase.dart';
 
 class PaymentMethodController extends GetxController {
   PaymentMethodController({

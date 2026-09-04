@@ -1,4 +1,4 @@
-import 'package:pos_royal/app/data/models/shipping_addresses_model.dart';
+import 'package:img/app/data/models/shipping_addresses_model.dart';
 
 class ShippingAddressesEntity {
   final String createdAt;

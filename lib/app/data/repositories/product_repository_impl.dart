@@ -1,6 +1,6 @@
-import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
-import 'package:pos_royal/app/domain/entities/product_by_id_entity.dart';
-import 'package:pos_royal/app/domain/entities/product_entity.dart';
+import 'package:img/app/domain/entities/paginated_entity.dart';
+import 'package:img/app/domain/entities/product_by_id_entity.dart';
+import 'package:img/app/domain/entities/product_entity.dart';
 
 import '../../domain/repositories/product_repository.dart';
 import '../datasources/product_remote_datasource.dart';

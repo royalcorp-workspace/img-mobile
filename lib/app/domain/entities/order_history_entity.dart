@@ -1,6 +1,6 @@
-import 'package:pos_royal/app/data/models/customer_model.dart';
-import 'package:pos_royal/app/domain/entities/product_entity.dart';
-import 'package:pos_royal/app/domain/entities/variant_entity.dart';
+import 'package:img/app/data/models/customer_model.dart';
+import 'package:img/app/domain/entities/product_entity.dart';
+import 'package:img/app/domain/entities/variant_entity.dart';
 
 class OrderHistoryEntity {
   final String id;

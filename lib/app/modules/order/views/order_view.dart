@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:pos_royal/app/core/helper/helper.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
-import 'package:pos_royal/app/modules/cart/controllers/cart_controller.dart';
-import 'package:pos_royal/app/modules/home/widgets/icon_badge.dart';
-import 'package:pos_royal/app/routes/app_pages.dart';
-import 'package:pos_royal/app/shared/widgets/app_search_field.dart';
-import 'package:pos_royal/app/shared/widgets/stepper/app_simple_horizontal_step_indicator.dart';
+import 'package:img/app/core/helper/helper.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:img/app/modules/cart/controllers/cart_controller.dart';
+import 'package:img/app/modules/home/widgets/icon_badge.dart';
+import 'package:img/app/routes/app_pages.dart';
+import 'package:img/app/shared/widgets/app_search_field.dart';
+import 'package:img/app/shared/widgets/stepper/app_simple_horizontal_step_indicator.dart';
 
 import '../controllers/order_controller.dart';
 

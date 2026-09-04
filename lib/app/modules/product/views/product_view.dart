@@ -4,16 +4,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
-import 'package:pos_royal/app/modules/cart/controllers/cart_controller.dart';
-import 'package:pos_royal/app/modules/home/widgets/icon_badge.dart';
-import 'package:pos_royal/app/modules/product/widgets/countdown_container.dart';
-import 'package:pos_royal/app/modules/product/widgets/product_promotion_card.dart';
-import 'package:pos_royal/app/routes/app_pages.dart';
-import 'package:pos_royal/app/shared/widgets/app_banner.dart';
-import 'package:pos_royal/app/shared/widgets/app_divider.dart';
-import 'package:pos_royal/app/shared/widgets/app_search_field.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:img/app/modules/cart/controllers/cart_controller.dart';
+import 'package:img/app/modules/home/widgets/icon_badge.dart';
+import 'package:img/app/modules/product/widgets/countdown_container.dart';
+import 'package:img/app/modules/product/widgets/product_promotion_card.dart';
+import 'package:img/app/routes/app_pages.dart';
+import 'package:img/app/shared/widgets/app_banner.dart';
+import 'package:img/app/shared/widgets/app_divider.dart';
+import 'package:img/app/shared/widgets/app_search_field.dart';
 
 import '../controllers/product_controller.dart';
 

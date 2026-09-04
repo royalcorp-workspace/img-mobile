@@ -1,4 +1,4 @@
-import 'package:pos_royal/app/domain/entities/provincy_entity.dart';
+import 'package:img/app/domain/entities/provincy_entity.dart';
 
 class ProvincesModel extends ProvincyEntity {
   ProvincesModel({

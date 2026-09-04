@@ -4,12 +4,12 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
-import 'package:pos_royal/app/core/helper/helper.dart';
-import 'package:pos_royal/app/core/network/logger_interceptor.dart';
-import 'package:pos_royal/app/core/utils/constants/network_constant.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/core/utils/token_storage.dart';
-import 'package:pos_royal/app/routes/app_pages.dart';
+import 'package:img/app/core/helper/helper.dart';
+import 'package:img/app/core/network/logger_interceptor.dart';
+import 'package:img/app/core/utils/constants/network_constant.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/core/utils/token_storage.dart';
+import 'package:img/app/routes/app_pages.dart';
 
 class DioNetwork {
   static final Dio appAPI = Dio(_baseOptions(apiUrl))

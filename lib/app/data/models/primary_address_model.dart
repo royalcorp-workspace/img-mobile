@@ -1,4 +1,4 @@
-import 'package:pos_royal/app/domain/entities/primary_address_entity.dart';
+import 'package:img/app/domain/entities/primary_address_entity.dart';
 
 class PrimaryAddressModel extends PrimaryAddressEntity {
   PrimaryAddressModel({

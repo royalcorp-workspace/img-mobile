@@ -1,6 +1,6 @@
-import 'package:pos_royal/app/data/models/customer_model.dart';
-import 'package:pos_royal/app/domain/entities/add_to_cart_entity.dart';
-import 'package:pos_royal/app/domain/entities/cart_entity.dart';
+import 'package:img/app/data/models/customer_model.dart';
+import 'package:img/app/domain/entities/add_to_cart_entity.dart';
+import 'package:img/app/domain/entities/cart_entity.dart';
 
 class CartModel extends CartEntity {
   CartModel({

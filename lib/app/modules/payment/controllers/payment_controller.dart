@@ -3,13 +3,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/data/datasources/check_status_payment_remote_datasource.dart';
-import 'package:pos_royal/app/data/repositories/check_status_payment_repository_impl.dart';
-import 'package:pos_royal/app/domain/entities/checkout_entity.dart';
-import 'package:pos_royal/app/domain/entities/order_entity.dart';
-import 'package:pos_royal/app/domain/usecases/check_status_payment_usecase.dart';
-import 'package:pos_royal/app/routes/app_pages.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/data/datasources/check_status_payment_remote_datasource.dart';
+import 'package:img/app/data/repositories/check_status_payment_repository_impl.dart';
+import 'package:img/app/domain/entities/checkout_entity.dart';
+import 'package:img/app/domain/entities/order_entity.dart';
+import 'package:img/app/domain/usecases/check_status_payment_usecase.dart';
+import 'package:img/app/routes/app_pages.dart';
 
 class PaymentController extends GetxController {
   PaymentController({this.checkStatusPaymentUsecase});

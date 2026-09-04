@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/styles/app_theme.dart';
-import 'package:pos_royal/app/core/utils/flavor.dart';
-import 'package:pos_royal/app/core/utils/injections.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
+import 'package:img/app/core/styles/app_theme.dart';
+import 'package:img/app/core/utils/flavor.dart';
+import 'package:img/app/core/utils/injections.dart';
+import 'package:img/app/core/utils/log/logger.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options_dev.dart' as dev_opts;
 import 'firebase_options_prod.dart' as prod_opts;

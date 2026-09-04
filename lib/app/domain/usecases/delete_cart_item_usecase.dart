@@ -1,4 +1,4 @@
-import 'package:pos_royal/app/domain/repositories/cart_repository.dart';
+import 'package:img/app/domain/repositories/cart_repository.dart';
 
 class DeleteCartItemUsecase {
   final CartRepository repository;

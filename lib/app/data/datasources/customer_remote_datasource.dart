@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:pos_royal/app/core/network/dio_network.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/data/models/customer_model.dart';
-import 'package:pos_royal/app/data/models/customer_update_request.dart';
-import 'package:pos_royal/app/data/models/primary_address_model.dart';
+import 'package:img/app/core/network/dio_network.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/data/models/customer_model.dart';
+import 'package:img/app/data/models/customer_update_request.dart';
+import 'package:img/app/data/models/primary_address_model.dart';
 
 abstract class CustomerRemoteDataSource {
   Future<CustomerModel> getCustomer(String customerId);

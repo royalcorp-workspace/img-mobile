@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/helper/helper.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
-import 'package:pos_royal/app/modules/checkout/models/checkout_arguments.dart';
-import 'package:pos_royal/app/modules/checkout/widgets/add_notes_widget.dart';
-import 'package:pos_royal/app/modules/checkout/widgets/checkout_item_card.dart';
-import 'package:pos_royal/app/domain/entities/voucher_entity.dart';
-import 'package:pos_royal/app/modules/payment_method/views/payment_method_view.dart';
-import 'package:pos_royal/app/routes/app_pages.dart';
-import 'package:pos_royal/app/shared/widgets/app_divider.dart';
-import 'package:pos_royal/app/shared/widgets/button/primary_button.dart';
-import 'package:pos_royal/app/shared/widgets/text/text_price_bold.dart';
+import 'package:img/app/core/helper/helper.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:img/app/modules/checkout/models/checkout_arguments.dart';
+import 'package:img/app/modules/checkout/widgets/add_notes_widget.dart';
+import 'package:img/app/modules/checkout/widgets/checkout_item_card.dart';
+import 'package:img/app/domain/entities/voucher_entity.dart';
+import 'package:img/app/modules/payment_method/views/payment_method_view.dart';
+import 'package:img/app/routes/app_pages.dart';
+import 'package:img/app/shared/widgets/app_divider.dart';
+import 'package:img/app/shared/widgets/button/primary_button.dart';
+import 'package:img/app/shared/widgets/text/text_price_bold.dart';
 
 import '../controllers/checkout_controller.dart';
 

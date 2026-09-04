@@ -1,4 +1,4 @@
-import 'package:pos_royal/app/data/models/checkout_model.dart';
+import 'package:img/app/data/models/checkout_model.dart';
 
 class CheckoutEntity {
   final bool? success;

@@ -1,5 +1,5 @@
-import 'package:pos_royal/app/domain/entities/product_entity.dart';
-import 'package:pos_royal/app/domain/entities/variant_entity.dart';
+import 'package:img/app/domain/entities/product_entity.dart';
+import 'package:img/app/domain/entities/variant_entity.dart';
 
 class OrderEntity {
   final String id;

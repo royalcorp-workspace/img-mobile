@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
-import 'package:pos_royal/app/modules/voucher/views/widgets/voucher_bottom_bar.dart';
-import 'package:pos_royal/app/modules/voucher/views/widgets/voucher_card.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:img/app/modules/voucher/views/widgets/voucher_bottom_bar.dart';
+import 'package:img/app/modules/voucher/views/widgets/voucher_card.dart';
 
 import '../controllers/voucher_controller.dart';
 
@@ -87,8 +87,7 @@ class VoucherView extends GetView<VoucherController> {
               return const SizedBox.shrink();
             }
             return VoucherBottomBar(
-              value: controller
-                  .vouchers[controller.selectedIndex.value].value
+              value: controller.vouchers[controller.selectedIndex.value].value
                   .toInt(),
               onTap: () {
                 final selectedVoucher =

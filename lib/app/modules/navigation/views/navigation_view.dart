@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/helper/helper.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
-import 'package:pos_royal/app/modules/home/controllers/home_controller.dart';
-import 'package:pos_royal/app/modules/home/views/home_view.dart';
-import 'package:pos_royal/app/modules/order/views/order_view.dart';
-import 'package:pos_royal/app/modules/product/views/product_view.dart';
-import 'package:pos_royal/app/modules/setting/views/setting_view.dart';
+import 'package:img/app/core/helper/helper.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:img/app/modules/home/controllers/home_controller.dart';
+import 'package:img/app/modules/home/views/home_view.dart';
+import 'package:img/app/modules/order/views/order_view.dart';
+import 'package:img/app/modules/product/views/product_view.dart';
+import 'package:img/app/modules/setting/views/setting_view.dart';
 
 import '../controllers/navigation_controller.dart';
 

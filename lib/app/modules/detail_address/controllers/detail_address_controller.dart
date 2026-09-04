@@ -2,21 +2,21 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/core/utils/token_storage.dart';
-import 'package:pos_royal/app/data/datasources/customer_remote_datasource.dart';
-import 'package:pos_royal/app/data/datasources/region_remote_datasource.dart';
-import 'package:pos_royal/app/data/models/customer_update_request.dart';
-import 'package:pos_royal/app/data/models/user_model.dart';
-import 'package:pos_royal/app/data/repositories/customer_repository_impl.dart';
-import 'package:pos_royal/app/data/repositories/region_repository_impl.dart';
-import 'package:pos_royal/app/domain/entities/city_entity.dart';
-import 'package:pos_royal/app/domain/entities/provincy_entity.dart';
-import 'package:pos_royal/app/domain/entities/sub_district_entity.dart';
-import 'package:pos_royal/app/domain/usecases/add_address_usecase.dart';
-import 'package:pos_royal/app/domain/usecases/get_region_city_usecase.dart';
-import 'package:pos_royal/app/domain/usecases/get_region_provincy_usecase.dart';
-import 'package:pos_royal/app/domain/usecases/get_region_sub_district_usecase.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/core/utils/token_storage.dart';
+import 'package:img/app/data/datasources/customer_remote_datasource.dart';
+import 'package:img/app/data/datasources/region_remote_datasource.dart';
+import 'package:img/app/data/models/customer_update_request.dart';
+import 'package:img/app/data/models/user_model.dart';
+import 'package:img/app/data/repositories/customer_repository_impl.dart';
+import 'package:img/app/data/repositories/region_repository_impl.dart';
+import 'package:img/app/domain/entities/city_entity.dart';
+import 'package:img/app/domain/entities/provincy_entity.dart';
+import 'package:img/app/domain/entities/sub_district_entity.dart';
+import 'package:img/app/domain/usecases/add_address_usecase.dart';
+import 'package:img/app/domain/usecases/get_region_city_usecase.dart';
+import 'package:img/app/domain/usecases/get_region_provincy_usecase.dart';
+import 'package:img/app/domain/usecases/get_region_sub_district_usecase.dart';
 
 class DetailAddressController extends GetxController {
   DetailAddressController({

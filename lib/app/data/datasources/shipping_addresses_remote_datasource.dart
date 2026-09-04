@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:pos_royal/app/core/network/dio_network.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/data/models/paginated_model.dart';
-import 'package:pos_royal/app/data/models/shipping_addresses_model.dart';
-import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
-import 'package:pos_royal/app/domain/entities/shipping_addresses_entity.dart';
+import 'package:img/app/core/network/dio_network.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/data/models/paginated_model.dart';
+import 'package:img/app/data/models/shipping_addresses_model.dart';
+import 'package:img/app/domain/entities/paginated_entity.dart';
+import 'package:img/app/domain/entities/shipping_addresses_entity.dart';
 
 abstract class ShippingAddressesRemoteDatasource {
   Future<PaginatedEntity<ShippingAddressesEntity>> getShippingAddresses({

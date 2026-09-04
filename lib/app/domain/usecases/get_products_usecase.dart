@@ -1,5 +1,5 @@
-import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
-import 'package:pos_royal/app/domain/entities/product_entity.dart';
+import 'package:img/app/domain/entities/paginated_entity.dart';
+import 'package:img/app/domain/entities/product_entity.dart';
 import '../repositories/product_repository.dart';
 
 class GetProductsUseCase {

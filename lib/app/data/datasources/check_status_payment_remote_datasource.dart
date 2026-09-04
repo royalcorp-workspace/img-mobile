@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
-import 'package:pos_royal/app/core/network/dio_network.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/data/models/check_status_payment_model.dart';
-import 'package:pos_royal/app/domain/entities/check_status_entity.dart';
+import 'package:img/app/core/network/dio_network.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/data/models/check_status_payment_model.dart';
+import 'package:img/app/domain/entities/check_status_entity.dart';
 
 abstract class CheckStatusPaymentRemoteDataSource {
   Future<CheckStatusPaymentEntity> checkStatusPayment(String orderID);

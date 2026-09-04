@@ -1,5 +1,5 @@
-import 'package:pos_royal/app/data/models/primary_address_model.dart';
-import 'package:pos_royal/app/domain/repositories/customer_repository.dart';
+import 'package:img/app/data/models/primary_address_model.dart';
+import 'package:img/app/domain/repositories/customer_repository.dart';
 
 class SetPrimaryAddressUsecase {
   final CustomerRepository repository;

@@ -1,5 +1,5 @@
-import 'package:pos_royal/app/domain/entities/check_status_entity.dart';
-import 'package:pos_royal/app/domain/repositories/check_status_paymentrepository.dart';
+import 'package:img/app/domain/entities/check_status_entity.dart';
+import 'package:img/app/domain/repositories/check_status_paymentrepository.dart';
 
 class CheckStatusPaymentUsecase {
   final CheckStatusPaymentRepository repository;

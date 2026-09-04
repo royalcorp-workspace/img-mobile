@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pos_royal/app/domain/entities/add_to_cart_entity.dart';
-import 'package:pos_royal/app/domain/entities/cart_entity.dart';
-import 'package:pos_royal/app/modules/cart/controllers/cart_controller.dart';
+import 'package:img/app/domain/entities/add_to_cart_entity.dart';
+import 'package:img/app/domain/entities/cart_entity.dart';
+import 'package:img/app/modules/cart/controllers/cart_controller.dart';
 
 void main() {
   group('CartController selection logic', () {

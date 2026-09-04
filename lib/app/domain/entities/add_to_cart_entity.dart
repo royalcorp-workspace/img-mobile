@@ -1,5 +1,5 @@
-import 'package:pos_royal/app/data/models/customer_model.dart';
-import 'package:pos_royal/app/domain/entities/order_entity.dart';
+import 'package:img/app/data/models/customer_model.dart';
+import 'package:img/app/domain/entities/order_entity.dart';
 
 class AddToCartEntityParams {
   final String? customerId;

@@ -1,5 +1,5 @@
-import 'package:pos_royal/app/domain/entities/homepage_content_entity.dart';
-import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
+import 'package:img/app/domain/entities/homepage_content_entity.dart';
+import 'package:img/app/domain/entities/paginated_entity.dart';
 
 class HomepageContentItemModel extends HomepageContentItemEntity {
   const HomepageContentItemModel({

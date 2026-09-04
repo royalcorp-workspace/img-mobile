@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:pos_royal/app/core/network/dio_network.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/data/models/checkout_model.dart';
-import 'package:pos_royal/app/data/models/checkout_params_model.dart';
-import 'package:pos_royal/app/domain/entities/checkout_entity.dart';
+import 'package:img/app/core/network/dio_network.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/data/models/checkout_model.dart';
+import 'package:img/app/data/models/checkout_params_model.dart';
+import 'package:img/app/domain/entities/checkout_entity.dart';
 
 abstract class CheckoutRemoteDataSource {
   Future<CheckoutEntity> checkout(CheckoutParamsModel params);

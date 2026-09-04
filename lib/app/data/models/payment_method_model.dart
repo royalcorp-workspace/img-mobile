@@ -1,4 +1,4 @@
-import 'package:pos_royal/app/domain/entities/payment_method_entity.dart';
+import 'package:img/app/domain/entities/payment_method_entity.dart';
 
 class PaymentMethodModel extends PaymentMethodEntity {
   PaymentMethodModel({

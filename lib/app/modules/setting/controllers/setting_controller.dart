@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/core/utils/token_storage.dart';
-import 'package:pos_royal/app/data/models/user_model.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/core/utils/token_storage.dart';
+import 'package:img/app/data/models/user_model.dart';
 
 class SettingController extends GetxController {
   var userModel = UserModel().obs;
@@ -26,8 +26,7 @@ class SettingController extends GetxController {
         final parsed = UserModel.fromJson(userMap);
         userModel.value = parsed;
 
-        if (parsed.customer?.id != null &&
-            parsed.customer!.id!.isNotEmpty) {
+        if (parsed.customer?.id != null && parsed.customer!.id!.isNotEmpty) {
           return parsed.customer!.id!;
         }
         if (parsed.id != null && parsed.id!.isNotEmpty) {
@@ -35,8 +34,8 @@ class SettingController extends GetxController {
         }
       }
     } catch (e) {
-      logger.warning(
-          '⚠️ [SETTING] Could not parse stored user customer ID: $e');
+      logger
+          .warning('⚠️ [SETTING] Could not parse stored user customer ID: $e');
     }
     return "3fa85f64-5717-4562-b3fc-2c963f66afa6";
   }

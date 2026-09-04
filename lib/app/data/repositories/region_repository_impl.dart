@@ -1,9 +1,9 @@
-import 'package:pos_royal/app/data/datasources/region_remote_datasource.dart';
-import 'package:pos_royal/app/domain/entities/city_entity.dart';
-import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
-import 'package:pos_royal/app/domain/entities/provincy_entity.dart';
-import 'package:pos_royal/app/domain/entities/sub_district_entity.dart';
-import 'package:pos_royal/app/domain/repositories/region_repository.dart';
+import 'package:img/app/data/datasources/region_remote_datasource.dart';
+import 'package:img/app/domain/entities/city_entity.dart';
+import 'package:img/app/domain/entities/paginated_entity.dart';
+import 'package:img/app/domain/entities/provincy_entity.dart';
+import 'package:img/app/domain/entities/sub_district_entity.dart';
+import 'package:img/app/domain/repositories/region_repository.dart';
 
 class RegionRepositoryImpl implements RegionRepository {
   final RegionRemoteDataSourceImpl remoteDataSource;

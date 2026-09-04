@@ -4,17 +4,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/helper/helper.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
-import 'package:pos_royal/app/modules/cart/controllers/cart_controller.dart';
-import 'package:pos_royal/app/modules/checkout/models/checkout_arguments.dart';
-import 'package:pos_royal/app/modules/detail_product/widgets/cart_badge.dart';
-import 'package:pos_royal/app/modules/detail_product/widgets/comment_card.dart';
-import 'package:pos_royal/app/modules/detail_product/widgets/detail_product_card.dart';
-import 'package:pos_royal/app/routes/app_pages.dart';
-import 'package:pos_royal/app/shared/widgets/app_divider.dart';
-import 'package:pos_royal/app/shared/widgets/text/text_price_line_through.dart';
+import 'package:img/app/core/helper/helper.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:img/app/modules/cart/controllers/cart_controller.dart';
+import 'package:img/app/modules/checkout/models/checkout_arguments.dart';
+import 'package:img/app/modules/detail_product/widgets/cart_badge.dart';
+import 'package:img/app/modules/detail_product/widgets/comment_card.dart';
+import 'package:img/app/modules/detail_product/widgets/detail_product_card.dart';
+import 'package:img/app/routes/app_pages.dart';
+import 'package:img/app/shared/widgets/app_divider.dart';
+import 'package:img/app/shared/widgets/text/text_price_line_through.dart';
 import 'package:readmore/readmore.dart';
 
 import '../controllers/detail_product_controller.dart';

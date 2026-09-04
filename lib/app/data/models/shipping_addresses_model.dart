@@ -1,4 +1,4 @@
-import 'package:pos_royal/app/domain/entities/shipping_addresses_entity.dart';
+import 'package:img/app/domain/entities/shipping_addresses_entity.dart';
 
 class ShippingAddressesModel extends ShippingAddressesEntity {
   ShippingAddressesModel({

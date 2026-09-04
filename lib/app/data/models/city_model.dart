@@ -1,4 +1,4 @@
-import 'package:pos_royal/app/domain/entities/city_entity.dart';
+import 'package:img/app/domain/entities/city_entity.dart';
 
 class CityModel extends CityEntity {
   CityModel({

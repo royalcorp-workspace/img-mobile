@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:pos_royal/app/routes/app_pages.dart';
-import 'package:pos_royal/app/core/utils/token_storage.dart';
-import 'package:pos_royal/app/shared/data/app_shared_prefs.dart';
+import 'package:img/app/routes/app_pages.dart';
+import 'package:img/app/core/utils/token_storage.dart';
+import 'package:img/app/shared/data/app_shared_prefs.dart';
 
 class SplashController extends GetxController {
   @override
@@ -14,7 +14,8 @@ class SplashController extends GetxController {
     await Future.delayed(const Duration(seconds: 2));
 
     // 1. If valid token exists -> go straight to NAVIGATION (skip onboarding & login)
-    if (TokenStorage.serverToken != null && TokenStorage.serverToken!.isNotEmpty) {
+    if (TokenStorage.serverToken != null &&
+        TokenStorage.serverToken!.isNotEmpty) {
       Get.offAllNamed(Routes.NAVIGATION);
       return;
     }

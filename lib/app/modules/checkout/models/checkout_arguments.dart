@@ -1,5 +1,5 @@
-import 'package:pos_royal/app/domain/entities/add_to_cart_entity.dart';
-import 'package:pos_royal/app/domain/entities/product_by_id_entity.dart';
+import 'package:img/app/domain/entities/add_to_cart_entity.dart';
+import 'package:img/app/domain/entities/product_by_id_entity.dart';
 
 enum CheckoutSource {
   cart,

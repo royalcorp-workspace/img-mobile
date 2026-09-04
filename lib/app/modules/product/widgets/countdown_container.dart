@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
 
 class CountdownContainer extends StatelessWidget {
   const CountdownContainer({super.key, required this.text});

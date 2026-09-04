@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pos_royal/app/data/models/address_model.dart';
-import 'package:pos_royal/app/data/models/checkout_model.dart';
-import 'package:pos_royal/app/data/models/variant_model.dart';
-import 'package:pos_royal/app/domain/entities/order_entity.dart';
-import 'package:pos_royal/app/modules/address/controllers/address_controller.dart';
+import 'package:img/app/data/models/address_model.dart';
+import 'package:img/app/data/models/checkout_model.dart';
+import 'package:img/app/data/models/variant_model.dart';
+import 'package:img/app/domain/entities/order_entity.dart';
+import 'package:img/app/modules/address/controllers/address_controller.dart';
 
 void main() {
   test('applyPrimarySelection marks only the selected address as primary', () {

@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
-import 'package:pos_royal/app/data/datasources/voucher_remote_datasource.dart';
-import 'package:pos_royal/app/data/repositories/voucher_repository_impl.dart';
-import 'package:pos_royal/app/domain/repositories/voucher_repository.dart';
-import 'package:pos_royal/app/domain/usecases/get_voucher_usecase.dart';
+import 'package:img/app/data/datasources/voucher_remote_datasource.dart';
+import 'package:img/app/data/repositories/voucher_repository_impl.dart';
+import 'package:img/app/domain/repositories/voucher_repository.dart';
+import 'package:img/app/domain/usecases/get_voucher_usecase.dart';
 
 import '../controllers/voucher_controller.dart';
 

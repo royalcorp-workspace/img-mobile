@@ -1,5 +1,5 @@
-import 'package:pos_royal/app/domain/entities/add_to_cart_entity.dart';
-import 'package:pos_royal/app/domain/repositories/cart_repository.dart';
+import 'package:img/app/domain/entities/add_to_cart_entity.dart';
+import 'package:img/app/domain/repositories/cart_repository.dart';
 
 class AddToCartUsecase {
   final CartRepository repository;

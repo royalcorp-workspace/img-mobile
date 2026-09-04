@@ -1,8 +1,8 @@
-import 'package:pos_royal/app/data/datasources/cart_remote_datasource.dart';
-import 'package:pos_royal/app/domain/entities/add_to_cart_entity.dart';
-import 'package:pos_royal/app/domain/entities/cart_entity.dart';
-import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
-import 'package:pos_royal/app/domain/repositories/cart_repository.dart';
+import 'package:img/app/data/datasources/cart_remote_datasource.dart';
+import 'package:img/app/domain/entities/add_to_cart_entity.dart';
+import 'package:img/app/domain/entities/cart_entity.dart';
+import 'package:img/app/domain/entities/paginated_entity.dart';
+import 'package:img/app/domain/repositories/cart_repository.dart';
 
 class CartRepositoryImpl implements CartRepository {
   final CartRemoteDataSource remoteDataSource;

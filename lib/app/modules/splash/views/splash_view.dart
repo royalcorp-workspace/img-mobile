@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:pos_royal/app/core/helper/helper.dart';
+import 'package:img/app/core/helper/helper.dart';
 
 import '../controllers/splash_controller.dart';
 

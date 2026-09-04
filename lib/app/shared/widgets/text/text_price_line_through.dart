@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
 
 class TextPriceLineThrough extends StatelessWidget {
   const TextPriceLineThrough({

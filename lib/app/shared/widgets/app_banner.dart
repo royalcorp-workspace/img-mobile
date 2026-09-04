@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/helper/helper.dart';
+import 'package:img/app/core/helper/helper.dart';
 
 class CustomBanner extends StatelessWidget {
   const CustomBanner({

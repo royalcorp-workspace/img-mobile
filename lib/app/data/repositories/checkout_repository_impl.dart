@@ -1,7 +1,7 @@
-import 'package:pos_royal/app/data/datasources/checkout_remote_datasource.dart';
-import 'package:pos_royal/app/data/models/checkout_params_model.dart';
-import 'package:pos_royal/app/domain/entities/checkout_entity.dart';
-import 'package:pos_royal/app/domain/repositories/checkout_repository.dart';
+import 'package:img/app/data/datasources/checkout_remote_datasource.dart';
+import 'package:img/app/data/models/checkout_params_model.dart';
+import 'package:img/app/domain/entities/checkout_entity.dart';
+import 'package:img/app/domain/repositories/checkout_repository.dart';
 
 class CheckoutRepositoryImpl implements CheckoutRepository {
   final CheckoutRemoteDataSource remoteDataSource;

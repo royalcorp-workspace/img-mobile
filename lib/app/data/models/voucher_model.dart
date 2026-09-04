@@ -1,4 +1,4 @@
-import 'package:pos_royal/app/domain/entities/voucher_entity.dart';
+import 'package:img/app/domain/entities/voucher_entity.dart';
 
 class VoucherModel extends VoucherEntity {
   VoucherModel({

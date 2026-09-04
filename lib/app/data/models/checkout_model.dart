@@ -1,4 +1,4 @@
-import 'package:pos_royal/app/domain/entities/checkout_entity.dart';
+import 'package:img/app/domain/entities/checkout_entity.dart';
 
 class CheckoutModel extends CheckoutEntity {
   CheckoutModel({

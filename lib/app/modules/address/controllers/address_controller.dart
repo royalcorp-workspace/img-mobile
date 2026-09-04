@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/core/utils/token_storage.dart';
-import 'package:pos_royal/app/data/datasources/customer_remote_datasource.dart';
-import 'package:pos_royal/app/data/models/address_model.dart';
-import 'package:pos_royal/app/data/models/user_model.dart';
-import 'package:pos_royal/app/data/repositories/customer_repository_impl.dart';
-import 'package:pos_royal/app/domain/usecases/get_customer_usecase.dart';
-import 'package:pos_royal/app/domain/usecases/set_primary_address_usecase.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/core/utils/token_storage.dart';
+import 'package:img/app/data/datasources/customer_remote_datasource.dart';
+import 'package:img/app/data/models/address_model.dart';
+import 'package:img/app/data/models/user_model.dart';
+import 'package:img/app/data/repositories/customer_repository_impl.dart';
+import 'package:img/app/domain/usecases/get_customer_usecase.dart';
+import 'package:img/app/domain/usecases/set_primary_address_usecase.dart';
 
 class AddressController extends GetxController {
   AddressController({this.getCustomerUsecase, this.setPrimaryAddressUsecase});

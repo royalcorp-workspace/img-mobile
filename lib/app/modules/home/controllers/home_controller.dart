@@ -2,21 +2,21 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:add_to_cart_animation/add_to_cart_animation.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/data/datasources/category_remote_datasource.dart';
-import 'package:pos_royal/app/data/datasources/product_remote_datasource.dart';
-import 'package:pos_royal/app/modules/cart/controllers/cart_controller.dart';
-import 'package:pos_royal/app/data/repositories/category_repository_impl.dart';
-import 'package:pos_royal/app/data/repositories/product_repository_impl.dart';
-import 'package:pos_royal/app/domain/usecases/get_cart_usecase.dart';
-import 'package:pos_royal/app/domain/usecases/get_category_usecase.dart';
-import 'package:pos_royal/app/domain/usecases/get_product_by_id_usecase.dart';
-import 'package:pos_royal/app/domain/usecases/get_products_usecase.dart';
-import 'package:pos_royal/app/modules/home/views/home_view.dart';
-import 'package:pos_royal/app/modules/home/widgets/parts_product.dart';
-import 'package:pos_royal/app/routes/app_pages.dart';
-import 'package:pos_royal/app/shared/widgets/app_banner.dart';
-import 'package:pos_royal/app/domain/entities/product_entity.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/data/datasources/category_remote_datasource.dart';
+import 'package:img/app/data/datasources/product_remote_datasource.dart';
+import 'package:img/app/modules/cart/controllers/cart_controller.dart';
+import 'package:img/app/data/repositories/category_repository_impl.dart';
+import 'package:img/app/data/repositories/product_repository_impl.dart';
+import 'package:img/app/domain/usecases/get_cart_usecase.dart';
+import 'package:img/app/domain/usecases/get_category_usecase.dart';
+import 'package:img/app/domain/usecases/get_product_by_id_usecase.dart';
+import 'package:img/app/domain/usecases/get_products_usecase.dart';
+import 'package:img/app/modules/home/views/home_view.dart';
+import 'package:img/app/modules/home/widgets/parts_product.dart';
+import 'package:img/app/routes/app_pages.dart';
+import 'package:img/app/shared/widgets/app_banner.dart';
+import 'package:img/app/domain/entities/product_entity.dart';
 
 class HomeController extends GetxController {
   HomeController({

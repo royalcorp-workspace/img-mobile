@@ -1,4 +1,4 @@
-import 'package:pos_royal/app/domain/entities/check_status_entity.dart';
+import 'package:img/app/domain/entities/check_status_entity.dart';
 
 class CheckStatusPaymentModel extends CheckStatusPaymentEntity {
   CheckStatusPaymentModel({
