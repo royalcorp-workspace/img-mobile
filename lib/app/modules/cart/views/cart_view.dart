@@ -59,6 +59,40 @@ class CartView extends GetView<CartController> {
           return CustomScrollView(
             controller: controller.pageScrollController,
             slivers: [
+              SliverToBoxAdapter(
+                  child: Visibility(
+                visible: controller.hasSelectedItems,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    10.verticalSpace,
+                    GestureDetector(
+                      onTap: () =>
+                          controller.showDeleteSelectedConfirmationDialog(),
+                      child: RPadding(
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              textAlign: TextAlign.end,
+                              '${controller.selectedCartItems.length} produk terpilih',
+                              style: AppTextStyle.smallBlack,
+                            ),
+                            Text(
+                              textAlign: TextAlign.end,
+                              'Hapus',
+                              style: AppTextStyle.smallBlackBold
+                                  .copyWith(color: AppColors.red),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    10.verticalSpace,
+                  ],
+                ),
+              )),
               SliverList.builder(
                 itemCount: items.length,
                 itemBuilder: (context, index) {

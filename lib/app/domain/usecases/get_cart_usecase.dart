@@ -9,7 +9,7 @@ class GetCartUsecase {
 
   Future<PaginatedEntity<CartEntity>> call({
     int page = 1,
-    int itemsPerPage = 10,
+    int itemsPerPage = 100,
   }) {
     return repository.getCart(
       page: page,

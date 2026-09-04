@@ -15,7 +15,7 @@ abstract class CartRemoteDataSource {
   });
   Future<PaginatedEntity<CartEntity>> getCart({
     int page = 1,
-    int itemsPerPage = 10,
+    int itemsPerPage = 100,
   });
 }
 
@@ -89,7 +89,7 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
 
   @override
   Future<PaginatedEntity<CartEntity>> getCart(
-      {int page = 1, int itemsPerPage = 10}) async {
+      {int page = 1, int itemsPerPage = 100}) async {
     logger.info(
         '🔍 [CART-DS] Fetching cart: page=$page, itemsPerPage=$itemsPerPage');
     try {

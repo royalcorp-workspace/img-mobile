@@ -10,6 +10,6 @@ abstract class CartRepository {
   });
   Future<PaginatedEntity<CartEntity>> getCart({
     int page = 1,
-    int itemsPerPage = 10,
+    int itemsPerPage = 100,
   });
 }

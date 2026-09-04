@@ -1,7 +1,41 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:img/app/domain/entities/add_to_cart_entity.dart';
 import 'package:img/app/domain/entities/cart_entity.dart';
+import 'package:img/app/domain/entities/paginated_entity.dart';
+import 'package:img/app/domain/repositories/cart_repository.dart';
+import 'package:img/app/domain/usecases/delete_cart_item_usecase.dart';
 import 'package:img/app/modules/cart/controllers/cart_controller.dart';
+
+class _FakeCartRepository implements CartRepository {
+  final List<String> deletedItems = [];
+
+  @override
+  Future<AddToCartEntity> addToCart(AddToCartEntityParams params) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deleteCartItem({
+    required String addToCartId,
+    required String itemId,
+  }) async {
+    deletedItems.add(itemId);
+  }
+
+  @override
+  Future<PaginatedEntity<CartEntity>> getCart({
+    int page = 1,
+    int itemsPerPage = 100,
+  }) async {
+    return PaginatedEntity(
+      data: const [],
+      totalCount: 0,
+      hasMore: false,
+      page: page,
+      itemsPerPage: itemsPerPage,
+    );
+  }
+}
 
 void main() {
   group('CartController selection logic', () {
@@ -70,6 +104,53 @@ void main() {
       ];
 
       expect(controller.cartItemCount, 6);
+    });
+
+    test('deleteSelectedItems removes all selected cart items', () async {
+      final repository = _FakeCartRepository();
+      final controller = CartController(
+        deleteCartItemUsecase: DeleteCartItemUsecase(repository),
+      );
+
+      controller.carts.value = [
+        CartEntity(
+          items: [
+            ItemCart(
+              id: 'a',
+              addToCartId: 'cart-1',
+              quantity: 2,
+              unitPrice: 100000,
+              total: 200000,
+            ),
+            ItemCart(
+              id: 'b',
+              addToCartId: 'cart-1',
+              quantity: 1,
+              unitPrice: 50000,
+              total: 50000,
+            ),
+            ItemCart(
+              id: 'c',
+              addToCartId: 'cart-1',
+              quantity: 1,
+              unitPrice: 75000,
+              total: 75000,
+            ),
+          ],
+        ),
+      ];
+
+      controller.selectedItems['a'] = true;
+      controller.selectedItems['c'] = true;
+      controller.itemQuantities['a'] = 2;
+      controller.itemQuantities['c'] = 1;
+
+      await controller.deleteSelectedItems();
+
+      expect(repository.deletedItems, containsAll(['a', 'c']));
+      expect(controller.selectedItems['a'], isNull);
+      expect(controller.selectedItems['c'], isNull);
+      expect(controller.hasSelectedItems, isFalse);
     });
   });
 }

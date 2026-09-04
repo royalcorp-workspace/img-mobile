@@ -159,7 +159,7 @@ class CartController extends GetxController {
   var isLoadingMore = false.obs;
   var hasMore = true.obs;
   var currentPage = 1;
-  final int itemsPerPage = 10;
+  final int itemsPerPage = 100;
 
   final ScrollController pageScrollController = ScrollController();
 
@@ -187,6 +187,164 @@ class CartController extends GetxController {
 
     itemQuantities.removeWhere((itemId, _) => !currentItemIds.contains(itemId));
     selectedItems.removeWhere((itemId, _) => !currentItemIds.contains(itemId));
+  }
+
+  Future<void> deleteSelectedItems() async {
+    final selected = selectedCartItems;
+    if (selected.isEmpty) return;
+
+    final useCase = deleteCartItemUsecase ??
+        DeleteCartItemUsecase(
+          CartRepositoryImpl(
+            remoteDataSource: CartRemoteDataSourceImpl(),
+          ),
+        );
+
+    final deletedIds = <String>[];
+
+    try {
+      for (final item in selected) {
+        final itemId = item.id ?? uniqueKeyForItem(item);
+        if (item.addToCartId == null || item.id == null) {
+          Get.snackbar(
+            'Gagal menghapus produk',
+            'Data produk tidak lengkap.',
+            backgroundColor: AppColors.red,
+            colorText: AppColors.white,
+          );
+          return;
+        }
+
+        await useCase.call(
+          addToCartId: item.addToCartId!,
+          itemId: item.id!,
+        );
+
+        deletedIds.add(itemId);
+      }
+
+      final updatedCarts = <CartEntity>[];
+      for (final cart in carts) {
+        final filteredItems = <ItemCart>[];
+        for (final item in cart.items ?? <ItemCart>[]) {
+          final itemId = item.id ?? uniqueKeyForItem(item);
+          if (!deletedIds.contains(itemId)) {
+            filteredItems.add(item);
+          }
+        }
+
+        updatedCarts.add(
+          CartEntity(
+            id: cart.id,
+            customerId: cart.customerId,
+            sessionId: cart.sessionId,
+            customerName: cart.customerName,
+            customerEmail: cart.customerEmail,
+            customerPhone: cart.customerPhone,
+            subtotal: cart.subtotal,
+            tax: cart.tax,
+            discount: cart.discount,
+            total: cart.total,
+            creator: cart.creator,
+            editor: cart.editor,
+            createdAt: cart.createdAt,
+            updatedAt: cart.updatedAt,
+            customer: cart.customer,
+            items: filteredItems.isEmpty ? [] : filteredItems,
+          ),
+        );
+      }
+
+      carts.assignAll(
+          updatedCarts.where((cart) => (cart.items ?? []).isNotEmpty));
+      for (final itemId in deletedIds) {
+        selectedItems.remove(itemId);
+        itemQuantities.remove(itemId);
+      }
+
+      selectedItems.refresh();
+      itemQuantities.refresh();
+      update();
+    } catch (e) {
+      Get.snackbar(
+        'Gagal menghapus produk',
+        'Terjadi kesalahan saat menghapus produk terpilih.',
+        backgroundColor: AppColors.red,
+        colorText: AppColors.white,
+      );
+    }
+  }
+
+  void showDeleteSelectedConfirmationDialog() {
+    if (!hasSelectedItems) return;
+
+    Get.dialog(
+      Dialog(
+        backgroundColor: AppColors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Hapus Produk Terpilih ?',
+                style: AppTextStyle.xLargeBlackBold,
+                textAlign: TextAlign.center,
+              ),
+              12.verticalSpace,
+              Text(
+                '${selectedCartItems.length} produk yang kamu pilih akan dihapus\ndari keranjang secara permanen',
+                style: AppTextStyle.mediumGrey.copyWith(height: 1.5),
+                textAlign: TextAlign.center,
+              ),
+              24.verticalSpace,
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back(),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.grey.shade300),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: Text(
+                        'Batal',
+                        style: AppTextStyle.largeBlackBold,
+                      ),
+                    ),
+                  ),
+                  16.horizontalSpace,
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        Get.back();
+                        await deleteSelectedItems();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: Text(
+                        'Hapus',
+                        style: AppTextStyle.largeWhiteBold,
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
   }
 
   void showDeleteConfirmationDialog(String itemId) {

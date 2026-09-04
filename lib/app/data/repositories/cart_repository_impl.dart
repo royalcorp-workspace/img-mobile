@@ -27,7 +27,7 @@ class CartRepositoryImpl implements CartRepository {
 
   @override
   Future<PaginatedEntity<CartEntity>> getCart(
-      {int page = 1, int itemsPerPage = 10}) {
+      {int page = 1, int itemsPerPage = 100}) {
     return remoteDataSource.getCart(
       page: page,
       itemsPerPage: itemsPerPage,
