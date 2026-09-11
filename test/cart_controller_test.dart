@@ -4,10 +4,12 @@ import 'package:img/app/domain/entities/cart_entity.dart';
 import 'package:img/app/domain/entities/paginated_entity.dart';
 import 'package:img/app/domain/repositories/cart_repository.dart';
 import 'package:img/app/domain/usecases/delete_cart_item_usecase.dart';
+import 'package:img/app/domain/usecases/get_cart_usecase.dart';
 import 'package:img/app/modules/cart/controllers/cart_controller.dart';
 
 class _FakeCartRepository implements CartRepository {
   final List<String> deletedItems = [];
+  List<CartEntity> cartData = [];
 
   @override
   Future<AddToCartEntity> addToCart(AddToCartEntityParams params) async {
@@ -28,8 +30,8 @@ class _FakeCartRepository implements CartRepository {
     int itemsPerPage = 100,
   }) async {
     return PaginatedEntity(
-      data: const [],
-      totalCount: 0,
+      data: cartData,
+      totalCount: cartData.length,
       hasMore: false,
       page: page,
       itemsPerPage: itemsPerPage,
@@ -86,8 +88,7 @@ void main() {
       expect(controller.selectedTotalPrice, 300000);
     });
 
-    test('cartItemCount aggregates the total number of items from all carts',
-        () {
+    test('cartItemCount counts cart lines rather than item quantities', () {
       final controller = CartController();
       controller.carts.value = [
         CartEntity(
@@ -103,7 +104,8 @@ void main() {
         ),
       ];
 
-      expect(controller.cartItemCount, 6);
+      expect(controller.cartItemCount, 3);
+      expect(controller.cartItemCount, 3);
     });
 
     test('deleteSelectedItems removes all selected cart items', () async {
@@ -151,6 +153,40 @@ void main() {
       expect(controller.selectedItems['a'], isNull);
       expect(controller.selectedItems['c'], isNull);
       expect(controller.hasSelectedItems, isFalse);
+    });
+
+    test(
+        'fetchCart updates itemQuantities when item quantity changes on server',
+        () async {
+      final repository = _FakeCartRepository();
+      repository.cartData = [
+        CartEntity(
+          items: [
+            ItemCart(id: 'a', quantity: 1, unitPrice: 100000, total: 100000),
+          ],
+        ),
+      ];
+      final getCartUseCase = GetCartUsecase(repository);
+      final controller = CartController(getCartUsecase: getCartUseCase);
+
+      // Initial fetch -> quantity is 1
+      await controller.fetchCart();
+      expect(controller.getItemQuantity('a'), 1);
+
+      // Simulate adding product to cart: server now returns quantity 2
+      repository.cartData = [
+        CartEntity(
+          items: [
+            ItemCart(id: 'a', quantity: 2, unitPrice: 100000, total: 200000),
+          ],
+        ),
+      ];
+
+      // fetchCart called after adding to cart
+      await controller.fetchCart();
+
+      // Quantity should now immediately reflect 2 without requiring app restart
+      expect(controller.getItemQuantity('a'), 2);
     });
   });
 }

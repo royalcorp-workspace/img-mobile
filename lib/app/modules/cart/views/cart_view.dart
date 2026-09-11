@@ -38,96 +38,101 @@ class CartView extends GetView<CartController> {
           )
         ],
       ),
-      body: Obx(
-        () {
-          if (controller.isLoading.value && controller.carts.isEmpty) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.primaryColor),
-            );
-          }
+      body: GetBuilder<CartController>(
+        initState: (_) {
+          controller.fetchCart();
+        },
+        builder: (_) => Obx(
+          () {
+            if (controller.isLoading.value && controller.carts.isEmpty) {
+              return const Center(
+                child: CircularProgressIndicator(color: AppColors.primaryColor),
+              );
+            }
 
-          final items = controller.cartItems;
-          if (items.isEmpty) {
-            return const Center(
-              child: Text(
-                'Keranjang kamu kosong',
-                style: AppTextStyle.largeBlackBold,
-              ),
-            );
-          }
+            final items = controller.cartItems;
+            if (items.isEmpty) {
+              return const Center(
+                child: Text(
+                  'Keranjang kamu kosong',
+                  style: AppTextStyle.largeBlackBold,
+                ),
+              );
+            }
 
-          return CustomScrollView(
-            controller: controller.pageScrollController,
-            slivers: [
-              SliverToBoxAdapter(
-                  child: Visibility(
-                visible: controller.hasSelectedItems,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    10.verticalSpace,
-                    GestureDetector(
-                      onTap: () =>
-                          controller.showDeleteSelectedConfirmationDialog(),
-                      child: RPadding(
-                        padding: EdgeInsets.symmetric(horizontal: 8),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              textAlign: TextAlign.end,
-                              '${controller.selectedCartItems.length} produk terpilih',
-                              style: AppTextStyle.smallBlack,
-                            ),
-                            Text(
-                              textAlign: TextAlign.end,
-                              'Hapus',
-                              style: AppTextStyle.smallBlackBold
-                                  .copyWith(color: AppColors.red),
-                            ),
-                          ],
+            return CustomScrollView(
+              controller: controller.pageScrollController,
+              slivers: [
+                SliverToBoxAdapter(
+                    child: Visibility(
+                  visible: controller.hasSelectedItems,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      10.verticalSpace,
+                      GestureDetector(
+                        onTap: () =>
+                            controller.showDeleteSelectedConfirmationDialog(),
+                        child: RPadding(
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                textAlign: TextAlign.end,
+                                '${controller.selectedCartItems.length} produk terpilih',
+                                style: AppTextStyle.smallBlack,
+                              ),
+                              Text(
+                                textAlign: TextAlign.end,
+                                'Hapus',
+                                style: AppTextStyle.smallBlackBold
+                                    .copyWith(color: AppColors.red),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    10.verticalSpace,
-                  ],
-                ),
-              )),
-              SliverList.builder(
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  final itemId = item.id ?? controller.uniqueKeyForItem(item);
+                      10.verticalSpace,
+                    ],
+                  ),
+                )),
+                SliverList.builder(
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    final item = items[index];
+                    final itemId = item.id ?? controller.uniqueKeyForItem(item);
 
-                  return Obx(
-                    () => CartItemCard(
-                      name: item.name ?? item.product?.name ?? '',
-                      description: item.product?.slug ?? '',
-                      price: Helper.formatCurrency((item.unitPrice).toInt()),
-                      quantity: controller.getItemQuantity(itemId),
-                      fillColor: WidgetStatePropertyAll(
-                        controller.isItemSelected(itemId)
-                            ? AppColors.primaryColor
-                            : AppColors.lightGrey,
+                    return Obx(
+                      () => CartItemCard(
+                        name: item.name ?? item.product?.name ?? '',
+                        description: item.product?.slug ?? '',
+                        price: Helper.formatCurrency((item.unitPrice).toInt()),
+                        quantity: controller.getItemQuantity(itemId),
+                        fillColor: WidgetStatePropertyAll(
+                          controller.isItemSelected(itemId)
+                              ? AppColors.primaryColor
+                              : AppColors.lightGrey,
+                        ),
+                        value: controller.isItemSelected(itemId),
+                        onChanged: (e) {
+                          controller.toggleItemSelection(itemId, e ?? false);
+                        },
+                        decrement: () {
+                          controller.decrementQty(itemId);
+                        },
+                        increment: () {
+                          controller.incrementQty(itemId);
+                        },
                       ),
-                      value: controller.isItemSelected(itemId),
-                      onChanged: (e) {
-                        controller.toggleItemSelection(itemId, e ?? false);
-                      },
-                      decrement: () {
-                        controller.decrementQty(itemId);
-                      },
-                      increment: () {
-                        controller.incrementQty(itemId);
-                      },
-                    ),
-                  );
-                },
-              ),
-              _buildLoadMoreIndicator()
-            ],
-          );
-        },
+                    );
+                  },
+                ),
+                _buildLoadMoreIndicator()
+              ],
+            );
+          },
+        ),
       ),
       bottomNavigationBar: Obx(
         () => Container(
@@ -148,7 +153,7 @@ class CartView extends GetView<CartController> {
             ),
             child: BottomAppBar(
                 padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                height: 68.h,
+                height: 80.h,
                 child: Column(
                   children: [
                     // 15.verticalSpace,

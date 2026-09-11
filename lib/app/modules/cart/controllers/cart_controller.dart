@@ -56,17 +56,7 @@ class CartController extends GetxController {
     }
   }
 
-  int get cartItemCount {
-    var total = 0;
-    for (final cart in carts) {
-      if (cart.items != null) {
-        for (final item in cart.items!) {
-          total += item.quantity;
-        }
-      }
-    }
-    return total;
-  }
+  int get cartItemCount => cartItems.length;
 
   List<ItemCart> get cartItems {
     final List<ItemCart> items = [];
@@ -181,12 +171,15 @@ class CartController extends GetxController {
     for (final item in cartItems) {
       final itemId = item.id ?? uniqueKeyForItem(item);
       currentItemIds.add(itemId);
-      itemQuantities.putIfAbsent(itemId, () => item.quantity);
+      itemQuantities[itemId] = item.quantity;
       selectedItems.putIfAbsent(itemId, () => false);
     }
 
     itemQuantities.removeWhere((itemId, _) => !currentItemIds.contains(itemId));
     selectedItems.removeWhere((itemId, _) => !currentItemIds.contains(itemId));
+
+    itemQuantities.refresh();
+    selectedItems.refresh();
   }
 
   Future<void> deleteSelectedItems() async {
