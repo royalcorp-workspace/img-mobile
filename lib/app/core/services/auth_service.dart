@@ -51,6 +51,7 @@ class AuthService {
               '✅ [AUTH-VERIFY] Server token received: ${serverToken.substring(0, 20)}...');
           await TokenStorage.save(
             serverToken,
+            refresh: authResponse.refreshToken,
             csrf: authResponse.csrfToken,
             userDataJson: authResponse.user != null
                 ? jsonEncode(authResponse.user!.toJson())
@@ -268,6 +269,7 @@ class AuthService {
               '✅ [AUTH-LOGIN] Server token received: ${serverToken.substring(0, 20)}...');
           await TokenStorage.save(
             serverToken,
+            refresh: authResponse.refreshToken,
             csrf: authResponse.csrfToken,
             userDataJson: authResponse.user != null
                 ? jsonEncode(authResponse.user!.toJson())

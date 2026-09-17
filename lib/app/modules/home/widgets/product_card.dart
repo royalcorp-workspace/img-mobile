@@ -196,7 +196,7 @@ class ProductsCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: AppTextStyle.largeBlackBold,
+                  style: AppTextStyle.mediumBlack600,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),

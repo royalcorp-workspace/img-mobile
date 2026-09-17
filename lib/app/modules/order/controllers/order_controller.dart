@@ -34,6 +34,47 @@ class OrderController extends GetxController {
   RxString customerId = ''.obs;
   final SearchController searchAnchorController = SearchController();
 
+  List<OrderHistoryEntity> get filteredOrderHistory {
+    switch (selectedIndex.value) {
+      case 1:
+        return orderHistory
+            .where((order) => _hasStatus(order, const {'draft'}))
+            .toList();
+      case 2:
+        return orderHistory
+            .where((order) => _hasStatus(order, const {'menunggu pembayaran'}))
+            .toList();
+      case 3:
+        return orderHistory
+            .where((order) => _hasStatus(order, const {'diproses'}))
+            .toList();
+      case 4:
+        return orderHistory
+            .where((order) => _hasStatus(order, const {'gagal transaksi'}))
+            .toList();
+      case 5:
+        return orderHistory
+            .where((order) => _isCompletedStatus(order.statusLabel))
+            .toList();
+      default:
+        return orderHistory.toList();
+    }
+  }
+
+  bool _hasStatus(OrderHistoryEntity order, Set<String> statuses) {
+    return statuses.contains(order.statusLabel.trim().toLowerCase());
+  }
+
+  bool _isCompletedStatus(String status) {
+    switch (status.trim().toLowerCase()) {
+      case 'terkirim':
+      case 'selesai':
+        return true;
+      default:
+        return false;
+    }
+  }
+
   @override
   void onInit() {
     super.onInit();
@@ -147,18 +188,22 @@ class OrderController extends GetxController {
 
   Color getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'menunggu pembayaran' || 'Draft':
-        return const Color(0xFFD97706); // Orange
+      case 'menunggu pembayaran':
+        return const Color(0xFFD97706);
+      case 'draft':
+        return Colors.grey; // Grey
       case 'konfirmasi':
-        return const Color(0xFF2563EB); // Blue
+        return const Color(0xFF2563EB); // Purple
       case 'diproses':
-        return const Color(0xFF7C3AED); // Purple
+        return const Color(0xFF7C3AED); // Orange
       case 'dikirim':
         return const Color(0xFF0891B2); // Cyan
       case 'terkirim':
         return const Color(0xFF16A34A); // Green
+      case 'gagal transaksi':
+        return const Color(0xFFA31616); // Red
       default:
-        return Colors.grey;
+        return const Color(0xFF2563EB);
     }
   }
 }

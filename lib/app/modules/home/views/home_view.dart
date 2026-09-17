@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:img/app/core/helper/helper.dart';
 import 'package:img/app/core/styles/app_color.dart';
 import 'package:img/app/modules/cart/controllers/cart_controller.dart';
-import 'package:img/app/modules/home/widgets/parts_product.dart';
 
 import 'package:get/get.dart';
 import 'package:img/app/modules/home/widgets/icon_badge.dart';
@@ -57,39 +56,68 @@ class HomeView extends GetView<HomeController> {
                 ),
               ),
               20.verticalSpace,
-              SizedBox(
-                height: 70.h,
-                child: GridView.count(
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 4,
-                  children: controller.customPartsProduct
-                      .map((e) =>
-                          PartsProduct(imagePath: e.imagePath, title: e.title))
-                      .toList(),
-                ),
-              ),
-              18.verticalSpace,
-              const SectionHeader(title: 'Kategori Pilihan', actionText: ''),
+              // ** Kategori Pilihan for Phase 2**
+              // const SectionHeader(title: 'Kategori Pilihan', actionText: ''),
+              // 12.verticalSpace,
+              // SizedBox(
+              //   height: 70.h,
+              //   child: GridView.count(
+              //     physics: const NeverScrollableScrollPhysics(),
+              //     crossAxisCount: 4,
+              //     children: controller.customPartsProduct
+              //         .map((e) =>
+              //             PartsProduct(imagePath: e.imagePath, title: e.title))
+              //         .toList(),
+              //   ),
+              // ),
+              // 18.verticalSpace,
+
+              const SectionHeader(
+                  title: 'Kategori & Brand Pilihan', actionText: ''),
               12.verticalSpace,
-              RPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: SizedBox(
-                  height: 55.h,
-                  child: GridView.count(
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 6,
-                    crossAxisSpacing: 5.w,
-                    childAspectRatio: 0.95,
-                    shrinkWrap: true,
-                    children: controller.customBrand
-                        .map((e) => CategoryBrand(imagePath: e.imagePath))
-                        .toList(),
+              SizedBox(
+                height: 80.h,
+                child: Obx(
+                  () => ListView.separated(
+                    controller: controller.categoryScrollController,
+                    padding: EdgeInsets.symmetric(horizontal: 8.w),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: controller.category.length +
+                        (controller.isLoadingMoreCategories.value ? 1 : 0),
+                    separatorBuilder: (_, __) => SizedBox(width: 2.w),
+                    itemBuilder: (context, index) {
+                      if (index >= controller.category.length) {
+                        return SizedBox(
+                          width: 50.w,
+                          child: const Center(
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.primaryColor,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+
+                      final category = controller.category[index];
+                      return CategoryBrand(
+                        onTap: () => controller.fetchProducts(
+                          categoryId: category.id,
+                          search: '',
+                        ),
+                        imagePath: category.image,
+                        name: category.name,
+                      );
+                    },
                   ),
                 ),
               ),
               15.verticalSpace,
               const SectionHeader(
-                  title: 'Promo Spesial Untukmu', actionText: ''),
+                  title: 'Produk Spesial Untukmu', actionText: ''),
               12.verticalSpace,
             ],
           ),
@@ -250,11 +278,12 @@ class HomeView extends GetView<HomeController> {
         },
       ),
       actions: [
-        IconBadge(
-          iconPath: 'ic_notification.svg',
-          count: 3,
-        ),
-        2.horizontalSpace,
+        //** Next Phase **
+        // IconBadge(
+        //   iconPath: 'ic_notification.svg',
+        //   count: 3,
+        // ),
+        // 2.horizontalSpace,
         GetBuilder<CartController>(
           builder: (cartController) {
             return AddToCartIcon(
@@ -296,9 +325,7 @@ class HomeView extends GetView<HomeController> {
       }
       if (hasCategory) {
         final cat = controller.category.firstWhereOrNull(
-          (c) =>
-              c is CategoryEntity &&
-              c.id == controller.selectedCategoryId.value,
+          (c) => c.id == controller.selectedCategoryId.value,
         );
         final catName = cat is CategoryEntity ? cat.name : 'Kategori';
         if (filterText.isNotEmpty) {
@@ -453,38 +480,58 @@ class CategoryBrand extends StatelessWidget {
   const CategoryBrand({
     super.key,
     required this.imagePath,
+    this.name = '',
+    this.onTap,
   });
 
-  final String imagePath;
+  final String? imagePath;
+  final String name;
+  final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(8),
-      height: 50.h,
-      width: 50.w,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 12,
-            color: Colors.black.withOpacity(0.08),
-          )
-        ],
-      ),
+    final image = imagePath?.trim() ?? '';
+    final hasImage = image.isNotEmpty;
+    final isNetworkImage =
+        image.startsWith('http://') || image.startsWith('https://');
+
+    return InkWell(
+      onTap: onTap,
       child: Container(
+        width: 92.w,
+        height: 92.w,
+        padding: EdgeInsets.all(6.r),
         decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.lightGrey),
-          image: DecorationImage(
-            fit: BoxFit.fill,
-            image: AssetImage(
-              Helper.getImagePath(imagePath),
-            ),
-          ),
+          color: AppColors.white12,
+          borderRadius: BorderRadius.circular(12.r),
         ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8.r),
+          child: hasImage
+              ? Image(
+                  image: isNetworkImage
+                      ? NetworkImage(image)
+                      : AssetImage(Helper.getImagePath(image)),
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => _buildNameFallback(),
+                )
+              : _buildNameFallback(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNameFallback() {
+    return Container(
+      color: AppColors.white,
+      alignment: Alignment.center,
+      padding: EdgeInsets.all(4.r),
+      child: Text(
+        name,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+        style: AppTextStyle.mediumBlackBold.copyWith(fontSize: 11.sp),
       ),
     );
   }

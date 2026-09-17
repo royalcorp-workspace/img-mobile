@@ -110,7 +110,7 @@ class AddressView extends GetView<AddressController> {
                                     ],
                                     10.verticalSpace,
                                     Text(
-                                      '${item.address}, ${item.subDistrictId}, ${item.cityId}, ${item.postalCode}',
+                                      '${item.address}, ${item.subDistrictName}, ${item.districtName}, ${item.cityName}, ${item.provinceName}, ${item.postalCode}',
                                       style: AppTextStyle.mediumBlackSecondary,
                                     ),
                                     if (item.isPrimary == true) ...[

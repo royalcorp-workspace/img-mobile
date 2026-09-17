@@ -14,83 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "355423691978-pgv8ulnfbmqmaqdq3iq793plh7m6a5vo.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyB25iTc5dpqwSjz1Zo323tThbB-KTnSpy0"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "355423691978-pgv8ulnfbmqmaqdq3iq793plh7m6a5vo.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "355423691978-9h5huqvobsm386imj14l5kgpb9f5fljg.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "posroyal.posRoyal.dev"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:355423691978:android:3f772e61c8f3e0131c0033",
-        "android_client_info": {
-          "package_name": "posroyal.pos_royal"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "355423691978-pgv8ulnfbmqmaqdq3iq793plh7m6a5vo.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyB25iTc5dpqwSjz1Zo323tThbB-KTnSpy0"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "355423691978-pgv8ulnfbmqmaqdq3iq793plh7m6a5vo.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "355423691978-9h5huqvobsm386imj14l5kgpb9f5fljg.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "posroyal.posRoyal.dev"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:355423691978:android:89ac8794cd7d55321c0033",
-        "android_client_info": {
-          "package_name": "posroyal.pos_royal.dev"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "355423691978-c59b7l3uf4u8ajak8soch41f7j68j4rg.apps.googleusercontent.com",
+          "client_id": "355423691978-r361lu0bnpenpeaf9f5pmpcvkp2oiqa7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "posroyal.pos_royal.dev",
-            "certificate_hash": "97e1be742e0e876322e0afbc59f70ac401f6b33d"
+            "package_name": "com.img.royalcorp.dev",
+            "certificate_hash": "c5a13cc59977adc4cc1f860e8cdaf27391ad9456"
           }
         },
         {

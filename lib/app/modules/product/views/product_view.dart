@@ -256,11 +256,12 @@ class ProductView extends GetView<ProductController> {
       ),
       backgroundColor: AppColors.primaryColor,
       actions: [
-        const IconBadge(
-          iconPath: 'ic_notification.svg',
-          count: 3,
-        ),
-        2.horizontalSpace,
+        //** Next Phase **
+        // IconBadge(
+        //   iconPath: 'ic_notification.svg',
+        //   count: 3,
+        // ),
+        // 2.horizontalSpace,
         GetBuilder<CartController>(
           builder: (cartController) {
             return AddToCartIcon(

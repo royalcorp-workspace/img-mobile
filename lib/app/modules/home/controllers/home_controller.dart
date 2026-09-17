@@ -5,6 +5,7 @@ import 'package:add_to_cart_animation/add_to_cart_animation.dart';
 import 'package:img/app/core/utils/log/logger.dart';
 import 'package:img/app/data/datasources/category_remote_datasource.dart';
 import 'package:img/app/data/datasources/product_remote_datasource.dart';
+import 'package:img/app/domain/entities/category_entity.dart';
 import 'package:img/app/modules/cart/controllers/cart_controller.dart';
 import 'package:img/app/data/repositories/category_repository_impl.dart';
 import 'package:img/app/data/repositories/product_repository_impl.dart';
@@ -36,8 +37,12 @@ class HomeController extends GetxController {
 
   // Products Infinite Scroll State
   final ScrollController pageScrollController = ScrollController(); // renamed
+  final ScrollController categoryScrollController = ScrollController();
   var products = [].obs;
-  var category = [].obs;
+  var category = <CategoryEntity>[].obs;
+  var isLoadingMoreCategories = false.obs;
+  var hasMoreCategories = true.obs;
+  var categoryPage = 1;
   var isLoadingProducts = false.obs;
   var isLoadingMore = false.obs;
   var hasMore = true.obs;
@@ -94,14 +99,15 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     _initScrollListener();
+    _initCategoryScrollListener();
     fetchProducts();
-    refreshCart();
     fetchCategory();
   }
 
   @override
   void onClose() {
     pageScrollController.dispose();
+    categoryScrollController.dispose();
     searchAnchorController.dispose();
     super.onClose();
   }
@@ -111,6 +117,15 @@ class HomeController extends GetxController {
       if (pageScrollController.position.pixels >=
           pageScrollController.position.maxScrollExtent - 300) {
         loadNextPage();
+      }
+    });
+  }
+
+  void _initCategoryScrollListener() {
+    categoryScrollController.addListener(() {
+      if (categoryScrollController.position.pixels >=
+          categoryScrollController.position.maxScrollExtent - 120) {
+        loadNextCategoryPage();
       }
     });
   }
@@ -160,6 +175,7 @@ class HomeController extends GetxController {
       );
       products.assignAll(result.data);
       hasMore.value = result.hasMore;
+      _loadNextPageIfNeeded();
     } catch (e, stackTrace) {
       logger.severe('❌ [HOME] Failed to fetch products: $e');
       if (kDebugMode) {
@@ -174,28 +190,21 @@ class HomeController extends GetxController {
 
   Future<void> refreshCart() async {
     try {
-      isLoadingProducts.value = true;
-      currentPage = 1;
-      hasMore.value = true;
       await cartController.fetchCart();
-      hasMore.value = cartController.hasMore.value;
     } catch (e, stackTrace) {
       logger.severe('❌ [HOME] Failed to fetch carts: $e');
       if (kDebugMode) {
         print('❌ [HOME] Error: $e');
         print(stackTrace);
       }
-    } finally {
-      isLoadingProducts.value = false;
     }
   }
 
   Future<void> fetchCategory() async {
     try {
-      isLoadingProducts.value = true;
       productErrorMessage.value = '';
-      currentPage = 1;
-      hasMore.value = true;
+      categoryPage = 1;
+      hasMoreCategories.value = true;
 
       final useCase = getCategoryUsecase ??
           GetCategoryUsecase(
@@ -204,10 +213,9 @@ class HomeController extends GetxController {
             ),
           );
 
-      final result =
-          await useCase.call(page: currentPage, itemsPerPage: itemsPerPage);
+      final result = await useCase.call(page: 1, itemsPerPage: itemsPerPage);
       category.assignAll(result.data);
-      hasMore.value = result.hasMore;
+      hasMoreCategories.value = result.hasMore;
     } catch (e, stackTrace) {
       logger.severe('❌ [HOME] Failed to fetch category: $e');
       if (kDebugMode) {
@@ -215,8 +223,40 @@ class HomeController extends GetxController {
         print(stackTrace);
       }
       productErrorMessage.value = e.toString();
+    }
+  }
+
+  Future<void> loadNextCategoryPage() async {
+    if (isLoadingMoreCategories.value || !hasMoreCategories.value) return;
+
+    try {
+      isLoadingMoreCategories.value = true;
+      final nextPage = categoryPage + 1;
+
+      final useCase = getCategoryUsecase ??
+          GetCategoryUsecase(
+            CategoryRepositoryImpl(
+              remoteDataSource: CategoryRemoteDataSourceImpl(),
+            ),
+          );
+
+      final result = await useCase.call(
+        page: nextPage,
+        itemsPerPage: itemsPerPage,
+      );
+      if (result.data.isNotEmpty) {
+        category.addAll(result.data);
+        categoryPage = nextPage;
+      }
+      hasMoreCategories.value = result.hasMore;
+    } catch (e, stackTrace) {
+      logger.severe('❌ [HOME] Failed to load next category page: $e');
+      if (kDebugMode) {
+        print('❌ [HOME] Error: $e');
+        print(stackTrace);
+      }
     } finally {
-      isLoadingProducts.value = false;
+      isLoadingMoreCategories.value = false;
     }
   }
 
@@ -282,6 +322,16 @@ class HomeController extends GetxController {
     } finally {
       isLoadingMore.value = false;
     }
+  }
+
+  void _loadNextPageIfNeeded() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!pageScrollController.hasClients ||
+          pageScrollController.position.maxScrollExtent > 300) {
+        return;
+      }
+      loadNextPage();
+    });
   }
 
   Future<List<ProductEntity>> searchProductsFromApi(String query) async {

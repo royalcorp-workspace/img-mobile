@@ -543,6 +543,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.img.royalcorp;
+				REVERSED_CLIENT_ID = com.googleusercontent.apps.122681934982-rul6nn8bjdmbi5l6n0snq80coptt2ddp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -617,6 +618,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.img.royalcorp;
+				REVERSED_CLIENT_ID = com.googleusercontent.apps.122681934982-rul6nn8bjdmbi5l6n0snq80coptt2ddp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -850,6 +852,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.img.royalcorp;
+				REVERSED_CLIENT_ID = com.googleusercontent.apps.122681934982-rul6nn8bjdmbi5l6n0snq80coptt2ddp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -1055,6 +1058,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.img.royalcorp;
+				REVERSED_CLIENT_ID = com.googleusercontent.apps.122681934982-rul6nn8bjdmbi5l6n0snq80coptt2ddp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -1292,6 +1296,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.img.royalcorp.dev;
+				REVERSED_CLIENT_ID = com.googleusercontent.apps.355423691978-troea3anss1lm2r7otd857srcjf8slc1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -1316,6 +1321,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.img.royalcorp.dev;
+				REVERSED_CLIENT_ID = com.googleusercontent.apps.355423691978-troea3anss1lm2r7otd857srcjf8slc1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -1562,6 +1568,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.img.royalcorp.dev;
+				REVERSED_CLIENT_ID = com.googleusercontent.apps.355423691978-troea3anss1lm2r7otd857srcjf8slc1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

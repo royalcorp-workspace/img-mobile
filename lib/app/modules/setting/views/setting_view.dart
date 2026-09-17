@@ -99,20 +99,20 @@ class SettingView extends GetView<SettingController> {
                 child: Column(
                   children: [
                     _menuTile(Icons.feedback_outlined, "Ulasan Produk", () {}),
-                    _divider(),
-                    _menuTile(
-                      Icons.local_offer_outlined,
-                      "Voucher & Promo",
-                      () => Get.toNamed(Routes.VOUCHER),
-                    ),
+                    // _divider(),
+                    // _menuTile(
+                    //   Icons.local_offer_outlined,
+                    //   "Voucher & Promo",
+                    //   () => Get.toNamed(Routes.VOUCHER),
+                    // ),
                     _divider(),
                     _menuTile(
                       Icons.location_on_outlined,
                       "Daftar Alamat",
                       () => Get.toNamed(Routes.ADDRESS),
                     ),
-                    _divider(),
-                    _menuTile(Icons.security_outlined, "Keamanan", () {}),
+                    // _divider(),
+                    // _menuTile(Icons.security_outlined, "Keamanan", () {}),
                   ],
                 ),
               ),

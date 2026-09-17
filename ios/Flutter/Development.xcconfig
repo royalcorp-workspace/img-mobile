@@ -3,4 +3,5 @@
 // Example: set PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.pos_royal.dev
 PRODUCT_BUNDLE_IDENTIFIER = com.img.royalcorp.dev
 FLAVOR = development
+REVERSED_CLIENT_ID = com.googleusercontent.apps.355423691978-troea3anss1lm2r7otd857srcjf8slc1
 // Add any other dev-specific flags here

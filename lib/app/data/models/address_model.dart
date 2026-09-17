@@ -1,63 +1,91 @@
 class AddressModel {
-  final String? id;
-  final String? userId;
-  final String? cityId;
-  final String? subDistrictId;
   final String? label;
   final String? recipientName;
   final String? phone;
   final String? address;
+  final String? cityId;
+  final String? userId;
+  final String? subDistrictId;
   final String? postalCode;
   final bool? isPrimary;
-  final String? createdAt;
-  final String? updatedAt;
+  final String? id;
+  final String? customerId;
+  final String? cityName;
+  final String? subDistrictName;
+  final String? districtName;
+  final String? provinceId;
+  final String? provinceName;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   AddressModel({
-    this.id,
-    this.userId,
-    this.cityId,
-    this.subDistrictId,
     this.label,
     this.recipientName,
     this.phone,
     this.address,
+    this.cityId,
+    this.userId,
+    this.subDistrictId,
     this.postalCode,
     this.isPrimary,
+    this.id,
+    this.customerId,
+    this.cityName,
+    this.subDistrictName,
+    this.districtName,
+    this.provinceId,
+    this.provinceName,
     this.createdAt,
     this.updatedAt,
   });
 
   factory AddressModel.fromJson(Map<String, dynamic> json) {
     return AddressModel(
-      id: json['id'] as String?,
-      userId: json['user_id'] as String?,
-      cityId: json['city_id'] as String?,
-      subDistrictId: json['sub_district_id'] as String?,
-      label: json['label'] as String?,
-      recipientName: json['recipient_name'] as String?,
-      phone: json['phone'] as String?,
-      address: json['address'] as String?,
-      postalCode: json['postal_code'] as String?,
-      isPrimary: json['is_primary'] as bool?,
-      createdAt: json['created_at'] as String?,
-      updatedAt: json['updated_at'] as String?,
+      label: json["label"],
+      recipientName: json["recipient_name"],
+      phone: json["phone"],
+      address: json["address"],
+      cityId: json["city_id"],
+      userId: json["user_id"],
+      subDistrictId: json["sub_district_id"],
+      postalCode: json["postal_code"],
+      isPrimary: json["is_primary"],
+      id: json["id"],
+      customerId: json["customer_id"],
+      cityName: json["city_name"],
+      subDistrictName: json["sub_district_name"],
+      districtName: json["district_name"],
+      provinceId: json["province_id"],
+      provinceName: json["province_name"],
+      createdAt: json["created_at"] == null
+          ? null
+          : DateTime.parse(json["created_at"]),
+      updatedAt: json["updated_at"] == null
+          ? null
+          : DateTime.parse(json["updated_at"]),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'user_id': userId,
-      'city_id': cityId,
-      'sub_district_id': subDistrictId,
-      'label': label,
-      'recipient_name': recipientName,
-      'phone': phone,
-      'address': address,
-      'postal_code': postalCode,
-      'is_primary': isPrimary,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
+      "label": label,
+      "recipient_name": recipientName,
+      "phone": phone,
+      "address": address,
+      "city_id": cityId,
+      "user_id": userId,
+      "sub_district_id": subDistrictId,
+      "postal_code": postalCode,
+      "is_primary": isPrimary,
+      "id": id,
+      "customer_id": customerId,
+      "city_name": cityName,
+      "sub_district_name": subDistrictName,
+      "district_name": districtName,
+      "province_id": provinceId,
+      "province_name": provinceName,
+      "created_at": createdAt?.toIso8601String(),
+      "updated_at": updatedAt?.toIso8601String(),
     };
   }
 }

@@ -23,7 +23,7 @@ class PartsProduct extends StatelessWidget {
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: AppColors.warmIvory,
+            color: AppColors.white12,
           ),
           child: Image.asset(Helper.getImagePath(imagePath)),
         ),

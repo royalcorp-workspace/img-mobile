@@ -54,7 +54,7 @@ class AuthController extends GetxController {
     final email = loginEmailC.text.trim();
     final password = loginPassC.text;
 
-    logger.info('  Email: $email');
+    logger.info('Email: $email');
 
     // Validation
     // if (email.isEmpty) {
@@ -265,17 +265,5 @@ class AuthController extends GetxController {
     } finally {
       isLoggingIn.value = false;
     }
-  }
-
-  @override
-  void onClose() {
-    loginEmailC.dispose();
-    loginPassC.dispose();
-    registerNameC.dispose();
-    registerEmailC.dispose();
-    registerPhoneC.dispose();
-    registerPassC.dispose();
-    registerConfirmPassC.dispose();
-    super.onClose();
   }
 }
