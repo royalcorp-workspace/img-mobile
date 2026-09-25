@@ -7,8 +7,12 @@ import 'package:img/app/data/models/primary_address_model.dart';
 
 abstract class CustomerRemoteDataSource {
   Future<CustomerModel> getCustomer(String customerId);
+  Future<CustomerModel> getCustomerProfile();
   Future<CustomerModel> updateCustomer(
     String customerId,
+    CustomerUpdateRequest request,
+  );
+  Future<CustomerModel> updateCustomerProfile(
     CustomerUpdateRequest request,
   );
   Future<PrimaryAddressModel> setPrimaryAddress(
@@ -18,6 +22,31 @@ abstract class CustomerRemoteDataSource {
 }
 
 class CustomerRemoteDataSourceImpl implements CustomerRemoteDataSource {
+  @override
+  Future<CustomerModel> getCustomerProfile() async {
+    logger.info('🔍 [CUSTOMER-DS] Fetching customer profile: /customers/me');
+    try {
+      final response = await DioNetwork.appAPI.get('/customers/me');
+
+      if (response.statusCode != null && response.statusCode! < 300) {
+        final data = response.data is Map<String, dynamic>
+            ? response.data as Map<String, dynamic>
+            : Map<String, dynamic>.from(response.data as Map);
+        return CustomerModel.fromJson(data);
+      } else {
+        throw Exception(
+            'Failed to load customer profile: status ${response.statusCode}');
+      }
+    } catch (e, stackTrace) {
+      logger.severe('❌ [CUSTOMER-DS] Error fetching customer profile: $e');
+      if (kDebugMode) {
+        print('❌ [CUSTOMER-DS] Error: $e');
+        print(stackTrace);
+      }
+      rethrow;
+    }
+  }
+
   @override
   Future<CustomerModel> getCustomer(String customerId) async {
     logger.info('🔍 [CUSTOMER-DS] Fetching customer: $customerId');
@@ -35,6 +64,36 @@ class CustomerRemoteDataSourceImpl implements CustomerRemoteDataSource {
       }
     } catch (e, stackTrace) {
       logger.severe('❌ [CUSTOMER-DS] Error fetching customer: $e');
+      if (kDebugMode) {
+        print('❌ [CUSTOMER-DS] Error: $e');
+        print(stackTrace);
+      }
+      rethrow;
+    }
+  }
+
+  @override
+  Future<CustomerModel> updateCustomerProfile(
+    CustomerUpdateRequest request,
+  ) async {
+    logger.info('🔍 [CUSTOMER-DS] Updating customer profile: /customers/me');
+    try {
+      final response = await DioNetwork.appAPI.put(
+        '/customers/me',
+        data: request.toJson(),
+      );
+
+      if (response.statusCode != null && response.statusCode! < 300) {
+        final data = response.data is Map<String, dynamic>
+            ? response.data as Map<String, dynamic>
+            : Map<String, dynamic>.from(response.data as Map);
+        return CustomerModel.fromJson(data);
+      } else {
+        throw Exception(
+            'Failed to update customer profile: status ${response.statusCode}');
+      }
+    } catch (e, stackTrace) {
+      logger.severe('❌ [CUSTOMER-DS] Error updating customer profile: $e');
       if (kDebugMode) {
         print('❌ [CUSTOMER-DS] Error: $e');
         print(stackTrace);

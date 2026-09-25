@@ -43,7 +43,7 @@ class ProductCard extends StatelessWidget {
                     topRight: Radius.circular(20),
                   ),
                   image: DecorationImage(
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                     image: AssetImage(
                       Helper.getImagePath(
                         'img_product1.jpg',
@@ -148,18 +148,20 @@ class ProductsCard extends StatelessWidget {
     required this.rating,
     required this.review,
     required this.imageProvider,
+    this.width,
   });
 
   final GlobalKey widgetKey = GlobalKey();
   final void Function(GlobalKey) onTap;
   final String title, formattedPrice, formattedOriginalPrice, rating, review;
   final ImageProvider<Object> imageProvider;
+  final double? width;
 
   @override
   Widget build(BuildContext context) {
     Container mandatoryContainer = Container(
       key: widgetKey,
-      width: 150.w,
+      width: width ?? 150.w,
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(20),
@@ -175,16 +177,26 @@ class ProductsCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            height: 80.h,
             decoration: BoxDecoration(
+              color: AppColors.white,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20),
                 topRight: Radius.circular(20),
               ),
-              image: DecorationImage(
-                fit: BoxFit.cover,
+            ),
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+              child: Image(
                 image: imageProvider,
-                onError: (exception, stackTrace) {},
+                width: double.infinity,
+                fit: BoxFit.fill,
+                errorBuilder: (_, __, ___) => Image.asset(
+                  'assets/images/img_product1.jpg',
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
           ),
@@ -244,6 +256,117 @@ class ProductsCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(20),
       onTap: () => onTap(widgetKey),
       child: mandatoryContainer,
+    );
+  }
+}
+
+class ProductCardShimmer extends StatefulWidget {
+  const ProductCardShimmer({
+    super.key,
+    this.width,
+    this.height,
+  });
+
+  final double? width;
+  final double? height;
+
+  @override
+  State<ProductCardShimmer> createState() => _ProductCardShimmerState();
+}
+
+class _ProductCardShimmerState extends State<ProductCardShimmer>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1300),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final offset = (_controller.value * 2) - 1;
+        return ShaderMask(
+          blendMode: BlendMode.srcATop,
+          shaderCallback: (bounds) => LinearGradient(
+            begin: Alignment(offset - 1, 0),
+            end: Alignment(offset + 1, 0),
+            colors: const [
+              Color(0xFFE8E8E8),
+              Color(0xFFF7F7F7),
+              Color(0xFFE8E8E8),
+            ],
+          ).createShader(bounds),
+          child: child,
+        );
+      },
+      child: Container(
+        width: widget.width ?? 150.w,
+        height: widget.height,
+        padding: EdgeInsets.all(8.r),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(color: AppColors.lightGrey),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 80.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14.r),
+              ),
+            ),
+            12.verticalSpace,
+            Container(
+              width: double.infinity,
+              height: 14.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+            ),
+            7.verticalSpace,
+            FractionallySizedBox(
+              widthFactor: .72,
+              child: Container(
+                height: 14.h,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4.r),
+                ),
+              ),
+            ),
+            const Spacer(),
+            Container(
+              width: 92.w,
+              height: 16.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+            ),
+            8.verticalSpace,
+            Container(
+              width: 70.w,
+              height: 12.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

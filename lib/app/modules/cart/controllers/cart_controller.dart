@@ -46,9 +46,9 @@ class CartController extends GetxController {
       _syncItemState();
       update();
     } catch (e, stackTrace) {
-      logger.severe('❌ [HOME] Failed to fetch carts: $e');
+      logger.severe('❌ [CART] Failed to fetch carts: $e');
       if (kDebugMode) {
-        print('❌ [HOME] Error: $e');
+        print('❌ [CART] Error: $e');
         print(stackTrace);
       }
     } finally {

@@ -39,11 +39,6 @@ class AddressView extends GetView<AddressController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  20.verticalSpace,
-                  Text(
-                    'Alamat Pengiriman',
-                    style: AppTextStyle.largeBlackBold,
-                  ),
                   15.verticalSpace,
                   if (controller.addresses.isEmpty) ...[
                     Center(

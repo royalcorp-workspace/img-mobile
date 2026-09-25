@@ -8,13 +8,10 @@ import 'package:img/app/modules/order/controllers/order_controller.dart';
 import 'package:img/app/routes/app_pages.dart';
 import 'package:img/app/shared/widgets/stepper/app_simple_horizontal_step_indicator.dart';
 
-class OrderV1 extends StatelessWidget {
+class OrderV1 extends GetView<OrderController> {
   const OrderV1({
     super.key,
-    required this.controller,
   });
-
-  final OrderController controller;
 
   @override
   Widget build(BuildContext context) {

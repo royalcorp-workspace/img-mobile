@@ -41,8 +41,29 @@ class DetailProductView extends GetView<DetailProductController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              DetailProductCard(
-                widgetKey: controller.widgetKey,
+              Obx(
+                () {
+                  final product = controller.productByID.value;
+                  final selectedVariant = product.variants?.isNotEmpty == true
+                      ? product.variants![controller.selectedIndex.value]
+                      : null;
+                  final variantImage = selectedVariant?.imageUrl ?? '';
+                  final productImages = product.images
+                          ?.map((image) => image.imageUrl)
+                          .where((url) => url.isNotEmpty)
+                          .toList() ??
+                      <String>[];
+                  final imageUrls = [
+                    if (variantImage.isNotEmpty) variantImage,
+                    ...productImages.where((url) => url != variantImage),
+                  ];
+
+                  return DetailProductCard(
+                    widgetKey: controller.widgetKey,
+                    imageUrls: imageUrls,
+                    pageController: controller.pageController,
+                  );
+                },
               ),
               10.verticalSpace,
               RPadding(
@@ -282,7 +303,7 @@ class DetailProductView extends GetView<DetailProductController> {
                     shrinkWrap: true,
                     itemCount: controller.productByID.value.variants?.length,
                     itemBuilder: (context, index) => Obx(
-                      () => SizeContainer(
+                      () => SizeContainerWidget(
                         label:
                             '${controller.productByID.value.variants?[index].width}x${controller.productByID.value.variants?[index].length}',
                         isSelected: controller.selectedIndex.value == index,
@@ -323,11 +344,11 @@ class DetailProductView extends GetView<DetailProductController> {
                       shrinkWrap: true,
                       itemCount: controller.productByID.value.colors?.length,
                       itemBuilder: (context, index) => Obx(
-                        () => SizeContainer(
+                        () => SizeContainerWidget(
                           label:
                               '${controller.productByID.value.colors?[index].name}',
                           isSelected: controller.selectedIndex.value == index,
-                          onTap: () => controller.selectedIndex.value = index,
+                          onTap: () => controller.changeSelectedIndex(index),
                         ),
                       ),
                     ),
@@ -671,19 +692,21 @@ ${controller.productByID.value.description}
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.lightGrey),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.message_outlined,
-                      size: 20,
-                      color: AppColors.black,
+                GestureDetector(
+                  child: Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.lightGrey),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.message_outlined,
+                        size: 20,
+                        color: AppColors.black,
+                      ),
                     ),
                   ),
                 ),
@@ -789,8 +812,8 @@ ${controller.productByID.value.description}
   }
 }
 
-class SizeContainer extends StatelessWidget {
-  const SizeContainer({
+class SizeContainerWidget extends StatelessWidget {
+  const SizeContainerWidget({
     super.key,
     required this.label,
     this.onTap,

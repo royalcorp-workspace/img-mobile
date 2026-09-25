@@ -51,6 +51,7 @@ class DropdownFormFieldApp<T> extends StatelessWidget {
             ],
           ),
           child: DropdownButtonFormField<T>(
+            alignment: Alignment.centerLeft,
             isExpanded: isExpanded,
             value: value,
             items: items,
@@ -65,8 +66,8 @@ class DropdownFormFieldApp<T> extends StatelessWidget {
               hintStyle: AppTextStyle.mediumGrey,
               fillColor: AppColors.white,
               filled: true,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              isDense: true,
+              contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
 
               // Matching Borders
               enabledBorder: OutlineInputBorder(

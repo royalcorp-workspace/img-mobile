@@ -1,27 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:img/app/core/helper/helper.dart';
-import 'package:img/app/core/styles/app_color.dart';
 
 class DetailProductCard extends StatelessWidget {
-  const DetailProductCard({super.key, required this.widgetKey});
+  const DetailProductCard({
+    super.key,
+    required this.widgetKey,
+    required this.imageUrls,
+    this.pageController,
+  });
 
   final GlobalKey widgetKey;
+  final List<String> imageUrls;
+  final PageController? pageController;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final images = imageUrls.where((url) => url.isNotEmpty).toList();
+    final galleryHeight = MediaQuery.sizeOf(context).width * 1;
+
+    return SizedBox(
       key: widgetKey,
-      height: 250,
-      width: Get.width,
-      decoration: BoxDecoration(
-        color: AppColors.red,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      clipBehavior: Clip.hardEdge,
-      child: Image.asset(
-        fit: BoxFit.cover,
-        Helper.getImagePath('img_product1.jpg'),
+      width: double.infinity,
+      height: galleryHeight,
+      child: PageView.builder(
+        controller: pageController,
+        itemCount: images.isEmpty ? 1 : images.length,
+        itemBuilder: (context, index) {
+          final imageUrl = images.isEmpty ? '' : images[index];
+          return ColoredBox(
+            color: Colors.white,
+            child: Image(
+              image: imageUrl.startsWith('http://') ||
+                      imageUrl.startsWith('https://')
+                  ? NetworkImage(imageUrl)
+                  : const AssetImage('assets/images/img_product1.jpg'),
+              fit: BoxFit.contain,
+            ),
+          );
+        },
       ),
     );
   }

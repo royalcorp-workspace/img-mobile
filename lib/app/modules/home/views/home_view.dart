@@ -7,13 +7,17 @@ import 'package:img/app/core/styles/app_color.dart';
 import 'package:img/app/modules/cart/controllers/cart_controller.dart';
 
 import 'package:get/get.dart';
+import 'package:img/app/modules/home/widgets/category_brand.dart';
 import 'package:img/app/modules/home/widgets/icon_badge.dart';
 import 'package:img/app/modules/home/widgets/product_card.dart';
 import 'package:img/app/modules/home/widgets/section_header.dart';
+import 'package:img/app/modules/product/widgets/countdown_container.dart';
+import 'package:img/app/modules/product/widgets/product_promotion_card.dart';
 import 'package:img/app/routes/app_pages.dart';
 import 'package:img/app/shared/widgets/app_banner.dart';
 import 'package:img/app/core/styles/app_text_style.dart';
 import 'package:img/app/domain/entities/category_entity.dart';
+import 'package:img/app/shared/widgets/app_divider.dart';
 import 'package:img/app/shared/widgets/app_search_field.dart';
 
 import '../controllers/home_controller.dart';
@@ -24,19 +28,99 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: CustomScrollView(
-        controller: controller.pageScrollController,
-        slivers: [
-          _buildCarouselandCategory(),
-          _buildActiveFilterHeader(),
-          _buildProductGrid(),
-          _buildLoadMoreIndicator()
+      body: Stack(
+        children: [
+          CustomScrollView(
+            controller: controller.pageScrollController,
+            slivers: [
+              _buildEventsActive(),
+              _buildCarousel(),
+              _buildCategory(),
+              _buildActiveFilterHeader(),
+              _buildProductGrid(),
+              _buildLoadMoreIndicator()
+            ],
+          ),
+          Obx(
+            () => AnimatedPositioned(
+                duration: const Duration(milliseconds: 250),
+                bottom: controller.showScrollToTop.value ? 24 : -70,
+                right: 20,
+                child: GestureDetector(
+                  onTap: () => controller.scrollToTop(),
+                  child: CircleAvatar(
+                    backgroundColor: AppColors.primaryColor,
+                    child: Icon(
+                      Icons.arrow_upward_outlined,
+                      size: 18,
+                    ),
+                  ),
+                )),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildCarouselandCategory() {
+  Widget _buildEventsActive() {
+    return SliverToBoxAdapter(
+      child: Obx(
+        () => Visibility(
+          visible: controller.searchQuery.value.trim().isEmpty &&
+              controller.selectedCategoryId.value == null,
+          child: Column(
+            children: [
+              const CustomBanner(imagePath: 'img_banner5.png'),
+              15.verticalSpace,
+              Visibility(
+                visible: controller.start.value != 0,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RPadding(
+                      padding: EdgeInsets.symmetric(horizontal: 14),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Promo Diskon Hingga 78%',
+                            style: AppTextStyle.largeBlackBold,
+                          ),
+                          Obx(
+                            () => CountdownContainer(
+                              text: controller.formattedTime,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    15.verticalSpace,
+                    RPadding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ProductPromotionCard(),
+                          ProductPromotionCard(),
+                          ProductPromotionCard(),
+                          ProductPromotionCard(),
+                        ],
+                      ),
+                    ),
+                    20.verticalSpace,
+                    const AppDivider(),
+                    20.verticalSpace,
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCarousel() {
     return SliverToBoxAdapter(
       child: Obx(
         () => Visibility(
@@ -46,8 +130,8 @@ class HomeView extends GetView<HomeController> {
             children: [
               5.verticalSpace,
               CarouselSlider(
-                items: controller.customBannerListSlider
-                    .map((e) => CustomBanner(imagePath: e.imagePath))
+                items: controller.banners
+                    .map((e) => CustomBanner(imagePath: e.imageWebUrl))
                     .toList(),
                 options: CarouselOptions(
                   autoPlay: true,
@@ -55,25 +139,23 @@ class HomeView extends GetView<HomeController> {
                   height: 122.h,
                 ),
               ),
-              20.verticalSpace,
-              // ** Kategori Pilihan for Phase 2**
-              // const SectionHeader(title: 'Kategori Pilihan', actionText: ''),
-              // 12.verticalSpace,
-              // SizedBox(
-              //   height: 70.h,
-              //   child: GridView.count(
-              //     physics: const NeverScrollableScrollPhysics(),
-              //     crossAxisCount: 4,
-              //     children: controller.customPartsProduct
-              //         .map((e) =>
-              //             PartsProduct(imagePath: e.imagePath, title: e.title))
-              //         .toList(),
-              //   ),
-              // ),
-              // 18.verticalSpace,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-              const SectionHeader(
-                  title: 'Kategori & Brand Pilihan', actionText: ''),
+  Widget _buildCategory() {
+    return SliverToBoxAdapter(
+      child: Obx(
+        () => Visibility(
+          visible: controller.searchQuery.value.trim().isEmpty &&
+              controller.selectedCategoryId.value == null,
+          child: Column(
+            children: [
+              20.verticalSpace,
+              const SectionHeader(title: 'Brand Pilihan', actionText: ''),
               12.verticalSpace,
               SizedBox(
                 height: 80.h,
@@ -104,10 +186,17 @@ class HomeView extends GetView<HomeController> {
 
                       final category = controller.category[index];
                       return CategoryBrand(
-                        onTap: () => controller.fetchProducts(
-                          categoryId: category.id,
-                          search: '',
-                        ),
+                        onTap: () {
+                          Get.toNamed(
+                            Routes.CATEGORY_PRODUCT,
+                            arguments: {
+                              'initialIndex': index,
+                              'categories': controller.category.toList(),
+                              'selectedCategory': category,
+                              'categoryId': category.id,
+                            },
+                          );
+                        },
                         imagePath: category.image,
                         name: category.name,
                       );
@@ -195,7 +284,7 @@ class HomeView extends GetView<HomeController> {
 
           // Category Suggestions
           final matchingCategories = controller.category.where((cat) {
-            final name = cat is CategoryEntity ? cat.name : cat.toString();
+            final name = cat.name;
             return keyword.isEmpty ||
                 name.toLowerCase().contains(keyword.toLowerCase());
           }).toList();
@@ -211,8 +300,8 @@ class HomeView extends GetView<HomeController> {
               ),
             );
             for (final cat in matchingCategories) {
-              final catName = cat is CategoryEntity ? cat.name : cat.toString();
-              final catId = cat is CategoryEntity ? cat.id : null;
+              final catName = cat.name;
+              final catId = cat.id;
               suggestions.add(
                 ListTile(
                   leading: const Icon(Icons.trending_up_outlined,
@@ -378,9 +467,19 @@ class HomeView extends GetView<HomeController> {
   Widget _buildProductGrid() {
     return Obx(() {
       if (controller.isLoadingProducts.value && controller.products.isEmpty) {
-        return const SliverFillRemaining(
-          child: Center(
-            child: CircularProgressIndicator(color: AppColors.primaryColor),
+        return SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          sliver: SliverGrid(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => const ProductCardShimmer(),
+              childCount: 6,
+            ),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: .73,
+            ),
           ),
         );
       }
@@ -392,29 +491,27 @@ class HomeView extends GetView<HomeController> {
             (context, index) {
               final product = controller.products[index];
               final title = product?.name ?? "-";
-
-              if (product != null) {
-                controller.priceVal = product!.finalPrice > 0
-                    ? product!.finalPrice
-                    : (product!.basePrice > 0
-                        ? product!.basePrice
-                        : (product!.variants.isNotEmpty
-                            ? (product!.variants.first.finalPrice > 0
-                                ? product!.variants.first.finalPrice
-                                : product!.variants.first.price)
-                            : 0.0));
-                if (product!.basePrice > controller.priceVal) {
-                  controller.originalPriceVal = product!.basePrice;
-                }
-              }
-              controller.formattedPrice = product != null
-                  ? Helper.formatCurrency(controller.priceVal.toInt())
-                  : Helper.formatCurrency(0);
-              controller.formattedOriginalPrice = controller.originalPriceVal >
-                      0
-                  ? Helper.formatCurrency(controller.originalPriceVal.toInt())
-                  : '';
-              controller.imageUrl = product?.thumbnail ??
+              final variant = product?.variants.isNotEmpty == true
+                  ? product!.variants.first
+                  : null;
+              final price = product == null
+                  ? 0.0
+                  : product.finalPrice > 0
+                      ? product.finalPrice
+                      : product.basePrice > 0
+                          ? product.basePrice
+                          : variant?.finalPrice != null &&
+                                  variant!.finalPrice > 0
+                              ? variant.finalPrice
+                              : variant?.price ?? 0.0;
+              final originalPrice = product == null
+                  ? 0.0
+                  : product.basePrice > price
+                      ? product.basePrice
+                      : (variant?.basePrice ?? 0) > price
+                          ? (variant?.basePrice ?? 0.0)
+                          : 0.0;
+              final imageUrl = product?.thumbnail ??
                   (product?.images.isNotEmpty == true
                       ? product!.images.first.image
                       : '');
@@ -423,9 +520,9 @@ class HomeView extends GetView<HomeController> {
               final String review = '(${product?.totalReviews ?? 128})';
 
               ImageProvider imageProvider;
-              if (controller.imageUrl.startsWith('http://') ||
-                  controller.imageUrl.startsWith('https://')) {
-                imageProvider = NetworkImage(controller.imageUrl);
+              if (imageUrl.startsWith('http://') ||
+                  imageUrl.startsWith('https://')) {
+                imageProvider = NetworkImage(imageUrl);
               } else {
                 imageProvider = AssetImage(
                   Helper.getImagePath('img_product1.jpg'),
@@ -433,8 +530,10 @@ class HomeView extends GetView<HomeController> {
               }
 
               return ProductsCard(
-                formattedOriginalPrice: controller.formattedOriginalPrice,
-                formattedPrice: controller.formattedPrice,
+                formattedOriginalPrice: originalPrice > 0
+                    ? Helper.formatCurrency(originalPrice.toInt())
+                    : '',
+                formattedPrice: Helper.formatCurrency(price.toInt()),
                 imageProvider: imageProvider,
                 rating: rating,
                 review: review,
@@ -448,8 +547,7 @@ class HomeView extends GetView<HomeController> {
             crossAxisCount: 2,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
-            childAspectRatio:
-                controller.formattedOriginalPrice.isEmpty ? .73 : .65,
+            childAspectRatio: 0.53,
           ),
         ),
       );
@@ -473,66 +571,5 @@ class HomeView extends GetView<HomeController> {
         ),
       );
     });
-  }
-}
-
-class CategoryBrand extends StatelessWidget {
-  const CategoryBrand({
-    super.key,
-    required this.imagePath,
-    this.name = '',
-    this.onTap,
-  });
-
-  final String? imagePath;
-  final String name;
-  final void Function()? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final image = imagePath?.trim() ?? '';
-    final hasImage = image.isNotEmpty;
-    final isNetworkImage =
-        image.startsWith('http://') || image.startsWith('https://');
-
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        width: 92.w,
-        height: 92.w,
-        padding: EdgeInsets.all(6.r),
-        decoration: BoxDecoration(
-          color: AppColors.white12,
-          borderRadius: BorderRadius.circular(12.r),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8.r),
-          child: hasImage
-              ? Image(
-                  image: isNetworkImage
-                      ? NetworkImage(image)
-                      : AssetImage(Helper.getImagePath(image)),
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => _buildNameFallback(),
-                )
-              : _buildNameFallback(),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNameFallback() {
-    return Container(
-      color: AppColors.white,
-      alignment: Alignment.center,
-      padding: EdgeInsets.all(4.r),
-      child: Text(
-        name,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        textAlign: TextAlign.center,
-        style: AppTextStyle.mediumBlackBold.copyWith(fontSize: 11.sp),
-      ),
-    );
   }
 }

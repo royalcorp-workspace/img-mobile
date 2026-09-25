@@ -15,11 +15,22 @@ class CustomerRepositoryImpl implements CustomerRepository {
   }
 
   @override
+  Future<CustomerModel> getCustomerProfile() {
+    return remoteDataSource.getCustomerProfile();
+  }
+
+  @override
   Future<CustomerModel> updateCustomer({
     required String customerId,
     required CustomerUpdateRequest request,
   }) {
     return remoteDataSource.updateCustomer(customerId, request);
+  }
+
+  @override
+  Future<CustomerModel> updateCustomerProfile(
+      CustomerUpdateRequest request) {
+    return remoteDataSource.updateCustomerProfile(request);
   }
 
   @override

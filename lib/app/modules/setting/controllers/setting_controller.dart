@@ -7,37 +7,64 @@ import 'package:img/app/core/styles/app_color.dart';
 import 'package:img/app/core/styles/app_text_style.dart';
 import 'package:img/app/core/utils/log/logger.dart';
 import 'package:img/app/core/utils/token_storage.dart';
+import 'package:img/app/data/models/customer_model.dart';
 import 'package:img/app/data/models/user_model.dart';
+import 'package:img/app/domain/usecases/get_customer_profile_usecase.dart';
 
 class SettingController extends GetxController {
+  final GetCustomerProfileUsecase? getCustomerProfileUsecase;
+
+  SettingController({this.getCustomerProfileUsecase});
+
   var userModel = UserModel().obs;
+  var customerModel = Rxn<CustomerModel>();
+  var isLoadingProfile = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    _getOrFetchCustomerId();
+    loadUserProfile();
   }
 
-  Future<String> _getOrFetchCustomerId() async {
-    try {
-      final userDataStr = await TokenStorage.getUserData();
-      if (userDataStr != null && userDataStr.isNotEmpty) {
-        final Map<String, dynamic> userMap = jsonDecode(userDataStr);
-        final parsed = UserModel.fromJson(userMap);
-        userModel.value = parsed;
+  Future<void> loadUserProfile() async {
+    _loadFromTokenStorage();
+    if (getCustomerProfileUsecase != null) {
+      try {
+        isLoadingProfile.value = true;
+        final profile = await getCustomerProfileUsecase!();
+        customerModel.value = profile;
 
-        if (parsed.customer?.id != null && parsed.customer!.id!.isNotEmpty) {
-          return parsed.customer!.id!;
-        }
-        if (parsed.id != null && parsed.id!.isNotEmpty) {
-          return parsed.id!;
-        }
+        userModel.value = UserModel(
+          id: profile.userId ?? userModel.value.id,
+          name: profile.name ?? userModel.value.name,
+          email: profile.email ?? userModel.value.email,
+          username: userModel.value.username,
+          customer: profile,
+        );
+      } catch (e) {
+        logger.warning('⚠️ [SETTING] Error fetching customer profile me: $e');
+      } finally {
+        isLoadingProfile.value = false;
       }
-    } catch (e) {
-      logger
-          .warning('⚠️ [SETTING] Could not parse stored user customer ID: $e');
     }
-    return "3fa85f64-5717-4562-b3fc-2c963f66afa6";
+  }
+
+  void _loadFromTokenStorage() {
+    try {
+      final userDataStr = TokenStorage.getUserData();
+      userDataStr.then((str) {
+        if (str != null && str.isNotEmpty) {
+          final Map<String, dynamic> userMap = jsonDecode(str);
+          final parsed = UserModel.fromJson(userMap);
+          userModel.value = parsed;
+          if (parsed.customer != null) {
+            customerModel.value = parsed.customer;
+          }
+        }
+      });
+    } catch (e) {
+      logger.warning('⚠️ [SETTING] Could not parse stored user data: $e');
+    }
   }
 
   void showDeleteConfirmationDialog() {
@@ -83,7 +110,8 @@ class SettingController extends GetxController {
                   16.horizontalSpace,
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
+                        await TokenStorage.clear();
                         Get.offAllNamed('/login');
                       },
                       style: ElevatedButton.styleFrom(

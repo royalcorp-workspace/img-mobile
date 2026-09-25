@@ -13,6 +13,9 @@ class Helper {
 
   /// Get image picture path
   static String getImagePath(String name) {
+    if (name.startsWith('assets/')) {
+      return name;
+    }
     return "$imagePath$name";
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:img/app/core/styles/app_color.dart';
 import 'package:img/app/core/styles/app_text_style.dart';
 import 'package:img/app/routes/app_pages.dart';
@@ -98,7 +99,18 @@ class SettingView extends GetView<SettingController> {
                 ),
                 child: Column(
                   children: [
-                    _menuTile(Icons.feedback_outlined, "Ulasan Produk", () {}),
+                    _menuTile(
+                      Icons.edit,
+                      "Edit Profile",
+                      () => Get.toNamed(Routes.PROFILE,
+                          arguments: controller.userModel.value),
+                    ),
+                    _divider(),
+                    _menuTile(
+                      Icons.location_on_outlined,
+                      "Daftar Alamat",
+                      () => Get.toNamed(Routes.ADDRESS),
+                    ),
                     // _divider(),
                     // _menuTile(
                     //   Icons.local_offer_outlined,
@@ -107,10 +119,12 @@ class SettingView extends GetView<SettingController> {
                     // ),
                     _divider(),
                     _menuTile(
-                      Icons.location_on_outlined,
-                      "Daftar Alamat",
-                      () => Get.toNamed(Routes.ADDRESS),
+                      Icons.lock_outline,
+                      "Ubah Kata Sandi",
+                      () => Get.toNamed(Routes.CHANGE_PASSWORD),
                     ),
+                    // _divider(),
+                    // _menuTile(Icons.feedback_outlined, "Ulasan Produk", () {}),
                     // _divider(),
                     // _menuTile(Icons.security_outlined, "Keamanan", () {}),
                   ],
@@ -135,14 +149,30 @@ class SettingView extends GetView<SettingController> {
                 ),
                 child: Column(
                   children: [
-                    _menuTile(Icons.support_agent, "Bantuan Royal Care", () {}),
+                    _menuTile(
+                      Icons.info_outline,
+                      "Kebijakan Privasi",
+                      () async {
+                        final Uri url = Uri.parse(
+                            'https://dev-img.royalcorp.co.id/kebijakan-privacy');
+                        if (!await launchUrl(url,
+                            mode: LaunchMode.externalApplication)) {
+                          Get.snackbar(
+                            'Kesalahan',
+                            'Gagal membuka Kebijakan Privasi',
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                        }
+                      },
+                    ),
                     _divider(),
-                    _menuTile(Icons.info_outline, "Ketentuan Privasi", () {}),
+                    _menuTile(Icons.support_agent, "Bantuan Royal Care", () {}),
                     _divider(),
                     ListTile(
                       leading: Icon(Icons.star_border,
                           color: AppColors.secondaryColor),
-                      title: const Text("Beri Rating"),
+                      title: const Text("Beri Rating Aplikasi"),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [

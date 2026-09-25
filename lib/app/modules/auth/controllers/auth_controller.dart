@@ -57,40 +57,40 @@ class AuthController extends GetxController {
     logger.info('Email: $email');
 
     // Validation
-    // if (email.isEmpty) {
-    //   logger.warning('⚠️ [CONTROLLER] Email is empty');
-    //   Get.snackbar('Kesalahan', 'Email diperlukan',
-    //       backgroundColor: Get.context!.theme.colorScheme.error,
-    //       colorText: Colors.white);
-    //   return;
-    // }
-    // if (!_isValidEmail(email)) {
-    //   logger.warning('⚠️ [CONTROLLER] Invalid email format: $email');
-    //   Get.snackbar('Kesalahan', 'Masukkan email yang valid',
-    //       backgroundColor: Get.context!.theme.colorScheme.error,
-    //       colorText: Colors.white);
-    //   return;
-    // }
-    // if (password.isEmpty) {
-    //   logger.warning('⚠️ [CONTROLLER] Password is empty');
-    //   Get.snackbar('Kesalahan', 'Kata sandi diperlukan',
-    //       backgroundColor: Get.context!.theme.colorScheme.error,
-    //       colorText: Colors.white);
-    //   return;
-    // }
-    // if (password.length < 6) {
-    //   logger.warning('⚠️ [CONTROLLER] Password too short');
-    //   Get.snackbar('Kesalahan', 'Kata sandi harus minimal 6 karakter',
-    //       backgroundColor: Get.context!.theme.colorScheme.error,
-    //       colorText: Colors.white);
-    //   return;
-    // }
+    if (email.isEmpty) {
+      logger.warning('⚠️ [CONTROLLER] Email is empty');
+      Get.snackbar('Kesalahan', 'Email diperlukan',
+          backgroundColor: Get.context!.theme.colorScheme.error,
+          colorText: Colors.white);
+      return;
+    }
+    if (!_isValidEmail(email)) {
+      logger.warning('⚠️ [CONTROLLER] Invalid email format: $email');
+      Get.snackbar('Kesalahan', 'Masukkan email yang valid',
+          backgroundColor: Get.context!.theme.colorScheme.error,
+          colorText: Colors.white);
+      return;
+    }
+    if (password.isEmpty) {
+      logger.warning('⚠️ [CONTROLLER] Password is empty');
+      Get.snackbar('Kesalahan', 'Kata sandi diperlukan',
+          backgroundColor: Get.context!.theme.colorScheme.error,
+          colorText: Colors.white);
+      return;
+    }
+    if (password.length < 6) {
+      logger.warning('⚠️ [CONTROLLER] Password too short');
+      Get.snackbar('Kesalahan', 'Kata sandi harus minimal 6 karakter',
+          backgroundColor: Get.context!.theme.colorScheme.error,
+          colorText: Colors.white);
+      return;
+    }
 
     try {
       isLoggingIn.value = true;
       logger.info('🔍 [CONTROLLER] Calling AuthService.loginWithEmail()');
-      final success = await _authService.loginWithEmail(
-          email: 'testloginuser@test.com', password: 'TestPass123!');
+      final success =
+          await _authService.loginWithEmail(email: email, password: password);
 
       if (success) {
         logger.info('✅ [CONTROLLER] Login successful, navigating...');

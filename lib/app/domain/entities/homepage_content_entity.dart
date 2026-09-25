@@ -1,24 +1,64 @@
 import 'paginated_entity.dart';
 
-class HomepageContentItemEntity {
+class HomepageContentReferenceEntity {
   final String id;
   final String name;
   final String slug;
-  final String? logo;
-  final String? bannerWeb;
-  final String? bannerMobile;
-  final bool isFeatured;
-  final bool status;
 
-  const HomepageContentItemEntity({
+  const HomepageContentReferenceEntity({
     required this.id,
     required this.name,
     required this.slug,
-    this.logo,
-    this.bannerWeb,
-    this.bannerMobile,
-    required this.isFeatured,
-    required this.status,
+  });
+}
+
+class HomepageContentImageEntity {
+  final String id;
+  final String productId;
+  final String image;
+  final String? altText;
+  final bool status;
+
+  const HomepageContentImageEntity({
+    this.id = '',
+    this.productId = '',
+    required this.image,
+    this.altText,
+    this.status = true,
+  });
+}
+
+class HomepageContentItemEntity {
+  final String id;
+  final String title;
+  final String name;
+  final String slug;
+  final String image;
+  final String thumbnail;
+  final String thumbnailUrl;
+  final int basePrice;
+  final int sellPrice;
+  final int discountPercent;
+  final int countingReview;
+  final int reviewsCount;
+  final int reviewCount;
+
+  int get totalReviews => 0;
+
+  const HomepageContentItemEntity({
+    required this.id,
+    required this.title,
+    required this.name,
+    required this.slug,
+    required this.image,
+    required this.thumbnail,
+    required this.thumbnailUrl,
+    required this.basePrice,
+    required this.sellPrice,
+    required this.discountPercent,
+    required this.countingReview,
+    required this.reviewsCount,
+    required this.reviewCount,
   });
 }
 

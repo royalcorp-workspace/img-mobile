@@ -17,7 +17,7 @@ class ProductByIdEntity {
   final dynamic uom;
   final dynamic segments;
   final String? id;
-  final List<dynamic>? images;
+  final List<ProductImageByIdEntity>? images;
   final List<ProductVariantEntity>? variants;
   final List<dynamic>? colors;
   final List<PriceProductSettingEntity>? priceProductSettings;
@@ -51,5 +51,27 @@ class ProductByIdEntity {
     this.avgRating,
     this.totalReviews,
     this.finalPrice,
+  });
+}
+
+class ProductImageByIdEntity {
+  final String id;
+  final String productId;
+  final String image;
+  final String imageUrl;
+  final dynamic altText;
+  final String variantId;
+  final String createdAt;
+  final String updatedAt;
+
+  ProductImageByIdEntity({
+    required this.id,
+    required this.productId,
+    required this.image,
+    required this.imageUrl,
+    required this.altText,
+    required this.variantId,
+    required this.createdAt,
+    required this.updatedAt,
   });
 }

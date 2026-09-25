@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:img/app/core/helper/helper.dart';
 import 'package:img/app/core/styles/app_color.dart';
 import 'package:img/app/core/styles/app_text_style.dart';
-import 'package:img/app/modules/home/controllers/home_controller.dart';
 import 'package:img/app/modules/home/views/home_view.dart';
 import 'package:img/app/modules/order/views/order_view.dart';
 import 'package:img/app/modules/product/views/product_view.dart';
@@ -26,7 +25,7 @@ class NavigationView extends GetView<NavigationController> {
           const ProductView(),
 
           /// Pesanan page
-          OrderView(),
+          const OrderView(),
 
           /// Setting page
           const SettingView(),
@@ -46,11 +45,6 @@ class NavigationView extends GetView<NavigationController> {
           child: NavigationBar(
             elevation: 15,
             onDestinationSelected: (int index) {
-              if (index == 0) {
-                if (Get.isRegistered<HomeController>()) {
-                  Get.find<HomeController>().scrollToTop();
-                }
-              }
               controller.currentPageIndex.value = index;
             },
             indicatorColor: Colors.transparent,

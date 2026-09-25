@@ -18,6 +18,7 @@ class VariantModel extends VariantEntity {
     super.basePrice,
     super.sellPrice,
     super.id = '',
+    super.imageUrl = '',
   });
 
   factory VariantModel.fromJson(Map<String, dynamic> json) {
@@ -42,6 +43,7 @@ class VariantModel extends VariantEntity {
       basePrice: toNum(json['base_price']).toDouble(),
       sellPrice: toNum(json['sell_price']).toDouble(),
       id: json['id']?.toString() ?? '',
+      imageUrl: json['image_url']?.toString() ?? '',
     );
   }
 }

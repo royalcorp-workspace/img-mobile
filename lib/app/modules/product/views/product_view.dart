@@ -4,15 +4,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
+import 'package:img/app/core/helper/helper.dart';
 import 'package:img/app/core/styles/app_color.dart';
 import 'package:img/app/core/styles/app_text_style.dart';
 import 'package:img/app/modules/cart/controllers/cart_controller.dart';
 import 'package:img/app/modules/home/widgets/icon_badge.dart';
-import 'package:img/app/modules/product/widgets/countdown_container.dart';
-import 'package:img/app/modules/product/widgets/product_promotion_card.dart';
+import 'package:img/app/modules/home/widgets/product_card.dart';
 import 'package:img/app/routes/app_pages.dart';
-import 'package:img/app/shared/widgets/app_banner.dart';
-import 'package:img/app/shared/widgets/app_divider.dart';
 import 'package:img/app/shared/widgets/app_search_field.dart';
 
 import '../controllers/product_controller.dart';
@@ -23,122 +21,63 @@ class ProductView extends GetView<ProductController> {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        statusBarColor: AppColors.primaryColor, // same as top container
-        statusBarIconBrightness: Brightness.light, // white icons
+        statusBarColor: AppColors.primaryColor,
+        statusBarIconBrightness: Brightness.light,
       ),
     );
     return Scaffold(
       appBar: _buildAppBar(),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            15.verticalSpace,
-            SizedBox(
-              height: 40.h,
-              child: ListView.separated(
-                separatorBuilder: (_, __) => const SizedBox(width: 10),
-                padding: const EdgeInsets.only(left: 8, bottom: 5, right: 8),
-                scrollDirection: Axis.horizontal,
-                itemCount: 4,
-                itemBuilder: (context, index) => Obx(
-                  () => InkWell(
-                    onTap: () => controller.selectedIndex.value = index,
-                    child: Container(
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: controller.selectedIndex.value == index
-                              ? AppColors.primaryColor
-                              : AppColors.lightGrey,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: Column(
+            children: [
+              15.verticalSpace,
+              SizedBox(
+                height: 40.h,
+                child: ListView.separated(
+                  separatorBuilder: (_, __) => const SizedBox(width: 10),
+                  padding: const EdgeInsets.only(left: 8, bottom: 5, right: 8),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 4,
+                  itemBuilder: (context, index) => Obx(
+                    () => InkWell(
+                      onTap: () => controller.selectedIndex.value = index,
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: controller.selectedIndex.value == index
+                                ? AppColors.primaryColor
+                                : AppColors.lightGrey,
+                          ),
                         ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          index == 0
-                              ? 'Semua'
-                              : index == 1
-                                  ? 'Harga Terendah'
-                                  : index == 2
-                                      ? 'Promo'
-                                      : 'Bebas Ongkir',
-                          style: controller.selectedIndex.value == index
-                              ? AppTextStyle.mediumBlack
-                                  .copyWith(color: AppColors.primaryColor)
-                              : AppTextStyle.mediumBlack,
+                        child: Center(
+                          child: Text(
+                            index == 0
+                                ? 'Semua'
+                                : index == 1
+                                    ? 'Harga Terendah'
+                                    : index == 2
+                                        ? 'Promo'
+                                        : 'Bebas Ongkir',
+                            style: controller.selectedIndex.value == index
+                                ? AppTextStyle.mediumBlack
+                                    .copyWith(color: AppColors.primaryColor)
+                                : AppTextStyle.mediumBlack,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            15.verticalSpace,
-            const CustomBanner(imagePath: 'img_banner5.png'),
-            15.verticalSpace,
-            Visibility(
-              visible: controller.start.value != 0,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RPadding(
-                    padding: EdgeInsets.symmetric(horizontal: 14),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Promo Diskon Hingga 78%',
-                          style: AppTextStyle.largeBlackBold,
-                        ),
-                        Obx(
-                          () => CountdownContainer(
-                            text: controller.formattedTime,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  15.verticalSpace,
-                  RPadding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ProductPromotionCard(),
-                        ProductPromotionCard(),
-                        ProductPromotionCard(),
-                        ProductPromotionCard(),
-                      ],
-                    ),
-                  ),
-                  20.verticalSpace,
-                  const AppDivider(),
-                  20.verticalSpace,
-                ],
-              ),
-            ),
-            _buildHomepageContent(),
-
-            // RPadding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 8),
-            //   child: GridView.builder(
-            //     physics: const NeverScrollableScrollPhysics(),
-            //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            //       crossAxisCount: 2,
-            //       crossAxisSpacing: 10,
-            //       mainAxisSpacing: 10,
-            //       childAspectRatio: 0.64,
-            //     ),
-            //     shrinkWrap: true,
-            //     itemCount: 8,
-            //     itemBuilder: (context, index) => ProductCard(
-            //       onTap: (e) {},
-            //     ),
-            //   ),
-            // ),
-
-            20.verticalSpace,
-          ],
+              15.verticalSpace,
+              _buildHomepageContent(),
+              20.verticalSpace,
+            ],
+          ),
         ),
       ),
     );
@@ -149,69 +88,79 @@ class ProductView extends GetView<ProductController> {
       final sections = controller.homepageContent
           .where((section) => section.items.data.isNotEmpty)
           .toList();
+      if (controller.isLoadingHomepageContent.value && sections.isEmpty) {
+        return const _HomepageContentShimmer();
+      }
       if (sections.isEmpty) return const SizedBox();
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: sections.map((section) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              RPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Text(
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: sections.map((section) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
                   section.title,
                   style: AppTextStyle.largeBlackBold,
                 ),
-              ),
-              10.verticalSpace,
-              SizedBox(
-                height: 92.h,
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: section.items.data.length,
-                  separatorBuilder: (_, __) => 10.horizontalSpace,
-                  itemBuilder: (context, index) {
-                    final item = section.items.data[index];
+                10.verticalSpace,
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isSingleProduct = section.items.data.length == 1;
+
+                    ProductsCard buildProductCard(int index) {
+                      final product = section.items.data[index];
+                      final imageUrl = product.thumbnailUrl.isEmpty
+                          ? product.thumbnail
+                          : (product.image.isNotEmpty ? product.image : '');
+
+                      ImageProvider imageProvider;
+                      if (imageUrl.startsWith('http://') ||
+                          imageUrl.startsWith('https://')) {
+                        imageProvider = NetworkImage(imageUrl);
+                      } else {
+                        imageProvider = AssetImage(
+                          Helper.getImagePath('img_product1.jpg'),
+                        );
+                      }
+
+                      return ProductsCard(
+                        width: isSingleProduct ? constraints.maxWidth : null,
+                        formattedOriginalPrice:
+                            Helper.formatCurrency(product.basePrice.toInt()),
+                        formattedPrice:
+                            Helper.formatCurrency(product.sellPrice.toInt()),
+                        imageProvider: imageProvider,
+                        rating: product.reviewCount.toStringAsFixed(1),
+                        review: '(${product.totalReviews})',
+                        title: product.name,
+                        onTap: (_) => controller.fetchProductByID(product.id),
+                      );
+                    }
+
+                    if (isSingleProduct) {
+                      return buildProductCard(0);
+                    }
+
                     return SizedBox(
-                      width: 82.w,
-                      child: Column(
-                        children: [
-                          CircleAvatar(
-                            radius: 30.r,
-                            backgroundColor: AppColors.greyWhite,
-                            backgroundImage: item.logo == null
-                                ? null
-                                : NetworkImage(item.logo!),
-                            child: item.logo == null
-                                ? Text(
-                                    item.name.isEmpty
-                                        ? '?'
-                                        : item.name[0].toUpperCase(),
-                                    style: AppTextStyle.mediumBlackBold,
-                                  )
-                                : null,
-                          ),
-                          5.verticalSpace,
-                          Text(
-                            item.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
-                            style: AppTextStyle.mediumBlack,
-                          ),
-                        ],
+                      height: 270.h,
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: section.items.data.length,
+                        separatorBuilder: (_, __) => 10.horizontalSpace,
+                        itemBuilder: (_, index) => buildProductCard(index),
                       ),
                     );
                   },
                 ),
-              ),
-              15.verticalSpace,
-            ],
-          );
-        }).toList(),
+                15.verticalSpace,
+              ],
+            );
+          }).toList(),
+        ),
       );
     });
   }
@@ -284,6 +233,97 @@ class ProductView extends GetView<ProductController> {
         ),
         7.horizontalSpace,
       ],
+    );
+  }
+}
+
+class _HomepageContentShimmer extends StatefulWidget {
+  const _HomepageContentShimmer();
+
+  @override
+  State<_HomepageContentShimmer> createState() =>
+      _HomepageContentShimmerState();
+}
+
+class _HomepageContentShimmerState extends State<_HomepageContentShimmer>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1300),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return ShaderMask(
+          blendMode: BlendMode.srcATop,
+          shaderCallback: (bounds) {
+            final offset = (_controller.value * 2) - 1;
+            return LinearGradient(
+              begin: Alignment(offset - 1, 0),
+              end: Alignment(offset + 1, 0),
+              colors: const [
+                Color(0xFFE8E8E8),
+                Color(0xFFF7F7F7),
+                Color(0xFFE8E8E8),
+              ],
+            ).createShader(bounds);
+          },
+          child: child,
+        );
+      },
+      child: const _HomepageContentPlaceholder(),
+    );
+  }
+}
+
+class _HomepageContentPlaceholder extends StatelessWidget {
+  const _HomepageContentPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: List.generate(2, (sectionIndex) {
+        return Padding(
+          padding: EdgeInsets.only(bottom: 15.h),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: sectionIndex == 0 ? 150.w : 120.w,
+                height: 22.h,
+                margin: const EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(6.r),
+                ),
+              ),
+              10.verticalSpace,
+              SizedBox(
+                height: 220.h,
+                child: ListView.separated(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 3,
+                  separatorBuilder: (_, __) => 10.horizontalSpace,
+                  itemBuilder: (_, __) => ProductCardShimmer(
+                    height: 220.h,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 }

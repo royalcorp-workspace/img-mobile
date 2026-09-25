@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:add_to_cart_animation/add_to_cart_icon.dart';
 import 'package:flutter/foundation.dart';
@@ -24,6 +23,7 @@ class DetailProductController extends GetxController {
   final AddToCartUsecase? addToCartUsecase;
   final GetCartUsecase? getCartUsecase;
 
+  late PageController pageController;
   GlobalKey<CartIconKey> cartKey = GlobalKey<CartIconKey>();
   final GlobalKey widgetKey = GlobalKey();
 
@@ -51,11 +51,26 @@ class DetailProductController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    pageController = PageController();
     productByID(Get.arguments[0]);
     if (cartController.carts.isEmpty) {
       refreshCart();
     }
-    log('HERE ${productByID.value.description}');
+  }
+
+  @override
+  void onClose() {
+    pageController.dispose();
+    super.onClose();
+  }
+
+  void changeSelectedIndex(int index) {
+    selectedIndex.value = index;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (pageController.hasClients) {
+        pageController.jumpToPage(0);
+      }
+    });
   }
 
   Future<void> refreshCart() async {
@@ -67,9 +82,9 @@ class DetailProductController extends GetxController {
       await cartController.fetchCart();
       hasMore.value = cartController.hasMore.value;
     } catch (e, stackTrace) {
-      logger.severe('❌ [HOME] Failed to fetch carts: $e');
+      logger.severe('❌ [CART] Failed to fetch carts: $e');
       if (kDebugMode) {
-        print('❌ [HOME] Error: $e');
+        print('❌ [CART] Error: $e');
         print(stackTrace);
       }
       cartErrorMessage.value = e.toString();

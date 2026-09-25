@@ -1,11 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:add_to_cart_animation/add_to_cart_animation.dart';
 import 'package:img/app/core/utils/log/logger.dart';
 import 'package:img/app/data/datasources/category_remote_datasource.dart';
+import 'package:img/app/data/datasources/homepage_content_remote_datasource.dart';
 import 'package:img/app/data/datasources/product_remote_datasource.dart';
+import 'package:img/app/data/repositories/homepage_content_repository_impl.dart';
 import 'package:img/app/domain/entities/category_entity.dart';
+import 'package:img/app/domain/entities/content_banner_entity.dart';
+import 'package:img/app/domain/usecases/get_content_banner_usecase.dart';
 import 'package:img/app/modules/cart/controllers/cart_controller.dart';
 import 'package:img/app/data/repositories/category_repository_impl.dart';
 import 'package:img/app/data/repositories/product_repository_impl.dart';
@@ -13,21 +19,20 @@ import 'package:img/app/domain/usecases/get_cart_usecase.dart';
 import 'package:img/app/domain/usecases/get_category_usecase.dart';
 import 'package:img/app/domain/usecases/get_product_by_id_usecase.dart';
 import 'package:img/app/domain/usecases/get_products_usecase.dart';
-import 'package:img/app/modules/home/views/home_view.dart';
-import 'package:img/app/modules/home/widgets/parts_product.dart';
 import 'package:img/app/routes/app_pages.dart';
-import 'package:img/app/shared/widgets/app_banner.dart';
 import 'package:img/app/domain/entities/product_entity.dart';
 
 class HomeController extends GetxController {
   HomeController({
     this.getProductsUseCase,
+    this.getContentBannerUsecase,
     this.getProductByIdUsecase,
     this.getCategoryUsecase,
     this.getCartUsecase,
   });
 
   final GetProductsUseCase? getProductsUseCase;
+  final GetContentBannerUsecase? getContentBannerUsecase;
   final GetProductByIdUsecase? getProductByIdUsecase;
   final GetCategoryUsecase? getCategoryUsecase;
   final GetCartUsecase? getCartUsecase;
@@ -39,6 +44,7 @@ class HomeController extends GetxController {
   final ScrollController pageScrollController = ScrollController(); // renamed
   final ScrollController categoryScrollController = ScrollController();
   var products = [].obs;
+  var banners = <ContentBannerEntity>[].obs;
   var category = <CategoryEntity>[].obs;
   var isLoadingMoreCategories = false.obs;
   var hasMoreCategories = true.obs;
@@ -46,13 +52,17 @@ class HomeController extends GetxController {
   var isLoadingProducts = false.obs;
   var isLoadingMore = false.obs;
   var hasMore = true.obs;
+  final RxBool showScrollToTop = false.obs;
   var currentPage = 1;
   final int itemsPerPage = 10;
+  RxInt start = 3600.obs;
   var productErrorMessage = ''.obs;
+  var bannerErrorMessage = ''.obs;
 
   var selectedCategoryId = RxnString();
   var searchQuery = ''.obs;
   final SearchController searchAnchorController = SearchController();
+  late Timer _timer;
 
   double priceVal = 0.0;
   double originalPriceVal = 0.0;
@@ -70,46 +80,47 @@ class HomeController extends GetxController {
 
   List get carts => cartController.carts;
 
-  /// List Slider
-  List<CustomBanner> customBannerListSlider = [
-    const CustomBanner(imagePath: 'img_banner.jpeg'),
-    const CustomBanner(imagePath: 'img_banner.jpeg'),
-    const CustomBanner(imagePath: 'img_banner.jpeg'),
-  ];
-
-  /// List Parts Product
-  List<PartsProduct> customPartsProduct = [
-    const PartsProduct(imagePath: 'img_bed_home.png', title: 'Kasur'),
-    const PartsProduct(imagePath: 'img_pillow_home.png', title: 'Bantal'),
-    const PartsProduct(imagePath: 'img_rolls_home.png', title: 'Guling'),
-    const PartsProduct(imagePath: 'img_acc_home.png', title: 'Aksesoris'),
-  ];
-
-  /// List Brands
-  List<CategoryBrand> customBrand = [
-    const CategoryBrand(imagePath: 'img_brand1.png'),
-    const CategoryBrand(imagePath: 'img_brand2.png'),
-    const CategoryBrand(imagePath: 'img_brand3.png'),
-    const CategoryBrand(imagePath: 'img_brand4.png'),
-    const CategoryBrand(imagePath: 'img_brand5.png'),
-    const CategoryBrand(imagePath: 'img_brand6.png'),
-  ];
-
   @override
   void onInit() {
     super.onInit();
     _initScrollListener();
     _initCategoryScrollListener();
+    startTimer();
     fetchProducts();
+    fetchBanners();
     fetchCategory();
   }
 
   @override
   void onClose() {
+    pageScrollController.removeListener(_onScroll);
     pageScrollController.dispose();
+    _timer.cancel();
     categoryScrollController.dispose();
     searchAnchorController.dispose();
     super.onClose();
+  }
+
+  String get formattedTime {
+    final duration = Duration(seconds: start.value);
+    final hours = duration.inHours.toString().padLeft(2, '0');
+    final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$hours : $minutes : $seconds';
+  }
+
+  void startTimer() {
+    const oneSec = Duration(seconds: 1);
+    _timer = Timer.periodic(
+      oneSec,
+      (Timer timer) {
+        if (start.value == 0) {
+          timer.cancel();
+        } else {
+          start--;
+        }
+      },
+    );
   }
 
   void _initScrollListener() {
@@ -118,7 +129,12 @@ class HomeController extends GetxController {
           pageScrollController.position.maxScrollExtent - 300) {
         loadNextPage();
       }
+      _onScroll();
     });
+  }
+
+  void _onScroll() {
+    showScrollToTop.value = pageScrollController.offset > 500;
   }
 
   void _initCategoryScrollListener() {
@@ -226,6 +242,30 @@ class HomeController extends GetxController {
     }
   }
 
+  Future<void> fetchBanners() async {
+    try {
+      productErrorMessage.value = '';
+      hasMoreCategories.value = true;
+
+      final useCase = getContentBannerUsecase ??
+          GetContentBannerUsecase(
+            HomepageContentRepositoryImpl(
+              remoteDataSource: HomepageContentRemoteDataSourceImpl(),
+            ),
+          );
+
+      final result = await useCase.call();
+      banners.assignAll(result.data);
+    } catch (e, stackTrace) {
+      logger.severe('❌ [HOME] Failed to fetch banners: $e');
+      if (kDebugMode) {
+        print('❌ [HOME] Error: $e');
+        print(stackTrace);
+      }
+      bannerErrorMessage.value = e.toString();
+    }
+  }
+
   Future<void> loadNextCategoryPage() async {
     if (isLoadingMoreCategories.value || !hasMoreCategories.value) return;
 
@@ -261,6 +301,8 @@ class HomeController extends GetxController {
   }
 
   Future<void> fetchProductByID(String productID) async {
+    if (isLoadingProducts.value) return;
+
     try {
       isLoadingProducts.value = true;
       productErrorMessage.value = '';

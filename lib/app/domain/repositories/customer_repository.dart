@@ -4,10 +4,14 @@ import 'package:img/app/data/models/primary_address_model.dart';
 
 abstract class CustomerRepository {
   Future<CustomerModel> getCustomer(String customerId);
+  Future<CustomerModel> getCustomerProfile();
   Future<CustomerModel> updateCustomer({
     required String customerId,
     required CustomerUpdateRequest request,
   });
+  Future<CustomerModel> updateCustomerProfile(
+    CustomerUpdateRequest request,
+  );
   Future<PrimaryAddressModel> setPrimaryAddress(
       String customerId, String addressId);
 }

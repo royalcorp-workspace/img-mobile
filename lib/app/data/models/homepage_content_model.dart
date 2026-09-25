@@ -6,23 +6,69 @@ class HomepageContentItemModel extends HomepageContentItemEntity {
     required super.id,
     required super.name,
     required super.slug,
-    super.logo,
-    super.bannerWeb,
-    super.bannerMobile,
-    required super.isFeatured,
-    required super.status,
+    required super.title,
+    required super.image,
+    required super.thumbnail,
+    required super.thumbnailUrl,
+    required super.basePrice,
+    required super.sellPrice,
+    required super.discountPercent,
+    required super.countingReview,
+    required super.reviewsCount,
+    required super.reviewCount,
   });
 
   factory HomepageContentItemModel.fromJson(Map<String, dynamic> json) {
     return HomepageContentItemModel(
-      id: json['id']?.toString() ?? '',
-      name: json['name']?.toString() ?? '',
-      slug: json['slug']?.toString() ?? '',
-      logo: json['logo']?.toString(),
-      bannerWeb: json['banner_web']?.toString(),
-      bannerMobile: json['banner_mobile']?.toString(),
-      isFeatured: _parseBool(json['is_featured']),
+      id: json["id"],
+      title: json["title"],
+      name: json["name"],
+      slug: json["slug"],
+      image: json["image"],
+      thumbnail: json["thumbnail"],
+      thumbnailUrl: json["thumbnail_url"],
+      basePrice: _parseInt(json["base_price"]),
+      sellPrice: _parseInt(json["sell_price"]),
+      discountPercent: _parseInt(json["discount_percent"]),
+      countingReview: _parseInt(json["counting_review"]),
+      reviewsCount: _parseInt(json["reviews_count"]),
+      reviewCount: _parseInt(json["review_count"]),
+    );
+  }
+}
+
+class HomepageContentImageModel extends HomepageContentImageEntity {
+  const HomepageContentImageModel({
+    super.id,
+    super.productId,
+    required super.image,
+    super.altText,
+    super.status,
+  });
+
+  factory HomepageContentImageModel.fromJson(Map<String, dynamic> json) {
+    return HomepageContentImageModel(
+      id: _parseString(json['id']),
+      productId: _parseString(json['product_id']),
+      image: _parseString(json['image'] ?? json['url']),
+      altText: _parseNullableString(json['alt_text']),
       status: _parseBool(json['status']),
+    );
+  }
+}
+
+class HomepageContentReferenceModel extends HomepageContentReferenceEntity {
+  const HomepageContentReferenceModel({
+    required super.id,
+    required super.name,
+    required super.slug,
+  });
+
+  factory HomepageContentReferenceModel.fromJson(Map<String, dynamic> json) {
+    return HomepageContentReferenceModel(
+      id: _parseString(json['id']),
+      name: _parseString(json['name']),
+      slug: _parseString(json['slug']),
     );
   }
 }
@@ -41,14 +87,15 @@ class HomepageContentSectionModel extends HomepageContentSectionEntity {
   factory HomepageContentSectionModel.fromJson(Map<String, dynamic> json) {
     final rawItems = json['items'] as List<dynamic>? ?? [];
     final items = rawItems
-        .map((item) => HomepageContentItemModel.fromJson(
-            Map<String, dynamic>.from(item as Map)))
+        .whereType<Map>()
+        .map((item) =>
+            HomepageContentItemModel.fromJson(Map<String, dynamic>.from(item)))
         .toList();
 
     return HomepageContentSectionModel(
-      id: json['id']?.toString() ?? '',
-      sectionKey: json['section_key']?.toString() ?? '',
-      title: json['title']?.toString() ?? '',
+      id: _parseString(json['id']),
+      sectionKey: _parseString(json['section_key']),
+      title: _parseString(json['title']),
       sortOrder: _parseInt(json['sort_order']),
       isVisible: _parseBool(json['is_visible']),
       meta: json['meta'] is Map
@@ -65,13 +112,17 @@ class HomepageContentSectionModel extends HomepageContentSectionEntity {
   }
 }
 
-bool _parseBool(dynamic value) {
-  if (value is bool) return value;
-  if (value is num) return value != 0;
-  return value?.toString().toLowerCase() == 'true' || value == '1';
-}
+String _parseString(dynamic value) => value?.toString() ?? '';
+
+String? _parseNullableString(dynamic value) => value?.toString();
 
 int _parseInt(dynamic value) {
   if (value is num) return value.toInt();
   return int.tryParse(value?.toString() ?? '') ?? 0;
+}
+
+bool _parseBool(dynamic value) {
+  if (value is bool) return value;
+  if (value is num) return value != 0;
+  return value?.toString().toLowerCase() == 'true' || value == '1';
 }

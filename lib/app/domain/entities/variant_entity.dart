@@ -15,6 +15,7 @@ class VariantEntity {
   final double? basePrice;
   final double? sellPrice;
   final String id;
+  final String imageUrl;
 
   VariantEntity({
     required this.productId,
@@ -33,6 +34,7 @@ class VariantEntity {
     this.basePrice,
     this.sellPrice,
     required this.id,
+    this.imageUrl = '',
   });
 
   Map<String, dynamic> toJson() => {
@@ -52,5 +54,6 @@ class VariantEntity {
         'attributes': attributes,
         'base_price': basePrice,
         'sell_price': sellPrice,
+        'image_url': imageUrl,
       };
 }
