@@ -90,8 +90,8 @@ class CheckoutView extends GetView<CheckoutController> {
                                   .variantName ??
                               '',
                           promoDesc: (controller.productByID.value
-                                          .priceProductSettings?.isNotEmpty ==
-                                      true)
+                                      .priceProductSettings?.isNotEmpty ==
+                                  true)
                               ? controller.productByID.value
                                   .priceProductSettings!.first.title
                               : '',
@@ -199,7 +199,7 @@ class CheckoutView extends GetView<CheckoutController> {
                                                   boxShadow: [
                                                     BoxShadow(
                                                       color: Colors.black
-                                                          .withValues(alpha: 0.08),
+                                                          .withOpacity(0.08),
                                                       offset:
                                                           const Offset(0, -1),
                                                       blurRadius: 12,
@@ -243,7 +243,7 @@ class CheckoutView extends GetView<CheckoutController> {
                                                   boxShadow: [
                                                     BoxShadow(
                                                       color: Colors.black
-                                                          .withValues(alpha: 0.08),
+                                                          .withOpacity(0.08),
                                                       offset:
                                                           const Offset(0, -1),
                                                       blurRadius: 12,
@@ -745,7 +745,7 @@ class CheckoutView extends GetView<CheckoutController> {
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
+              color: Colors.black.withOpacity(0.08),
               offset: const Offset(0, -8),
               blurRadius: 16,
               spreadRadius: 0,

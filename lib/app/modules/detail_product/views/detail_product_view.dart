@@ -658,7 +658,7 @@ ${controller.productByID.value.description}
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
+                color: Colors.black.withOpacity(0.08),
                 offset: const Offset(0, -8),
                 blurRadius: 16,
                 spreadRadius: 0,
