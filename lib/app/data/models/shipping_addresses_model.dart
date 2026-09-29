@@ -1,49 +1,44 @@
-import 'package:img/app/domain/entities/shipping_addresses_entity.dart';
+import 'package:pos_royal/app/domain/entities/shipping_addresses_entity.dart';
 
 class ShippingAddressesModel extends ShippingAddressesEntity {
   ShippingAddressesModel({
     required super.createdAt,
     required super.updatedAt,
     required super.courierId,
-    required super.cityId,
-    super.subDistrictId,
+    required super.subDistrictId,
     required super.type,
     required super.price,
     required super.isActive,
     required super.sortOrder,
     required super.id,
-    super.courier,
+    required super.courier,
   });
 
   factory ShippingAddressesModel.fromJson(Map<String, dynamic> json) =>
       ShippingAddressesModel(
-        createdAt: json["created_at"] ?? '',
-        updatedAt: json["updated_at"] ?? '',
-        courierId: json["courier_id"] ?? '',
-        cityId: json["city_id"],
+        createdAt: json["created_at"],
+        updatedAt: json["updated_at"],
+        courierId: json["courier_id"],
         subDistrictId: json["sub_district_id"],
-        type: json["type"] ?? 0,
-        price: (json["price"] as num?)?.toDouble() ?? 0.0,
-        isActive: json["is_active"] ?? false,
-        sortOrder: json["sort_order"] ?? 0,
-        id: json["id"] ?? '',
-        courier: json["courier"] != null
-            ? CourierModel.fromJson(json["courier"])
-            : null,
+        type: json["type"],
+        price: json["price"],
+        isActive: json["is_active"],
+        sortOrder: json["sort_order"],
+        id: json["id"],
+        courier: CourierModel.fromJson(json["courier"]),
       );
 
   Map<String, dynamic> toJson() => {
         "created_at": createdAt,
         "updated_at": updatedAt,
         "courier_id": courierId,
-        "city_id": cityId,
         "sub_district_id": subDistrictId,
         "type": type,
         "price": price,
         "is_active": isActive,
         "sort_order": sortOrder,
         "id": id,
-        "courier": courier?.toJson(),
+        "courier": courier.toJson(),
       };
 }
 
@@ -58,12 +53,12 @@ class CourierModel extends CourierEntity {
   });
 
   factory CourierModel.fromJson(Map<String, dynamic> json) => CourierModel(
-        id: json["id"] ?? '',
-        code: json["code"] ?? '',
-        name: json["name"] ?? '',
-        type: json["type"] ?? 0,
-        isActive: json["is_active"] ?? false,
-        sortOrder: json["sort_order"] ?? 0,
+        id: json["id"],
+        code: json["code"],
+        name: json["name"],
+        type: json["type"],
+        isActive: json["is_active"],
+        sortOrder: json["sort_order"],
       );
 
   Map<String, dynamic> toJson() => {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:img/app/core/styles/app_color.dart';
-import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:pos_royal/app/core/styles/app_color.dart';
+import 'package:pos_royal/app/core/styles/app_text_style.dart';
 
 class CommentCard extends StatelessWidget {
   const CommentCard({
@@ -17,7 +17,7 @@ class CommentCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Erric Hoffman', style: AppTextStyle.mediumBlackBold),
-            Text('11-Mar 2026', style: AppTextStyle.smallGrey),
+            Text('11-Mar 2026', style: AppTextStyle.mediumGrey),
           ],
         ),
         5.verticalSpace,
@@ -25,13 +25,13 @@ class CommentCard extends StatelessWidget {
           children: [
             Icon(
               Icons.star,
-              size: 15,
+              size: 18,
               color: AppColors.yellow,
             ),
             2.horizontalSpace,
             Text(
               '5.0',
-              style: AppTextStyle.smallGrey,
+              style: AppTextStyle.mediumGrey,
             ),
           ],
         ),

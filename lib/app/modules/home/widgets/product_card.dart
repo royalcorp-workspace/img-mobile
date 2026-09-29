@@ -1,260 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:img/app/core/helper/helper.dart';
-import 'package:img/app/core/styles/app_color.dart';
-import 'package:img/app/core/styles/app_text_style.dart';
-
-class ProductsCard extends StatelessWidget {
-  ProductsCard({
-    super.key,
-    required this.onTap,
-    required this.title,
-    required this.formattedPrice,
-    required this.formattedOriginalPrice,
-    required this.rating,
-    required this.review,
-    required this.imageProvider,
-    this.width,
-    this.height,
-    this.brand,
-    this.discountPercentage,
-    this.onAddToCart,
-  });
-
-  final GlobalKey widgetKey = GlobalKey();
-  final void Function(GlobalKey) onTap;
-  final void Function(GlobalKey)? onAddToCart;
-  final String title;
-  final String formattedPrice;
-  final String formattedOriginalPrice;
-  final String rating;
-  final String review;
-  final ImageProvider<Object> imageProvider;
-  final double? width;
-  final double? height;
-  final String? brand;
-  final String? discountPercentage;
-
-  @override
-  Widget build(BuildContext context) {
-    // Calculate approximate discount percentage if not provided directly
-    String? calculatedDiscount = discountPercentage;
-    if ((calculatedDiscount == null || calculatedDiscount.isEmpty) &&
-        formattedOriginalPrice.isNotEmpty &&
-        formattedPrice.isNotEmpty) {
-      try {
-        final origStr =
-            formattedOriginalPrice.replaceAll(RegExp(r'[^0-9]'), '');
-        final currStr = formattedPrice.replaceAll(RegExp(r'[^0-9]'), '');
-        final double orig = double.tryParse(origStr) ?? 0;
-        final double curr = double.tryParse(currStr) ?? 0;
-        if (orig > curr && orig > 0) {
-          final disc = (((orig - curr) / orig) * 100).round();
-          if (disc > 0) {
-            calculatedDiscount = '-$disc%';
-          }
-        }
-      } catch (_) {}
-    }
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        key: widgetKey,
-        borderRadius: BorderRadius.circular(16.r),
-        onTap: () => onTap(widgetKey),
-        child: Container(
-          width: width ?? 160.w,
-          height: height,
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(
-              color: AppColors.lightGrey.withOpacity(0.6),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 8,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final hasBoundedHeight = constraints.hasBoundedHeight;
-
-              Widget infoContent = Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Title
-                  Text(
-                    title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyle.mediumBlack600.copyWith(
-                      fontSize: 10.sp,
-                      height: 1.25,
-                    ),
-                  ),
-                  6.verticalSpace,
-                  // Price Section
-                  Text(
-                    formattedPrice,
-                    style: AppTextStyle.mediumBlackBold.copyWith(
-                      fontSize: 10.5.sp,
-                      color: const Color(0xFFD32F2F),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  if (formattedOriginalPrice.isNotEmpty) ...[
-                    2.verticalSpace,
-                    Text(
-                      formattedOriginalPrice,
-                      style: AppTextStyle.smallGrey.copyWith(
-                        fontSize: 10.sp,
-                        decoration: TextDecoration.lineThrough,
-                        color: AppColors.grey,
-                      ),
-                    ),
-                  ],
-                ],
-              );
-
-              Widget ratingRow = Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.star_rounded,
-                          color: AppColors.yellow,
-                          size: 14.sp,
-                        ),
-                        2.horizontalSpace,
-                        Text(
-                          rating,
-                          style: AppTextStyle.smallBlackBold.copyWith(
-                            fontSize: 10.5.sp,
-                          ),
-                        ),
-                        2.horizontalSpace,
-                        Flexible(
-                          child: Text(
-                            review,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppTextStyle.xSmallGrey.copyWith(
-                              fontSize: 10.5.sp,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              );
-
-              Widget productInfoSection;
-              if (hasBoundedHeight) {
-                productInfoSection = Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(10.r),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        infoContent,
-                        ratingRow,
-                      ],
-                    ),
-                  ),
-                );
-              } else {
-                productInfoSection = Padding(
-                  padding: EdgeInsets.all(10.r),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      infoContent,
-                      10.verticalSpace,
-                      ratingRow,
-                    ],
-                  ),
-                );
-              }
-
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize:
-                    hasBoundedHeight ? MainAxisSize.max : MainAxisSize.min,
-                children: [
-                  // Image Container with Badge
-                  Stack(
-                    children: [
-                      Container(
-                        height: 120.h,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: AppColors.greyWhite,
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(16.r),
-                          ),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(16.r),
-                          ),
-                          child: Image(
-                            image: imageProvider,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Image.asset(
-                              Helper.getImagePath('img_product1.jpg'),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      // Discount Badge
-                      if (calculatedDiscount != null &&
-                          calculatedDiscount.isNotEmpty)
-                        Positioned(
-                          top: 8.h,
-                          left: 8.w,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 7.w, vertical: 3.h),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFE53935),
-                              borderRadius: BorderRadius.circular(6.r),
-                            ),
-                            child: Text(
-                              calculatedDiscount,
-                              style: AppTextStyle.xSmallWhiteBold.copyWith(
-                                fontSize: 10.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-
-                  // Product Info Section
-                  productInfoSection,
-                ],
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-}
+import 'package:pos_royal/app/core/helper/helper.dart';
+import 'package:pos_royal/app/core/styles/app_color.dart';
+import 'package:pos_royal/app/core/styles/app_text_style.dart';
+import 'package:pos_royal/app/shared/widgets/text/text_price_bold.dart';
+import 'package:pos_royal/app/shared/widgets/text/text_price_line_through.dart';
 
 class ProductCard extends StatelessWidget {
   ProductCard({
@@ -267,92 +17,188 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ProductsCard(
-      onTap: onTap,
-      title: "Elite Springbed Kasur Pocket Emporium New Edition",
-      formattedPrice: "Rp 1.087.210",
-      formattedOriginalPrice: "Rp 3.749.000",
-      rating: "4.2",
-      review: "(128)",
-      brand: "Elite",
-      discountPercentage: "-71%",
-      imageProvider: AssetImage(
-        Helper.getImagePath('img_product1.jpg'),
+    Container mandatoryContainer = Container(
+      key: widgetKey,
+      width: 150.w,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.lightGrey),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.lightGrey.withOpacity(0.3),
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
+      child: Stack(
+        children: [
+          Column(
+            children: [
+              Container(
+                height: 125.h,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: AssetImage(
+                      Helper.getImagePath(
+                        'img_product1.jpg',
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              10.verticalSpace,
+              RPadding(
+                padding: const EdgeInsets.only(left: 8, right: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Elite Springbed Kasur Pocket Emporium New Edition",
+                      style: AppTextStyle.largeBlackBold,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    15.verticalSpace,
+                    TextPriceBold(price: 'Rp 1.087.210'),
+                    5.verticalSpace,
+                    TextPriceLineThrough(price: 'Rp 3.749.000'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Positioned(
+            right: 0,
+            bottom: 22,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              width: 48.w,
+              height: 20.h,
+              decoration: const BoxDecoration(
+                color: AppColors.orange,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(14),
+                  bottomLeft: Radius.circular(14),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.star,
+                    color: AppColors.white,
+                    size: 15,
+                  ),
+                  2.horizontalSpace,
+                  Text(
+                    '4.2',
+                    style: AppTextStyle.mediumWhite500,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            child: const DiscountTag(
+              discountPercentage: '20',
+              label: 'Off',
+            ),
+
+            // Container(
+            //   padding: const EdgeInsets.symmetric(horizontal: 5),
+            //   width: 48,
+            //   height: 20,
+            //   decoration: const BoxDecoration(
+            //     color: AppColors.redContrast,
+            //   ),
+            //   child: Center(
+            //     child: Text(
+            //       '-71%',
+            //       style: AppTextStyle.mediumWhite500,
+            //     ),
+            //   ),
+            // ),
+          ),
+        ],
+      ),
+    );
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: () => onTap(widgetKey),
+      child: mandatoryContainer,
     );
   }
 }
 
-class ProductCardShimmer extends StatefulWidget {
-  const ProductCardShimmer({
+class ProductsCard extends StatelessWidget {
+  ProductsCard({
     super.key,
-    this.width,
-    this.height,
+    required this.onTap,
+    required this.title,
+    required this.formattedPrice,
+    required this.formattedOriginalPrice,
+    required this.rating,
+    required this.review,
+    required this.imageProvider,
   });
 
-  final double? width;
-  final double? height;
-
-  @override
-  State<ProductCardShimmer> createState() => _ProductCardShimmerState();
-}
-
-class _ProductCardShimmerState extends State<ProductCardShimmer>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 1300),
-  )..repeat();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  final GlobalKey widgetKey = GlobalKey();
+  final void Function(GlobalKey) onTap;
+  final String title, formattedPrice, formattedOriginalPrice, rating, review;
+  final ImageProvider<Object> imageProvider;
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        final offset = (_controller.value * 2) - 1;
-        return ShaderMask(
-          blendMode: BlendMode.srcATop,
-          shaderCallback: (bounds) => LinearGradient(
-            begin: Alignment(offset - 1, 0),
-            end: Alignment(offset + 1, 0),
-            colors: const [
-              Color(0xFFE8E8E8),
-              Color(0xFFF7F7F7),
-              Color(0xFFE8E8E8),
-            ],
-          ).createShader(bounds),
-          child: child,
-        );
-      },
-      child: Container(
-        width: widget.width ?? 160.w,
-        height: widget.height,
-        padding: EdgeInsets.all(8.r),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(color: AppColors.lightGrey),
-        ),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final hasBoundedHeight = constraints.hasBoundedHeight;
-            return Column(
+    Container mandatoryContainer = Container(
+      key: widgetKey,
+      width: 150.w,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.lightGrey),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.lightGrey.withOpacity(0.3),
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: 80.h,
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: imageProvider,
+                onError: (exception, stackTrace) {},
+              ),
+            ),
+          ),
+          10.verticalSpace,
+          RPadding(
+            padding: const EdgeInsets.only(left: 8, right: 8),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize:
-                  hasBoundedHeight ? MainAxisSize.max : MainAxisSize.min,
               children: [
-                Container(
-                  height: 100.h,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
+                Text(
+                  title,
+                  style: AppTextStyle.largeBlackBold,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 15.verticalSpace,
                 TextPriceBold(price: formattedPrice),
@@ -373,40 +219,29 @@ class _ProductCardShimmerState extends State<ProductCardShimmer>
                   color: AppColors.yellow,
                   size: 15,
                 ),
-                6.verticalSpace,
-                Container(
-                  width: double.infinity,
-                  height: 12.h,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4.r),
+                2.horizontalSpace,
+                Text(
+                  rating,
+                  style: AppTextStyle.mediumBlackBold.copyWith(
+                    color: AppColors.yellow,
                   ),
                 ),
-                4.verticalSpace,
-                FractionallySizedBox(
-                  widthFactor: .7,
-                  child: Container(
-                    height: 12.h,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
-                  ),
-                ),
-                if (hasBoundedHeight) const Spacer() else 12.verticalSpace,
-                Container(
-                  width: 90.w,
-                  height: 14.h,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4.r),
-                  ),
+                4.horizontalSpace,
+                Text(
+                  review,
+                  style: AppTextStyle.smallGrey,
                 ),
               ],
-            );
-          },
-        ),
+            ),
+          ),
+        ],
       ),
+    );
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: () => onTap(widgetKey),
+      child: mandatoryContainer,
     );
   }
 }
@@ -433,19 +268,85 @@ class DiscountTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-      decoration: BoxDecoration(
-        color: tagColor,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16.r),
-          bottomRight: Radius.circular(12.r),
-        ),
-      ),
-      child: Text(
-        '-$discountPercentage%',
-        style: AppTextStyle.xSmallWhiteBold.copyWith(fontSize: 10.sp),
+    return SizedBox(
+      width: width,
+      height: height,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          CustomPaint(
+            painter: _DiscountTagPainter(tagColor),
+            size: Size(width, height),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('$discountPercentage%', style: AppTextStyle.smallWhiteBold),
+              Text(label, style: AppTextStyle.xSmallWhite),
+            ],
+          ),
+        ],
       ),
     );
+  }
+}
+
+class _DiscountTagPainter extends CustomPainter {
+  final Color tagColor;
+
+  _DiscountTagPainter(this.tagColor);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = tagColor
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+
+    // Define the rounded rectangle part
+    // Top-left corner
+    // path.moveTo(0, size.height * 0.1);
+    // path.arcToPoint(
+    //   const Offset(10, 0), // Adjust for desired top-left radius
+    //   radius: const Radius.circular(10),
+    //   clockwise: false,
+    // );
+
+    // Top-right corner
+    path.lineTo(size.width, 0);
+    // path.arcToPoint(
+    //   Offset(
+    //       size.width, size.height * 0.1), // Adjust for desired top-right radius
+    //   radius: const Radius.circular(10),
+    //   clockwise: false,
+    // );
+
+    // Right side
+    path.lineTo(size.width, size.height * 0.82);
+
+    // Bottom point of the tag
+    path.lineTo(size.width / 2, size.height);
+
+    // Left side
+    path.lineTo(0, size.height * 0.82);
+
+    // Close the path
+    path.close();
+
+    // Apply a subtle blur/shadow effect to the tag itself
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = tagColor.withOpacity(0.8)
+        ..style = PaintingStyle.fill,
+    );
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return (oldDelegate as _DiscountTagPainter).tagColor != tagColor;
   }
 }

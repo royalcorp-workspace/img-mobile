@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:get/get.dart';
-import 'package:img/app/core/helper/helper.dart';
-import 'package:img/app/core/styles/app_color.dart';
-import 'package:img/app/core/styles/app_text_style.dart';
-import 'package:img/app/modules/home/views/home_view.dart';
-import 'package:img/app/modules/order/views/order_view.dart';
-import 'package:img/app/modules/product/views/product_view.dart';
-import 'package:img/app/modules/setting/views/setting_view.dart';
+import 'package:pos_royal/app/core/helper/helper.dart';
+import 'package:pos_royal/app/core/styles/app_color.dart';
+import 'package:pos_royal/app/core/styles/app_text_style.dart';
+import 'package:pos_royal/app/modules/home/controllers/home_controller.dart';
+import 'package:pos_royal/app/modules/home/views/home_view.dart';
+import 'package:pos_royal/app/modules/order/views/order_view.dart';
+import 'package:pos_royal/app/modules/product/views/product_view.dart';
+import 'package:pos_royal/app/modules/setting/views/setting_view.dart';
 
 import '../controllers/navigation_controller.dart';
 
 class NavigationView extends GetView<NavigationController> {
   const NavigationView({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Obx(
@@ -26,118 +26,103 @@ class NavigationView extends GetView<NavigationController> {
           const ProductView(),
 
           /// Pesanan page
-          const OrderView(),
+          OrderView(),
 
           /// Setting page
           const SettingView(),
         ][controller.currentPageIndex.value],
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 16,
-                offset: const Offset(0, -4),
-              ),
-            ],
-          ),
-          child: SafeArea(
-            child: Container(
-              height: 64.h,
-              padding: EdgeInsets.symmetric(horizontal: 12.w),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildNavItem(
-                    index: 0,
-                    label: 'Beranda',
-                    activeIconPath: 'img_home.png',
-                    inactiveIconPath: 'img_home_disable.png',
-                    fallbackIcon: Icons.home_rounded,
-                  ),
-                  _buildNavItem(
-                    index: 1,
-                    label: 'Produk',
-                    activeIconPath: 'img_products.png',
-                    inactiveIconPath: 'img_products_disable.png',
-                    fallbackIcon: Icons.grid_view_rounded,
-                  ),
-                  _buildNavItem(
-                    index: 2,
-                    label: 'Pesanan',
-                    activeIconPath: 'img_orders.png',
-                    inactiveIconPath: 'img_orders_disable.png',
-                    fallbackIcon: Icons.receipt_long_rounded,
-                  ),
-                  _buildNavItem(
-                    index: 3,
-                    label: 'Pengaturan',
-                    activeIconPath: 'img_settings.png',
-                    inactiveIconPath: 'img_settings_disable.png',
-                    fallbackIcon: Icons.settings_rounded,
-                  ),
-                ],
-              ),
+        bottomNavigationBar: NavigationBarTheme(
+          data: NavigationBarThemeData(
+            backgroundColor: AppColors.white,
+            shadowColor: AppColors.lightGrey,
+            labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>(
+              (Set<WidgetState> states) => states.contains(WidgetState.selected)
+                  ? AppTextStyle.smallBlackBold.copyWith(
+                      color: AppColors.secondaryColor,
+                    )
+                  : AppTextStyle.smallGrey,
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem({
-    required int index,
-    required String label,
-    required String activeIconPath,
-    required String inactiveIconPath,
-    required IconData fallbackIcon,
-  }) {
-    final isSelected = controller.currentPageIndex.value == index;
-
-    return Material(
-      color: Colors.transparent,
-      child: GestureDetector(
-        onTap: () => controller.currentPageIndex.value = index,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 2.h),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? AppColors.primaryColor.withOpacity(0.12)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Image.asset(
+          child: NavigationBar(
+            elevation: 15,
+            onDestinationSelected: (int index) {
+              if (index == 0) {
+                if (Get.isRegistered<HomeController>()) {
+                  Get.find<HomeController>().scrollToTop();
+                }
+              }
+              controller.currentPageIndex.value = index;
+            },
+            indicatorColor: Colors.transparent,
+            selectedIndex: controller.currentPageIndex.value,
+            destinations: <Widget>[
+              NavigationDestination(
+                selectedIcon: Image.asset(
+                  width: 35,
+                  height: 35,
                   Helper.getImagePath(
-                    isSelected ? activeIconPath : inactiveIconPath,
-                  ),
-                  width: 26.w,
-                  height: 26.w,
-                  errorBuilder: (_, __, ___) => Icon(
-                    fallbackIcon,
-                    size: 24.sp,
-                    color: isSelected ? AppColors.primaryColor : AppColors.grey,
+                    'img_home.png',
                   ),
                 ),
+                icon: Image.asset(
+                  width: 35,
+                  height: 35,
+                  Helper.getImagePath(
+                    'img_home_disable.png',
+                  ),
+                ),
+                label: 'Beranda',
               ),
-              3.verticalSpace,
-              Text(
-                label,
-                style: AppTextStyle.smallBlackBold.copyWith(
-                  fontSize: 11.sp,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                  color: isSelected
-                      ? AppColors.primaryColor
-                      : AppColors.blackSecondary,
+              NavigationDestination(
+                selectedIcon: Image.asset(
+                  width: 35,
+                  height: 35,
+                  Helper.getImagePath(
+                    'img_products.png',
+                  ),
                 ),
+                icon: Image.asset(
+                  width: 35,
+                  height: 35,
+                  Helper.getImagePath(
+                    'img_products_disable.png',
+                  ),
+                ),
+                label: 'Produk',
+              ),
+              NavigationDestination(
+                selectedIcon: Image.asset(
+                  width: 35,
+                  height: 35,
+                  Helper.getImagePath(
+                    'img_orders.png',
+                  ),
+                ),
+                icon: Image.asset(
+                  width: 35,
+                  height: 35,
+                  Helper.getImagePath(
+                    'img_orders_disable.png',
+                  ),
+                ),
+                label: 'Pesanan',
+              ),
+              NavigationDestination(
+                selectedIcon: Image.asset(
+                  width: 35,
+                  height: 35,
+                  Helper.getImagePath(
+                    'img_settings.png',
+                  ),
+                ),
+                icon: Image.asset(
+                  width: 35,
+                  height: 35,
+                  Helper.getImagePath(
+                    'img_settings_disable.png',
+                  ),
+                ),
+                label: 'Pengaturan',
               ),
             ],
           ),

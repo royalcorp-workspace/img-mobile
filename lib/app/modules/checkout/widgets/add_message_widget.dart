@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:img/app/core/styles/app_color.dart';
-import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:pos_royal/app/core/styles/app_color.dart';
+import 'package:pos_royal/app/core/styles/app_text_style.dart';
 
-class AddNotesWidget extends StatelessWidget {
-  const AddNotesWidget({
+class AddMessageWidget extends StatelessWidget {
+  const AddMessageWidget({
     super.key,
-    this.controller,
-    this.onChanged,
   });
-
-  final TextEditingController? controller;
-  final void Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +26,12 @@ class AddNotesWidget extends StatelessWidget {
               ),
               borderRadius: BorderRadius.circular(8)),
           child: TextField(
-            controller: controller,
             decoration: InputDecoration.collapsed(
               hintText: '(Optional) Tinggalkan pesan untuk penjual',
               hintStyle: AppTextStyle.mediumGrey,
             ),
             cursorColor: AppColors.primaryColor,
             style: AppTextStyle.mediumBlack,
-            onChanged: onChanged,
           ),
         ),
       ],

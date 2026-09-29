@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:img/app/core/helper/helper.dart';
-import 'package:img/app/core/styles/app_color.dart';
-import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:pos_royal/app/core/styles/app_color.dart';
+import 'package:pos_royal/app/core/styles/app_text_style.dart';
 
 class VoucherBottomBar extends StatelessWidget {
-  const VoucherBottomBar({super.key, required this.value, this.onTap});
-
-  final int value;
-  final VoidCallback? onTap;
+  const VoucherBottomBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +14,7 @@ class VoucherBottomBar extends StatelessWidget {
         topLeft: Radius.circular(30),
       ),
       child: BottomAppBar(
-        height: 85.h,
+        height: 100,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -27,19 +22,19 @@ class VoucherBottomBar extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: const [
                 Text(
                   'Kamu Hemat',
                   style: AppTextStyle.mediumBlack,
                 ),
                 Text(
-                  Helper.formatCurrency(value),
+                  'Rp. 7.000',
                   style: AppTextStyle.largeBlackBold,
                 ),
               ],
             ),
             InkWell(
-              onTap: onTap ?? () => Get.back(),
+              onTap: () => Get.back(),
               child: Container(
                 height: 40,
                 width: 150,
@@ -50,7 +45,7 @@ class VoucherBottomBar extends StatelessWidget {
                 child: const Center(
                   child: Text(
                     'Pakai Voucher',
-                    style: AppTextStyle.mediumWhiteBold,
+                    style: AppTextStyle.largeWhiteBold,
                   ),
                 ),
               ),

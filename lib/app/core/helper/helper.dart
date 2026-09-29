@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:img/app/core/utils/constants/app_constant.dart';
-import 'package:img/app/core/utils/token_storage.dart';
+import 'package:pos_royal/app/core/utils/constants/app_constant.dart';
+import 'package:pos_royal/app/core/utils/token_storage.dart';
 
 class Helper {
   /// Get svg picture path
@@ -13,9 +13,6 @@ class Helper {
 
   /// Get image picture path
   static String getImagePath(String name) {
-    if (name.startsWith('assets/')) {
-      return name;
-    }
     return "$imagePath$name";
   }
 

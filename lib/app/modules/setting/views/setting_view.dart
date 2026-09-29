@@ -71,10 +71,10 @@ class SettingView extends GetView<SettingController> {
                             ),
                           ),
                         ),
-                        // IconButton(
-                        //   onPressed: () => Get.toNamed(Routes.PROFILE),
-                        //   icon: const Icon(Icons.edit, color: Colors.white),
-                        // )
+                        IconButton(
+                          onPressed: () => Get.toNamed(Routes.PROFILE),
+                          icon: const Icon(Icons.edit, color: Colors.white),
+                        )
                       ],
                     ),
                   ),
@@ -98,11 +98,12 @@ class SettingView extends GetView<SettingController> {
                 ),
                 child: Column(
                   children: [
+                    _menuTile(Icons.feedback_outlined, "Ulasan Produk", () {}),
+                    _divider(),
                     _menuTile(
-                      Icons.edit,
-                      "Edit Profile",
-                      () => Get.toNamed(Routes.PROFILE,
-                          arguments: controller.userModel.value),
+                      Icons.local_offer_outlined,
+                      "Voucher & Promo",
+                      () => Get.toNamed(Routes.VOUCHER),
                     ),
                     _divider(),
                     _menuTile(
@@ -110,22 +111,8 @@ class SettingView extends GetView<SettingController> {
                       "Daftar Alamat",
                       () => Get.toNamed(Routes.ADDRESS),
                     ),
-                    // _divider(),
-                    // _menuTile(
-                    //   Icons.local_offer_outlined,
-                    //   "Voucher & Promo",
-                    //   () => Get.toNamed(Routes.VOUCHER),
-                    // ),
                     _divider(),
-                    _menuTile(
-                      Icons.lock_outline,
-                      "Ubah Kata Sandi",
-                      () => Get.toNamed(Routes.CHANGE_PASSWORD),
-                    ),
-                    // _divider(),
-                    // _menuTile(Icons.feedback_outlined, "Ulasan Produk", () {}),
-                    // _divider(),
-                    // _menuTile(Icons.security_outlined, "Keamanan", () {}),
+                    _menuTile(Icons.security_outlined, "Keamanan", () {}),
                   ],
                 ),
               ),
@@ -147,36 +134,14 @@ class SettingView extends GetView<SettingController> {
                 ),
                 child: Column(
                   children: [
-                    _menuTile(
-                      Icons.info_outline,
-                      "Kebijakan Privasi",
-                      () async {
-                        final Uri url = Uri.parse(
-                            'https://dev-img.royalcorp.co.id/kebijakan-privacy');
-                        if (!await launchUrl(url,
-                            mode: LaunchMode.externalApplication)) {
-                          Get.snackbar(
-                            '',
-                            '',
-                            titleText: Text('Kesalahan',
-                                style: AppTextStyle.largeWhiteBold),
-                            messageText: Text('Gagal membuka Kebijakan Privasi',
-                                style: AppTextStyle.mediumWhite),
-                            backgroundColor:
-                                Get.context?.theme.colorScheme.error ??
-                                    AppColors.red,
-                            colorText: AppColors.white,
-                          );
-                        }
-                      },
-                    ),
-                    _divider(),
                     _menuTile(Icons.support_agent, "Bantuan Royal Care", () {}),
+                    _divider(),
+                    _menuTile(Icons.info_outline, "Ketentuan Privasi", () {}),
                     _divider(),
                     ListTile(
                       leading: Icon(Icons.star_border,
                           color: AppColors.secondaryColor),
-                      title: const Text("Beri Rating Aplikasi"),
+                      title: const Text("Beri Rating"),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
