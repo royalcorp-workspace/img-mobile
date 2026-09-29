@@ -1,4 +1,3 @@
 // Production xcconfig
-PRODUCT_BUNDLE_IDENTIFIER = com.img.royalcorp
+PRODUCT_BUNDLE_IDENTIFIER = posroyal.pos_royal
 FLAVOR = production
-REVERSED_CLIENT_ID = com.googleusercontent.apps.122681934982-rul6nn8bjdmbi5l6n0snq80coptt2ddp

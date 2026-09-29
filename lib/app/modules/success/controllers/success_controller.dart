@@ -1,13 +1,23 @@
 import 'package:get/get.dart';
 
 class SuccessController extends GetxController {
-  var invoiceNumber = '';
+  //TODO: Implement SuccessController
 
+  final count = 0.obs;
   @override
   void onInit() {
     super.onInit();
-    invoiceNumber = (Get.arguments != null && Get.arguments is String)
-        ? (Get.arguments as String)
-        : '-';
   }
+
+  @override
+  void onReady() {
+    super.onReady();
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+  }
+
+  void increment() => count.value++;
 }

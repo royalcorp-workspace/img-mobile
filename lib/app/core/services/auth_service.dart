@@ -1,19 +1,12 @@
 import 'dart:convert';
-import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:img/app/core/styles/app_color.dart';
-import 'package:img/app/core/styles/app_text_style.dart';
-import 'package:img/app/routes/app_pages.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:img/app/core/network/dio_network.dart';
-import 'package:img/app/core/utils/token_storage.dart';
-import 'package:img/app/core/utils/log/logger.dart';
-import 'package:img/app/data/models/auth_response_model.dart';
+import 'package:pos_royal/app/core/network/dio_network.dart';
+import 'package:pos_royal/app/core/utils/token_storage.dart';
+import 'package:pos_royal/app/core/utils/log/logger.dart';
+import 'package:pos_royal/app/data/models/auth_response_model.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -43,7 +36,6 @@ class AuthService {
               '✅ [AUTH-LOGIN] Server token received: ${serverToken.substring(0, 20)}...');
           await TokenStorage.save(
             serverToken,
-            refresh: authResponse.refreshToken,
             csrf: authResponse.csrfToken,
             userDataJson: authResponse.user != null
                 ? jsonEncode(authResponse.user!.toJson())
@@ -250,7 +242,6 @@ class AuthService {
               '✅ [AUTH-VERIFY] Server token received: ${serverToken.substring(0, 20)}...');
           await TokenStorage.save(
             serverToken,
-            refresh: authResponse.refreshToken,
             csrf: authResponse.csrfToken,
             userDataJson: authResponse.user != null
                 ? jsonEncode(authResponse.user!.toJson())

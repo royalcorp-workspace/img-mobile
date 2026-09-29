@@ -1,6 +1,5 @@
-import 'package:img/app/data/models/product_model.dart';
-import 'package:img/app/data/models/variant_model.dart';
-import 'package:img/app/domain/entities/product_by_id_entity.dart';
+import 'package:pos_royal/app/data/models/product_model.dart';
+import 'package:pos_royal/app/domain/entities/product_by_id_entity.dart';
 
 int _parseInt(dynamic val) {
   if (val == null) return 0;
@@ -76,9 +75,8 @@ class ProductByIdModel extends ProductByIdEntity {
             : null,
         id: _parseString(json['id']),
         images: (json['images'] as List<dynamic>?)
-                ?.whereType<Map>()
-                .map((e) => ProductImageByIdModel.fromJson(
-                    Map<String, dynamic>.from(e)))
+                ?.map((e) =>
+                    ProductImageModel.fromJson(e as Map<String, dynamic>))
                 .toList() ??
             [],
         variants: (json['variants'] as List<dynamic>?)
@@ -101,40 +99,4 @@ class ProductByIdModel extends ProductByIdEntity {
         totalReviews: _parseInt(json['total_reviews']),
         finalPrice: _parseInt(json['final_price']),
       );
-}
-
-class ProductImageByIdModel extends ProductImageByIdEntity {
-  ProductImageByIdModel({
-    required super.id,
-    required super.productId,
-    required super.image,
-    required super.imageUrl,
-    required super.altText,
-    required super.variantId,
-    required super.createdAt,
-    required super.updatedAt,
-  });
-
-  factory ProductImageByIdModel.fromJson(Map<String, dynamic> json) =>
-      ProductImageByIdModel(
-        id: _parseString(json["id"]),
-        productId: _parseString(json["product_id"]),
-        image: _parseString(json["image"]),
-        imageUrl: _parseString(json["image_url"]),
-        altText: json["alt_text"],
-        variantId: _parseString(json["variant_id"]),
-        createdAt: _parseString(json["created_at"]),
-        updatedAt: _parseString(json["updated_at"]),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "product_id": productId,
-        "image": image,
-        "image_url": imageUrl,
-        "alt_text": altText,
-        "variant_id": variantId,
-        "created_at": createdAt,
-        "updated_at": updatedAt,
-      };
 }

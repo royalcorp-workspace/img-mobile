@@ -63,6 +63,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '122681934982',
     projectId: 'img-royalcorp',
     storageBucket: 'img-royalcorp.firebasestorage.app',
-    iosBundleId: 'com.img.royalcorp',
+    iosBundleId: 'posroyal.posRoyal',
   );
 }
