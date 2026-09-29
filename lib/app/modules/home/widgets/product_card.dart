@@ -354,14 +354,24 @@ class _ProductCardShimmerState extends State<ProductCardShimmer>
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
-                10.verticalSpace,
-                Container(
-                  width: 60.w,
-                  height: 10.h,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4.r),
-                  ),
+                15.verticalSpace,
+                TextPriceBold(price: formattedPrice),
+                5.verticalSpace,
+                Visibility(
+                    visible: formattedOriginalPrice.isNotEmpty,
+                    child: TextPriceLineThrough(price: formattedOriginalPrice)),
+              ],
+            ),
+          ),
+          8.verticalSpace,
+          RPadding(
+            padding: const EdgeInsets.only(left: 8, bottom: 8, right: 8),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.star,
+                  color: AppColors.yellow,
+                  size: 15,
                 ),
                 6.verticalSpace,
                 Container(

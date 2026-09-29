@@ -1,6 +1,10 @@
 // ignore_for_file: sized_box_for_whitespace
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:pos_royal/app/core/helper/helper.dart';
+import 'package:pos_royal/app/core/styles/app_color.dart';
 
 class DetailProductCard extends StatelessWidget {
   const DetailProductCard({
@@ -21,29 +25,16 @@ class DetailProductCard extends StatelessWidget {
 
     return Container(
       key: widgetKey,
-      width: double.infinity,
-      height: galleryHeight,
-      child: PageView.builder(
-        controller: pageController,
-        itemCount: images.isEmpty ? 1 : images.length,
-        itemBuilder: (context, index) {
-          final imageUrl = images.isEmpty ? '' : images[index];
-          return ColoredBox(
-            color: Colors.white,
-            child: Image(
-              image: imageUrl.startsWith('http://') ||
-                      imageUrl.startsWith('https://')
-                  ? NetworkImage(imageUrl)
-                  : const AssetImage('assets/images/img_product1.jpg')
-                      as ImageProvider,
-              fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) => Image.asset(
-                'assets/images/img_product1.jpg',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
+      height: 200.h,
+      width: Get.width,
+      decoration: BoxDecoration(
+        color: AppColors.red,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      clipBehavior: Clip.hardEdge,
+      child: Image.asset(
+        fit: BoxFit.cover,
+        Helper.getImagePath('img_product1.jpg'),
       ),
     );
   }

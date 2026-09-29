@@ -150,8 +150,28 @@ class CheckoutView extends GetView<CheckoutController> {
                     10.verticalSpace,
                     RPadding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
-                      child: AddNotesWidget(
-                        controller: controller.notesC,
+                      child: Obx(
+                        () => CheckoutItemCard(
+                          name: controller.productByID.value.name ?? '',
+                          attributes: controller
+                                  .productByID
+                                  .value
+                                  .variants?[controller.selectedIndex.value]
+                                  .variantName ??
+                              '',
+                          promoDesc: (controller.productByID.value
+                                          .priceProductSettings?.isNotEmpty ==
+                                      true)
+                              ? controller.productByID.value
+                                  .priceProductSettings!.first.title
+                              : '',
+                          price: controller.productByID.value.finalPrice ?? 0,
+                          onTapDecrement: controller.selectedQty.value == 1
+                              ? null
+                              : controller.decrementQty,
+                          qty: controller.selectedQty.value,
+                          onTapIncrement: controller.incrementQty,
+                        ),
                       ),
                     ),
                     10.verticalSpace,
@@ -182,9 +202,94 @@ class CheckoutView extends GetView<CheckoutController> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            'Pilih Kurir',
-                                            style: AppTextStyle.largeBlackBold,
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 12,
+                                                    horizontal: 40),
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.white,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black
+                                                          .withValues(alpha: 0.08),
+                                                      offset:
+                                                          const Offset(0, -1),
+                                                      blurRadius: 12,
+                                                      spreadRadius: 0,
+                                                    ),
+                                                  ],
+                                                  border: Border.all(
+                                                    color:
+                                                        AppColors.primaryColor,
+                                                    width: 1.2,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    SvgPicture.asset(
+                                                      Helper.getSvgPath(
+                                                        'ic_delivery.svg',
+                                                      ),
+                                                    ),
+                                                    10.horizontalSpace,
+                                                    Text(
+                                                      'Di antar',
+                                                      style: AppTextStyle
+                                                          .mediumBlack
+                                                          .copyWith(
+                                                        color: AppColors
+                                                            .primaryColor,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 12,
+                                                    horizontal: 40),
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.white,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black
+                                                          .withValues(alpha: 0.08),
+                                                      offset:
+                                                          const Offset(0, -1),
+                                                      blurRadius: 12,
+                                                      spreadRadius: 0,
+                                                    ),
+                                                  ],
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    SvgPicture.asset(
+                                                      Helper.getSvgPath(
+                                                        'ic_pickup.svg',
+                                                      ),
+                                                    ),
+                                                    10.horizontalSpace,
+                                                    Text(
+                                                      'Ambil',
+                                                      style: AppTextStyle
+                                                          .mediumBlack
+                                                          .copyWith(
+                                                        color: AppColors
+                                                            .primaryColor,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              )
+                                            ],
                                           ),
                                           10.verticalSpace,
                                           const Divider(
@@ -575,7 +680,7 @@ class CheckoutView extends GetView<CheckoutController> {
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               offset: const Offset(0, -8),
               blurRadius: 16,
               spreadRadius: 0,

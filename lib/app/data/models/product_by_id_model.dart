@@ -2,15 +2,6 @@ import 'package:img/app/data/models/product_model.dart';
 import 'package:img/app/data/models/variant_model.dart';
 import 'package:img/app/domain/entities/product_by_id_entity.dart';
 
-double _parseDouble(dynamic val) {
-  if (val == null) return 0.0;
-  if (val is num) return val.toDouble();
-  if (val is String) {
-    return double.tryParse(val) ?? 0.0;
-  }
-  return 0.0;
-}
-
 int _parseInt(dynamic val) {
   if (val == null) return 0;
   if (val is num) return val.toInt();

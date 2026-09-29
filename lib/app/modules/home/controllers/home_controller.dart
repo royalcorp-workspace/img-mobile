@@ -76,30 +76,7 @@ class HomeController extends GetxController {
   final int itemsPerPage = 10;
   var activeBannerIndex = 0.obs;
   var productErrorMessage = ''.obs;
-  var bannerErrorMessage = ''.obs;
-
-  var selectedCategoryId = RxnString();
-  var selectedShortcutId = RxnString();
-  var selectedSortOption = 'Terpopuler'.obs;
-  var searchQuery = ''.obs;
-  final SearchController searchAnchorController = SearchController();
-  Timer? _timer;
-
-  double priceVal = 0.0;
-  double originalPriceVal = 0.0;
-
-  String formattedPrice = '';
-  String formattedOriginalPrice = '';
-  String imageUrl = '';
-
-  CartController get cartController {
-    if (!Get.isRegistered<CartController>()) {
-      Get.lazyPut<CartController>(() => CartController(), fenix: true);
-    }
-    return Get.find<CartController>();
-  }
-
-  List get carts => cartController.carts;
+  var discount = '';
 
   @override
   void onInit() {
@@ -301,10 +278,12 @@ class HomeController extends GetxController {
             ),
           );
 
-      final result = await useCase.call();
-      banners.assignAll(result.data);
+      final result =
+          await useCase.call(page: currentPage, itemsPerPage: itemsPerPage);
+      category.assignAll(result.data);
+      hasMore.value = result.hasMore;
     } catch (e, stackTrace) {
-      logger.severe('❌ [HOME] Failed to fetch banners: $e');
+      logger.severe('❌ [HOME] Failed to fetch category: $e');
       if (kDebugMode) {
         print('❌ [HOME] Error: $e');
         print(stackTrace);

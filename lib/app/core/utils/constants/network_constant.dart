@@ -12,7 +12,6 @@ final String apiUrl = () {
     // case Flavor.staging:
     //   return _stagingApi;
     case Flavor.development:
-    default:
       return _devApi;
   }
 }();

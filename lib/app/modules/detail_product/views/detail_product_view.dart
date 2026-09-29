@@ -43,27 +43,8 @@ class DetailProductView extends GetView<DetailProductController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Obx(
-                () {
-                  final product = controller.productByID.value;
-                  final selectedVariant = controller.selectedVariant;
-                  final variantImage = selectedVariant?.imageUrl ?? '';
-                  final productImages = product.images
-                          ?.map((image) => image.imageUrl)
-                          .where((url) => url.isNotEmpty)
-                          .toList() ??
-                      <String>[];
-                  final imageUrls = [
-                    if (variantImage.isNotEmpty) variantImage,
-                    ...productImages.where((url) => url != variantImage),
-                  ];
-
-                  return DetailProductCard(
-                    widgetKey: controller.widgetKey,
-                    imageUrls: imageUrls,
-                    pageController: controller.pageController,
-                  );
-                },
+              DetailProductCard(
+                widgetKey: controller.widgetKey,
               ),
               10.verticalSpace,
               RPadding(
@@ -163,120 +144,141 @@ class DetailProductView extends GetView<DetailProductController> {
                     8.horizontalSpace,
                     Obx(
                       () => Visibility(
-                        visible: (controller.selectedVariant?.price ?? 0) != 0,
+                        visible: controller.productByID.value
+                                .variants?[controller.selectedIndex.value].price
+                                .toInt() !=
+                            controller
+                                .productByID
+                                .value
+                                .variants?[controller.selectedIndex.value]
+                                .finalPrice
+                                .toInt(),
                         child: TextPriceLineThrough(
-                            price: Helper.formatCurrency(
-                                controller.selectedVariant?.price.toInt() ??
-                                    0)),
+                            price: Helper.formatCurrency(controller
+                                    .productByID
+                                    .value
+                                    .variants?[controller.selectedIndex.value]
+                                    .price
+                                    .toInt() ??
+                                0)),
                       ),
                     ),
                     8.horizontalSpace,
-                    Obx(
-                      () {
-                        final settings = controller
-                                .selectedVariant?.priceProductSettings ??
-                            controller.productByID.value.priceProductSettings ??
-                            [];
-                        final firstSetting =
-                            settings.isEmpty ? null : settings.first;
-                        if (firstSetting == null ||
-                            (controller.selectedVariant?.price ?? 0) == 0) {
-                          return const SizedBox.shrink();
-                        }
-                        int discountVal = 0;
-                        if (firstSetting is PriceProductSettingEntity) {
-                          discountVal = firstSetting.discountValue.toInt();
-                        } else if (firstSetting is Map) {
-                          discountVal = (num.tryParse(
-                                      firstSetting['discount_value']
-                                              ?.toString() ??
-                                          '') ??
-                                  0)
-                              .toInt();
-                        }
-
-                        return Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: const BoxDecoration(
-                            color: AppColors.shadeRed,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(8),
+                    Visibility(
+                      visible: controller
+                          .productByID
+                          .value
+                          .variants![controller.selectedIndex.value]
+                          .priceProductSettings
+                          .isNotEmpty,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: AppColors.shadeRed,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.remove,
+                              size: 12,
+                              color: AppColors.orange,
                             ),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.remove,
-                                size: 12,
-                                color: AppColors.orange,
-                              ),
-                              Text(
-                                '$discountVal%',
-                                style: AppTextStyle.mediumBlackBold.copyWith(
-                                  color: AppColors.orange,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
+                            Obx(
+                              () {
+                                final settings = controller
+                                    .productByID
+                                    .value
+                                    .variants?[controller.selectedIndex.value]
+                                    .priceProductSettings;
+                                final discount =
+                                    (settings != null && settings.isNotEmpty)
+                                        ? settings.first.discountValue.toInt()
+                                        : 0;
+                                return Text(
+                                  '$discount%',
+                                  style: AppTextStyle.mediumBlackBold.copyWith(
+                                    color: AppColors.orange,
+                                  ),
+                                );
+                              },
+                            )
+                          ],
+                        ),
+                      ),
                     )
                   ],
                 ),
               ),
               10.verticalSpace,
-              Obx(
-                () {
-                  final settings =
-                      controller.selectedVariant?.priceProductSettings ??
-                          controller.productByID.value.priceProductSettings ??
-                          [];
-                  final firstSetting = settings.isEmpty ? null : settings.first;
-                  if (firstSetting == null) return const SizedBox.shrink();
-
-                  String title = '-';
-                  String description = '-';
-                  if (firstSetting is PriceProductSettingEntity) {
-                    title = firstSetting.title.isNotEmpty
-                        ? firstSetting.title
-                        : '-';
-                    description = (firstSetting.description != null &&
-                            firstSetting.description!.isNotEmpty)
-                        ? firstSetting.description!
-                        : '-';
-                  } else if (firstSetting is Map) {
-                    title = firstSetting['title']?.toString() ?? '-';
-                    description =
-                        firstSetting['description']?.toString() ?? '-';
-                  }
-
-                  return Column(
-                    children: [
-                      const Divider(
-                        color: AppColors.lightGrey,
-                        thickness: 1.2,
-                      ),
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        minLeadingWidth: 0,
-                        horizontalTitleGap: 5,
-                        leading: Image.asset(
-                          height: 60,
-                          width: 60,
-                          Helper.getImagePath('img_special_promo.png'),
-                        ),
-                        title: Text(
+              Visibility(
+                  visible: controller
+                      .productByID
+                      .value
+                      .variants![controller.selectedIndex.value]
+                      .priceProductSettings
+                      .isNotEmpty,
+                  child: const Divider(
+                      color: AppColors.lightGrey, thickness: 1.2)),
+              Visibility(
+                visible: controller
+                    .productByID
+                    .value
+                    .variants![controller.selectedIndex.value]
+                    .priceProductSettings
+                    .isNotEmpty,
+                child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    minLeadingWidth: 0,
+                    horizontalTitleGap: 5,
+                    leading: Image.asset(
+                      height: 60,
+                      width: 60,
+                      Helper.getImagePath('img_special_promo.png'),
+                    ),
+                    title: Obx(
+                      () {
+                        final settings = controller
+                            .productByID
+                            .value
+                            .variants?[controller.selectedIndex.value]
+                            .priceProductSettings;
+                        final title = (settings != null && settings.isNotEmpty)
+                            ? settings.first.title
+                            : '-';
+                        return Text(
                           title,
                           style: AppTextStyle.mediumBlackBold,
-                        ),
-                        subtitle: Text(
-                          description,
+                        );
+                      },
+                    ),
+                    subtitle: Obx(
+                      () {
+                        final settings = controller
+                            .productByID
+                            .value
+                            .variants?[controller.selectedIndex.value]
+                            .priceProductSettings;
+                        final desc = (settings != null && settings.isNotEmpty)
+                            ? (settings.first.description ?? '-')
+                            : '-';
+                        return Text(
+                          desc,
                           style: AppTextStyle.mediumBlack,
-                        ),
-                      ),
-                    ],
-                  );
-                },
+                        );
+                      },
+                    )),
+              ),
+              AppDivider(),
+              10.verticalSpace,
+              RPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                child: const Text(
+                  'Pilih Ukuran',
+                  style: AppTextStyle.largeBlackBold,
+                ),
               ),
               Obx(
                 () => Visibility(
@@ -686,7 +688,7 @@ ${controller.productByID.value.description}
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withValues(alpha: 0.08),
                 offset: const Offset(0, -8),
                 blurRadius: 16,
                 spreadRadius: 0,
@@ -703,6 +705,10 @@ ${controller.productByID.value.description}
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(
+                  onTap: () => Get.toNamed(Routes.CHAT, arguments: [
+                    controller.productByID,
+                    controller.selectedIndex.value
+                  ]),
                   child: Container(
                     height: 40,
                     width: 40,

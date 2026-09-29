@@ -41,15 +41,6 @@ class DetailProductController extends GetxController {
   var productByID = ProductByIdEntity().obs;
   var cartErrorMessage = ''.obs;
 
-  CartController get cartController {
-    if (!Get.isRegistered<CartController>()) {
-      Get.lazyPut<CartController>(() => CartController(), fenix: true);
-    }
-    return Get.find<CartController>();
-  }
-
-  List get carts => cartController.carts;
-
   @override
   void onInit() {
     super.onInit();

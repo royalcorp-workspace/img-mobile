@@ -187,7 +187,7 @@ class LoginView extends GetView<AuthController> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     GestureDetector(
-                      onTap: controller.signInWithGoogle,
+                      onTap: controller.loginWithGmail,
                       child: Container(
                         padding: EdgeInsets.all(10),
                         height: 45.h,
@@ -205,7 +205,7 @@ class LoginView extends GetView<AuthController> {
                     ),
                     SizedBox(width: 15.w),
                     GestureDetector(
-                      onTap: controller.signInWithApple,
+                      onTap: controller.loginWithApple,
                       child: Container(
                         padding: EdgeInsets.all(10),
                         height: 45.h,

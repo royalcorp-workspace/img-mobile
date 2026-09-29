@@ -795,7 +795,7 @@ class HomeView extends GetView<HomeController> {
                   Helper.getImagePath('img_product1.jpg'),
                 );
               }
-
+              controller.discount = formattedOriginalPrice;
               return ProductsCard(
                 formattedOriginalPrice: originalPrice > 0
                     ? Helper.formatCurrency(originalPrice.toInt())
@@ -809,7 +809,16 @@ class HomeView extends GetView<HomeController> {
                 onAddToCart: (key) => controller.addToCart(key),
               );
             },
-          ));
+            childCount: controller.products.length,
+          ),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: controller.discount.isNotEmpty ? .65 : .70,
+          ),
+        ),
+      );
     });
   }
 
