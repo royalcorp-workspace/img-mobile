@@ -39,37 +39,44 @@ class CheckoutView extends GetView<CheckoutController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    15.verticalSpace,
+                    10.verticalSpace,
                     RPadding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: InkWell(
                         onTap: () => Get.toNamed(Routes.ADDRESS),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.location_on_sharp,
-                                  size: 18,
-                                  color: AppColors.primaryColor,
-                                ),
-                                5.horizontalSpace,
-                                RichText(
-                                  text: TextSpan(
-                                    text: 'Dikirim ke ',
-                                    style: AppTextStyle.mediumGrey,
-                                    children: [
-                                      TextSpan(
-                                        text:
-                                            'Jl. Raya Batujajar, Bandung Barat',
-                                        style: AppTextStyle.mediumBlackBold,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ],
+                            Icon(
+                              Icons.location_on_sharp,
+                              size: 18,
+                              color: AppColors.primaryColor,
                             ),
+                            5.horizontalSpace,
+                            Expanded(
+                              child: RichText(
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                text: TextSpan(
+                                  text: 'Dikirim ke ',
+                                  style: AppTextStyle.mediumGrey,
+                                  children: [
+                                    TextSpan(
+                                      text: (controller.adddress != null &&
+                                              controller.adddress!.isNotEmpty)
+                                          ? '${controller.adddress!.first.address}, ${controller.adddress!.first.cityName}'
+                                          : 'Belum ada alamat pengiriman terpilih',
+                                      style: (controller.adddress != null &&
+                                              controller.adddress!.isNotEmpty)
+                                          ? AppTextStyle.mediumBlackBold
+                                          : AppTextStyle.mediumGreyBold,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            5.horizontalSpace,
                             Icon(
                               Icons.arrow_forward_ios_outlined,
                               color: AppColors.blackSecondary,
@@ -79,9 +86,7 @@ class CheckoutView extends GetView<CheckoutController> {
                         ),
                       ),
                     ),
-                    15.verticalSpace,
-
-                    // Product
+                    10.verticalSpace,
                     controller.checkoutSource == CheckoutSource.product
                         ? RPadding(
                             padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -96,11 +101,11 @@ class CheckoutView extends GetView<CheckoutController> {
                                             controller.selectedIndex.value]
                                         .variantName ??
                                     '',
-                                promoDesc: controller.productByID.value
+                                promoDesc: (controller.productByID.value
                                             .priceProductSettings?.isNotEmpty ==
-                                        true
-                                    ? controller.productByID.value
-                                        .priceProductSettings!.first.title
+                                        true)
+                                    ? (controller.productByID.value
+                                        .priceProductSettings!.first.title)
                                     : '',
                                 price: controller
                                         .productByID
@@ -142,72 +147,21 @@ class CheckoutView extends GetView<CheckoutController> {
                                 ),
                               );
                             }),
-                    15.verticalSpace,
+                    10.verticalSpace,
                     RPadding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: AddNotesWidget(
                         controller: controller.notesC,
                       ),
                     ),
-                    15.verticalSpace,
+                    10.verticalSpace,
                     AppDivider(),
-                    15.verticalSpace,
+                    10.verticalSpace,
                     RPadding(
                       padding: EdgeInsets.symmetric(horizontal: 14),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Phase 2
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //   children: [
-                          //     Expanded(
-                          //       child: Row(
-                          //         crossAxisAlignment: CrossAxisAlignment.start,
-                          //         children: [
-                          //           Icon(
-                          //             Icons.inventory_2_outlined,
-                          //             size: 18,
-                          //             color: AppColors.primaryColor,
-                          //           ),
-                          //           5.horizontalSpace,
-                          //           Expanded(
-                          //             child: RichText(
-                          //               maxLines: 2,
-                          //               overflow: TextOverflow.ellipsis,
-                          //               text: TextSpan(
-                          //                 text: 'Akan dikirim dari ',
-                          //                 style: AppTextStyle.mediumGrey,
-                          //                 children: [
-                          //                   TextSpan(
-                          //                     text: 'Royal Pusat',
-                          //                     style:
-                          //                         AppTextStyle.mediumBlackBold,
-                          //                   )
-                          //                 ],
-                          //               ),
-                          //             ),
-                          //           ),
-                          //         ],
-                          //       ),
-                          //     ),
-                          //     Icon(
-                          //       Icons.arrow_forward_ios_outlined,
-                          //       color: AppColors.blackSecondary,
-                          //       size: 15,
-                          //     )
-                          //   ],
-                          // ),
-                          // 10.verticalSpace,
-                          // Text(
-                          //   'Jl.Raya Barat, Cimareme, Kec. Ngamprah, Kabupaten Bandung Barat, Jawa Barat 40552',
-                          //   style: AppTextStyle.mediumBlackSecondary,
-                          // ),
-                          // 10.verticalSpace,
-                          // const Divider(
-                          //     color: AppColors.lightGrey, thickness: 1.2),
-                          // 15.verticalSpace,
-
                           InkWell(
                             onTap: () {
                               showModalBottomSheet(
@@ -374,7 +328,6 @@ class CheckoutView extends GetView<CheckoutController> {
                               ),
                             ),
                           ),
-
                           Obx(
                             () => Visibility(
                               visible: controller
@@ -434,8 +387,6 @@ class CheckoutView extends GetView<CheckoutController> {
                             ),
                           ),
                           20.verticalSpace,
-
-                          // Payment Method
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -515,7 +466,6 @@ class CheckoutView extends GetView<CheckoutController> {
                                       );
                                     }),
                           ),
-
                           20.verticalSpace,
                           Text(
                             'Ringkasan Transaksi',

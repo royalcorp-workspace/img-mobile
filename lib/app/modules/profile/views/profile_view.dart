@@ -54,10 +54,17 @@ class ProfileView extends GetView<ProfileController> {
                                         null &&
                                     controller
                                         .customerModel.value!.avatar!.isNotEmpty
-                                ? CircleAvatar(
-                                    radius: 40.r,
-                                    backgroundImage: NetworkImage(
+                                ? ClipOval(
+                                    child: Image.network(
                                       controller.customerModel.value!.avatar!,
+                                      width: 80.r,
+                                      height: 80.r,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => const Icon(
+                                        Icons.person_outline,
+                                        size: 45,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   )
                                 : const Icon(

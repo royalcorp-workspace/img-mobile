@@ -1,4 +1,3 @@
-import 'package:add_to_cart_animation/add_to_cart_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -6,10 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:img/app/core/helper/helper.dart';
 import 'package:img/app/core/styles/app_color.dart';
 import 'package:img/app/core/styles/app_text_style.dart';
-import 'package:img/app/modules/cart/controllers/cart_controller.dart';
-import 'package:img/app/modules/home/widgets/icon_badge.dart';
 import 'package:img/app/routes/app_pages.dart';
-import 'package:img/app/shared/widgets/app_search_field.dart';
 
 import '../controllers/order_controller.dart';
 
@@ -23,62 +19,62 @@ class OrderView extends GetView<OrderController> {
       body: CustomScrollView(
         controller: controller.pageScrollController,
         slivers: [
-          SliverToBoxAdapter(child: 15.verticalSpace),
-          SliverPersistentHeader(
-            pinned: true, // This pins the widget at the top
-            delegate: _StatusHeaderDelegate(
-              child: Container(
-                color: Colors
-                    .white, // Prevents background content from bleeding through
-                alignment: Alignment.center,
-                child: SizedBox(
-                  height: 40.h,
-                  child: ListView.separated(
-                    separatorBuilder: (_, __) => const SizedBox(width: 10),
-                    padding:
-                        const EdgeInsets.only(left: 8, bottom: 5, right: 8),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 6,
-                    itemBuilder: (context, index) => Obx(
-                      () => InkWell(
-                        onTap: () => controller.selectedIndex.value = index,
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: controller.selectedIndex.value == index
-                                  ? AppColors.primaryColor
-                                  : AppColors.lightGrey,
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              index == 0
-                                  ? 'Semua Status'
-                                  : index == 1
-                                      ? 'Draft'
-                                      : index == 2
-                                          ? 'Menunggu Pembayaran'
-                                          : index == 3
-                                              ? 'Diproses'
-                                              : index == 4
-                                                  ? 'Gagal Transaksi'
-                                                  : 'Selesai',
-                              style: controller.selectedIndex.value == index
-                                  ? AppTextStyle.mediumBlack
-                                      .copyWith(color: AppColors.primaryColor)
-                                  : AppTextStyle.mediumBlack,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          // SliverToBoxAdapter(child: 15.verticalSpace),
+          // SliverPersistentHeader(
+          //   pinned: true, // This pins the widget at the top
+          //   delegate: _StatusHeaderDelegate(
+          //     child: Container(
+          //       color: Colors
+          //           .white, // Prevents background content from bleeding through
+          //       alignment: Alignment.center,
+          //       child: SizedBox(
+          //         height: 40.h,
+          //         child: ListView.separated(
+          //           separatorBuilder: (_, __) => const SizedBox(width: 10),
+          //           padding:
+          //               const EdgeInsets.only(left: 8, bottom: 5, right: 8),
+          //           scrollDirection: Axis.horizontal,
+          //           itemCount: 6,
+          //           itemBuilder: (context, index) => Obx(
+          //             () => InkWell(
+          //               onTap: () => controller.selectedIndex.value = index,
+          //               child: Container(
+          //                 padding: const EdgeInsets.all(10),
+          //                 decoration: BoxDecoration(
+          //                   borderRadius: BorderRadius.circular(8),
+          //                   border: Border.all(
+          //                     color: controller.selectedIndex.value == index
+          //                         ? AppColors.primaryColor
+          //                         : AppColors.lightGrey,
+          //                   ),
+          //                 ),
+          //                 child: Center(
+          //                   child: Text(
+          //                     index == 0
+          //                         ? 'Semua Status'
+          //                         : index == 1
+          //                             ? 'Draft'
+          //                             : index == 2
+          //                                 ? 'Menunggu Pembayaran'
+          //                                 : index == 3
+          //                                     ? 'Diproses'
+          //                                     : index == 4
+          //                                         ? 'Gagal Transaksi'
+          //                                         : 'Selesai',
+          //                     style: controller.selectedIndex.value == index
+          //                         ? AppTextStyle.mediumBlack
+          //                             .copyWith(color: AppColors.primaryColor)
+          //                         : AppTextStyle.mediumBlack,
+          //                   ),
+          //                 ),
+          //               ),
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
           SliverToBoxAdapter(child: 15.verticalSpace),
           SliverToBoxAdapter(
             child: RPadding(
@@ -117,153 +113,162 @@ class OrderView extends GetView<OrderController> {
 
                 return RPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Container(
-                    padding: EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      border: Border.all(color: AppColors.lightGrey),
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
-                          offset: const Offset(0, 0),
-                          blurRadius: 16,
-                          spreadRadius: 0,
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.shopping_bag_outlined,
-                                  color: AppColors.secondaryColor,
-                                ),
-                                10.horizontalSpace,
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Belanja',
-                                      style: AppTextStyle.mediumBlackBold,
-                                    ),
-                                    Text(
-                                      standard,
-                                      style: AppTextStyle.mediumGrey,
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 5, vertical: 1),
-                                  decoration: BoxDecoration(
-                                    color: statusColor.withOpacity(0.3),
-                                    borderRadius: BorderRadius.circular(4),
+                  child: InkWell(
+                    onTap: () =>
+                        Get.toNamed(Routes.DETAIL_ORDER, arguments: data.id),
+                    borderRadius: BorderRadius.circular(14),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        border: Border.all(color: AppColors.lightGrey),
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            offset: const Offset(0, 0),
+                            blurRadius: 16,
+                            spreadRadius: 0,
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.shopping_bag_outlined,
+                                    color: AppColors.secondaryColor,
                                   ),
-                                  child: Text(
-                                    data.statusLabel,
-                                    style:
-                                        AppTextStyle.mediumBlackBold.copyWith(
-                                      color: statusColor,
+                                  10.horizontalSpace,
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        data.orderNumber,
+                                        style: AppTextStyle.largeBlackBold,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        standard,
+                                        style: AppTextStyle.mediumGrey,
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 5, vertical: 1),
+                                    decoration: BoxDecoration(
+                                      color: statusColor.withOpacity(0.3),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      data.statusLabel,
+                                      style:
+                                          AppTextStyle.mediumBlackBold.copyWith(
+                                        color: statusColor,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                5.horizontalSpace,
-                                Icon(
-                                  Icons.more_vert_rounded,
-                                  color: AppColors.grey,
-                                )
-                              ],
-                            )
-                          ],
-                        ),
-                        5.verticalSpace,
-                        const Divider(
-                            color: AppColors.lightGrey, thickness: 0.8),
-                        5.verticalSpace,
-                        Row(
-                          children: [
-                            Container(
-                              height: 45,
-                              width: 45,
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                image: AssetImage(
-                                  Helper.getImagePath(
-                                    'img_product1.jpg',
-                                  ),
-                                ),
-                              )),
-                            ),
-                            10.horizontalSpace,
-                            Expanded(
-                              child: Column(
+                                  5.horizontalSpace,
+                                  Icon(
+                                    Icons.more_vert_rounded,
+                                    color: AppColors.grey,
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
+                          5.verticalSpace,
+                          const Divider(
+                              color: AppColors.lightGrey, thickness: 0.8),
+                          5.verticalSpace,
+                          // Row(
+                          //   children: [
+                          //     // Discuss
+                          //     // Container(
+                          //     //   height: 45,
+                          //     //   width: 45,
+                          //     //   decoration: BoxDecoration(
+                          //     //       image: DecorationImage(
+                          //     //     image: AssetImage(
+                          //     //       Helper.getImagePath(
+                          //     //         'img_product1.jpg',
+                          //     //       ),
+                          //     //     ),
+                          //     //   )),
+                          //     // ),
+                          //     10.horizontalSpace,
+                          //     Expanded(
+                          //       child: Column(
+                          //         crossAxisAlignment: CrossAxisAlignment.start,
+                          //         children: [
+                          //           Text(
+                          //             data.orderNumber,
+                          //             style: AppTextStyle.largeBlackBold,
+                          //             overflow: TextOverflow.ellipsis,
+                          //           ),
+                          //           Text(
+                          //             '${data.items.length} barang',
+                          //             style: AppTextStyle.mediumGrey,
+                          //           ),
+                          //         ],
+                          //       ),
+                          //     )
+                          //   ],
+                          // ),
+                          // 5.verticalSpace,
+                          // const Divider(
+                          //     color: AppColors.lightGrey, thickness: 0.8),
+                          // 5.verticalSpace,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    data.items.first.name,
-                                    style: AppTextStyle.largeBlackBold,
-                                    overflow: TextOverflow.ellipsis,
+                                    'Total Belanja',
+                                    style: AppTextStyle.mediumBlack,
                                   ),
                                   Text(
-                                    '${data.items.length} barang',
-                                    style: AppTextStyle.mediumGrey,
+                                    Helper.formatCurrency(
+                                      data.total.toInt(),
+                                    ),
+                                    style: AppTextStyle.mediumBlackBold,
                                   ),
                                 ],
                               ),
-                            )
-                          ],
-                        ),
-                        5.verticalSpace,
-                        const Divider(
-                            color: AppColors.lightGrey, thickness: 0.8),
-                        5.verticalSpace,
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Total Belanja',
-                                  style: AppTextStyle.mediumBlack,
-                                ),
-                                Text(
-                                  Helper.formatCurrency(
-                                    data.total.toInt(),
+                              Visibility(
+                                visible: data.statusLabel == 'Terkirim',
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 30, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.greenContrast,
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  style: AppTextStyle.mediumBlackBold,
-                                ),
-                              ],
-                            ),
-                            Visibility(
-                              visible: data.statusLabel == 'Terkirim',
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 30, vertical: 3),
-                                decoration: BoxDecoration(
-                                  color: AppColors.greenContrast,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  'Beli Lagi',
-                                  style: AppTextStyle.mediumBlackBold.copyWith(
-                                    color: AppColors.white,
+                                  child: Text(
+                                    'Beli Lagi',
+                                    style:
+                                        AppTextStyle.mediumBlackBold.copyWith(
+                                      color: AppColors.white,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -297,72 +302,62 @@ class OrderView extends GetView<OrderController> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      toolbarHeight: 70.h,
+      titleSpacing: 5,
+      toolbarHeight: 48.h,
       automaticallyImplyLeading: false,
-      title: SizedBox(
-        width: 260.w,
-        child: SearchAnchor(
-          viewBackgroundColor: AppColors.white,
-          searchController: controller.searchAnchorController,
-          viewLeading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: AppColors.black),
-            onPressed: Get.back,
-          ),
-          viewTrailing: [
-            IconButton(
-              icon: const Icon(Icons.clear, color: AppColors.black),
-              onPressed: controller.searchAnchorController.clear,
-            ),
-          ],
-          builder: (context, searchController) => InkWell(
-            onTap: searchController.openView,
-            child: const IgnorePointer(child: AppSearchField()),
-          ),
-          suggestionsBuilder: (context, searchController) {
-            final keyword = searchController.text.trim();
-            if (keyword.isEmpty) return const <Widget>[];
-            return [
-              ListTile(
-                leading:
-                    const Icon(Icons.search, color: AppColors.primaryColor),
-                title: Text('Cari "$keyword"',
-                    style: AppTextStyle.mediumBlackBold),
-                onTap: () => searchController.closeView(keyword),
+      title: Container(
+        alignment: Alignment.center,
+        child: SizedBox(
+          height: 40.h,
+          child: ListView.separated(
+            separatorBuilder: (_, __) => const SizedBox(width: 10),
+            padding: const EdgeInsets.only(bottom: 5),
+            scrollDirection: Axis.horizontal,
+            itemCount: 6,
+            itemBuilder: (context, index) => Obx(
+              () => InkWell(
+                onTap: () => controller.selectedIndex.value = index,
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: controller.selectedIndex.value == index
+                          ? AppColors.white
+                          : AppColors.greyWhite,
+                    ),
+                    color: controller.selectedIndex.value == index
+                        ? AppColors.white
+                        : AppColors.greyWhite,
+                  ),
+                  child: Center(
+                    child: Text(
+                      index == 0
+                          ? 'Semua Status'
+                          : index == 1
+                              ? 'Draft'
+                              : index == 2
+                                  ? 'Menunggu Pembayaran'
+                                  : index == 3
+                                      ? 'Diproses'
+                                      : index == 4
+                                          ? 'Gagal Transaksi'
+                                          : 'Selesai',
+                      style: controller.selectedIndex.value == index
+                          ? AppTextStyle.mediumBlack.copyWith(
+                              color: AppColors.primaryColor,
+                              fontWeight: FontWeight.bold,
+                            )
+                          : AppTextStyle.mediumBlack,
+                    ),
+                  ),
+                ),
               ),
-            ];
-          },
+            ),
+          ),
         ),
       ),
       backgroundColor: AppColors.primaryColor,
-      actions: [
-        //** Next Phase **
-        // IconBadge(
-        //   iconPath: 'ic_notification.svg',
-        //   count: 3,
-        // ),
-        // 2.horizontalSpace,
-        GetBuilder<CartController>(
-          builder: (cartController) {
-            return AddToCartIcon(
-              key: controller.cartKey,
-              icon: InkWell(
-                onTap: () => Get.toNamed(Routes.CART),
-                child: IconBadge(
-                  iconPath: 'ic_cart.svg',
-                  count: cartController.cartItemCount,
-                ),
-              ),
-              badgeOptions: const BadgeOptions(
-                width: 0,
-                height: 0,
-                fontSize: 0,
-                active: false,
-              ),
-            );
-          },
-        ),
-        7.horizontalSpace,
-      ],
     );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
 import 'package:img/app/core/utils/log/logger.dart';
 import 'package:img/app/domain/usecases/change_password_usecase.dart';
 
@@ -34,40 +36,52 @@ class ChangePasswordController extends GetxController {
 
     if (oldPassword.isEmpty) {
       Get.snackbar(
-        'Kesalahan',
-        'Kata sandi saat ini tidak boleh kosong',
-        backgroundColor: Get.context!.theme.colorScheme.error,
-        colorText: Colors.white,
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Kata sandi saat ini tidak boleh kosong',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
       );
       return;
     }
 
     if (newPassword.isEmpty) {
       Get.snackbar(
-        'Kesalahan',
-        'Kata sandi baru tidak boleh kosong',
-        backgroundColor: Get.context!.theme.colorScheme.error,
-        colorText: Colors.white,
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Kata sandi baru tidak boleh kosong',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
       );
       return;
     }
 
     if (newPassword.length < 8) {
       Get.snackbar(
-        'Kesalahan',
-        'Kata sandi baru minimal 8 karakter',
-        backgroundColor: Get.context!.theme.colorScheme.error,
-        colorText: Colors.white,
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Kata sandi baru minimal 8 karakter',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
       );
       return;
     }
 
     if (newPassword != confirmPassword) {
       Get.snackbar(
-        'Kesalahan',
-        'Konfirmasi kata sandi baru tidak cocok',
-        backgroundColor: Get.context!.theme.colorScheme.error,
-        colorText: Colors.white,
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Konfirmasi kata sandi baru tidak cocok',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
       );
       return;
     }
@@ -81,18 +95,26 @@ class ChangePasswordController extends GetxController {
       );
 
       Get.snackbar(
-        'Berhasil',
-        'Kata sandi Anda berhasil diubah',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
+        '',
+        '',
+        titleText: Text('Berhasil', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Kata sandi Anda berhasil diubah',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: AppColors.green,
+        colorText: AppColors.white,
       );
     } catch (e) {
       logger.severe('❌ [CHANGE-PASSWORD] Error changing password: $e');
+
       Get.snackbar(
-        'Gagal',
-        'Gagal mengubah kata sandi. Pastikan kata sandi saat ini benar.',
-        backgroundColor: Get.context!.theme.colorScheme.error,
-        colorText: Colors.white,
+        '',
+        '',
+        titleText: Text('Gagal', style: AppTextStyle.largeWhiteBold),
+        messageText: Text(
+            'Gagal mengubah kata sandi. Pastikan kata sandi saat ini benar.',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
       );
     } finally {
       isLoading.value = false;

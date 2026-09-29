@@ -2,14 +2,18 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:img/app/core/helper/helper.dart';
 import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
 import 'package:img/app/core/utils/log/logger.dart';
 import 'package:img/app/core/utils/token_storage.dart';
 import 'package:img/app/data/datasources/checkout_remote_datasource.dart';
 import 'package:img/app/data/datasources/order_remote_datasource.dart';
 import 'package:img/app/data/datasources/payment_method_remote_datasource.dart';
 import 'package:img/app/data/datasources/shipping_addresses_remote_datasource.dart';
+import 'package:img/app/data/models/address_model.dart';
 import 'package:img/app/data/models/checkout_params_model.dart';
 import 'package:img/app/data/models/user_model.dart';
 import 'package:img/app/data/repositories/checkout_repository_impl.dart';
@@ -28,6 +32,7 @@ import 'package:img/app/domain/usecases/get_payment_methods_usecase.dart';
 import 'package:img/app/domain/usecases/get_shipping_addresses_usecase.dart';
 import 'package:img/app/modules/checkout/models/checkout_arguments.dart';
 import 'package:img/app/routes/app_pages.dart';
+import 'package:img/app/shared/widgets/button/primary_button.dart';
 
 class CheckoutController extends GetxController {
   CheckoutController({
@@ -55,6 +60,7 @@ class CheckoutController extends GetxController {
   ProductByIdEntity? product;
   List<ItemParams> itemParams = [];
   TextEditingController notesC = TextEditingController();
+  RxList<AddressModel>? adddress = <AddressModel>[].obs;
 
   var selectedVoucher = Rxn<VoucherEntity>();
   final int itemsPerPage = 10;
@@ -109,6 +115,7 @@ class CheckoutController extends GetxController {
 
     fetchShippingAddresses();
     fetchPaymentMethod();
+    _fetchAddress();
   }
 
   void _handleCheckoutArguments(CheckoutArguments args) {
@@ -174,9 +181,27 @@ class CheckoutController extends GetxController {
 
     final targetIndex = args.selectedVariantIndex ?? 0;
 
+    itemParams.clear();
+    final itemQty = selectedQty.value > 0 ? selectedQty.value : 1;
+
     if (productValue.variants == null || productValue.variants!.isEmpty) {
       selectedIndex.value = 0;
-      logger.warning('⚠️ [CHECKOUT] Product has no available variants');
+      final unitPrice = (productValue.finalPrice ?? 0).toDouble();
+      itemParams.add(
+        ItemParams(
+          productId: productValue.id ?? '',
+          productVariantId: '1',
+          quantity: itemQty,
+          unitPrice: unitPrice,
+          discountNominal: 0,
+          discountPercent: 0,
+          total: unitPrice * itemQty,
+          weight: 0,
+          name: productValue.name ?? '',
+        ),
+      );
+      logger.warning(
+          '⚠️ [CHECKOUT] Product has no available variants; using base product fallback');
       return;
     }
 
@@ -191,7 +216,6 @@ class CheckoutController extends GetxController {
 
     itemParams.clear();
 
-    final itemQty = selectedQty.value > 0 ? selectedQty.value : 1;
     final itemUnitPrice = selectedVariant.finalPrice.toDouble();
 
     itemParams.add(
@@ -505,9 +529,15 @@ class CheckoutController extends GetxController {
         print('❌ [CREATE-ORDER] Error creating order: $e');
         print(stackTrace);
       }
+
       Get.snackbar(
-        'Gagal membuat pesanan',
-        'Terjadi kesalahan saat memproses pesanan. Silakan coba lagi.',
+        '',
+        '',
+        titleText:
+            Text('Gagal membuat pesanan', style: AppTextStyle.largeWhiteBold),
+        messageText: Text(
+            'Terjadi kesalahan saat memproses pesanan. Silakan coba lagi.',
+            style: AppTextStyle.mediumWhite),
         backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
         colorText: AppColors.white,
       );
@@ -546,14 +576,103 @@ class CheckoutController extends GetxController {
         print('❌ [CHECKOUT] Error checkout: $e');
         print(stackTrace);
       }
+
       Get.snackbar(
-        'Gagal membayar tagihan',
-        'Terjadi kesalahan saat menyiapkan proses pembayaran. Silakan coba lagi.',
+        '',
+        '',
+        titleText:
+            Text('Gagal membayar tagihan', style: AppTextStyle.largeWhiteBold),
+        messageText: Text(
+            'Terjadi kesalahan saat menyiapkan proses pembayaran. Silakan coba lagi.',
+            style: AppTextStyle.mediumWhite),
         backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
         colorText: AppColors.white,
       );
     } finally {
       isCreatingOrder.value = false;
     }
+  }
+
+  Future<String?> _fetchAddress() async {
+    try {
+      final userDataStr = await TokenStorage.getUserData();
+      if (userDataStr != null && userDataStr.isNotEmpty) {
+        final Map<String, dynamic> userMap = jsonDecode(userDataStr);
+        final Map<String, dynamic> userPayload = userMap['user'] ?? userMap;
+        final userModel = UserModel.fromJson(userPayload);
+
+        adddress?.value = userModel.customer?.addresses ?? <AddressModel>[];
+
+        // 🔥 SOLUSI 2: Gunakan operator safety ?. atau check null sebelum memanggil .isEmpty
+        if (adddress != null && adddress!.isEmpty) {
+          Future.delayed(const Duration(milliseconds: 500), () {
+            showLocationPermissionDialog();
+          });
+        }
+      }
+    } catch (e) {
+      logger
+          .warning('⚠️ [ADDRESS] Could not parse stored user customer ID: $e');
+    }
+    return null;
+  }
+
+  void showLocationPermissionDialog() {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24), // Sudut melengkung luar
+        ),
+        child: ClipRRect(
+          borderRadius:
+              BorderRadius.circular(24), // Agar gambar tidak bocor keluar sudut
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                margin: EdgeInsets.all(14),
+                width: double.infinity,
+                color: AppColors.white,
+                child: Center(
+                  child: Image.asset(Helper.getImagePath('img_address.png')),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    Text(
+                      'Kami butuh Lokasimu!',
+                      style: AppTextStyle.largeBlackBold,
+                      textAlign: TextAlign.center,
+                    ),
+                    12.verticalSpace,
+                    Text(
+                      'Akses Lokasi akan digunakan untuk mendapatkan lokasi kamu, dan Jarak Toko ke lokasi kamu saat ini',
+                      style: AppTextStyle.mediumGrey.copyWith(height: 1.2),
+                      textAlign: TextAlign.center,
+                    ),
+                    24.verticalSpace,
+                    ButtonPrimary(
+                      fullWidth: true,
+                      text: 'Tambah Alamat',
+                      textColor: AppColors.white,
+                      color: AppColors.primaryColor,
+                      onPressed: () {
+                        Get.back();
+                        Get.toNamed(Routes.ADDRESS);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              14.verticalSpace,
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
   }
 }

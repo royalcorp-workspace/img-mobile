@@ -8,6 +8,7 @@ import 'package:img/app/core/utils/flavor.dart';
 import 'package:img/app/core/utils/injections.dart';
 import 'package:img/app/core/utils/log/logger.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'firebase_options_dev.dart' as dev_opts;
 import 'firebase_options_prod.dart' as prod_opts;
 
@@ -22,8 +23,36 @@ void main() async {
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
+
+  await initializeDateFormatting('id_ID', null);
+
   initRootLogger();
   logger.info('✅ Logger initialized');
+
+  // Silently handle NetworkImageLoadException (404/network errors) to prevent compiler/debugger pause
+  final originalOnError = FlutterError.onError;
+  FlutterError.onError = (FlutterErrorDetails details) {
+    final String exceptionStr = details.exception.toString();
+    final String libraryStr = details.library ?? '';
+    final String stackStr = details.stack?.toString() ?? '';
+
+    final bool isNetworkImageError =
+        details.exception is NetworkImageLoadException ||
+            libraryStr == 'image resource service' ||
+            libraryStr == 'painting library' ||
+            exceptionStr.contains('NetworkImage') ||
+            exceptionStr.contains('NetworkImageLoadException') ||
+            exceptionStr.contains('HTTP request failed') ||
+            exceptionStr.contains('statusCode: 404') ||
+            stackStr.contains('_network_image_io.dart');
+
+    if (isNetworkImageError) {
+      logger.warning(
+          '⚠️ Network image load failure caught silently: ${details.exception}');
+      return;
+    }
+    originalOnError?.call(details);
+  };
 
   final FirebaseOptions options = switch (AppFlavor.current) {
     Flavor.production => prod_opts.DefaultFirebaseOptions.currentPlatform,

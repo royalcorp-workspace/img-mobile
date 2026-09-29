@@ -1,5 +1,5 @@
 import 'package:img/app/domain/entities/order_history_entity.dart';
-
+import 'package:img/app/domain/entities/order_tracking_entity.dart';
 import 'package:img/app/domain/entities/paginated_entity.dart';
 
 import '../../domain/entities/order_entity.dart';
@@ -27,5 +27,10 @@ class OrderRepositoryImpl implements OrderRepository {
       page: page,
       itemsPerPage: itemsPerPage,
     );
+  }
+
+  @override
+  Future<OrderTrackingEntity> getOrderTracking(String orderId) {
+    return remoteDataSource.getOrderTracking(orderId);
   }
 }

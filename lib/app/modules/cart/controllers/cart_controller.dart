@@ -200,9 +200,14 @@ class CartController extends GetxController {
         final itemId = item.id ?? uniqueKeyForItem(item);
         if (item.addToCartId == null || item.id == null) {
           Get.snackbar(
-            'Gagal menghapus produk',
-            'Data produk tidak lengkap.',
-            backgroundColor: AppColors.red,
+            '',
+            '',
+            titleText: Text('Gagal menghapus produk',
+                style: AppTextStyle.largeWhiteBold),
+            messageText: Text('Data produk tidak lengkap.',
+                style: AppTextStyle.mediumWhite),
+            backgroundColor:
+                Get.context?.theme.colorScheme.error ?? AppColors.red,
             colorText: AppColors.white,
           );
           return;
@@ -260,9 +265,13 @@ class CartController extends GetxController {
       update();
     } catch (e) {
       Get.snackbar(
-        'Gagal menghapus produk',
-        'Terjadi kesalahan saat menghapus produk terpilih.',
-        backgroundColor: AppColors.red,
+        '',
+        '',
+        titleText:
+            Text('Gagal menghapus produk', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Terjadi kesalahan saat menghapus produk terpilih.',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
         colorText: AppColors.white,
       );
     }
@@ -391,9 +400,15 @@ class CartController extends GetxController {
                         );
                         if (item?.addToCartId == null || item?.id == null) {
                           Get.snackbar(
-                            'Gagal menghapus produk',
-                            'Data produk tidak lengkap.',
-                            backgroundColor: AppColors.red,
+                            '',
+                            '',
+                            titleText: Text('Gagal menghapus produk',
+                                style: AppTextStyle.largeWhiteBold),
+                            messageText: Text('Data produk tidak lengkap.',
+                                style: AppTextStyle.mediumWhite),
+                            backgroundColor:
+                                Get.context?.theme.colorScheme.error ??
+                                    AppColors.red,
                             colorText: AppColors.white,
                           );
                           return;
@@ -412,10 +427,18 @@ class CartController extends GetxController {
                           );
                         } catch (e) {
                           Get.back();
+
                           Get.snackbar(
-                            'Gagal menghapus produk',
-                            'Terjadi kesalahan saat menghapus produk.',
-                            backgroundColor: AppColors.red,
+                            '',
+                            '',
+                            titleText: Text('Gagal menghapus produk',
+                                style: AppTextStyle.largeWhiteBold),
+                            messageText: Text(
+                                'Terjadi kesalahan saat menghapus produk.',
+                                style: AppTextStyle.mediumWhite),
+                            backgroundColor:
+                                Get.context?.theme.colorScheme.error ??
+                                    AppColors.red,
                             colorText: AppColors.white,
                           );
                           return;

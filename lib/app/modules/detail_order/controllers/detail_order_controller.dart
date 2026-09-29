@@ -1,17 +1,133 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:img/app/data/datasources/check_status_payment_remote_datasource.dart';
+import 'package:img/app/data/repositories/check_status_payment_repository_impl.dart';
+import 'package:img/app/domain/entities/checkout_entity.dart';
+import 'package:img/app/domain/usecases/check_status_payment_usecase.dart';
+import 'package:img/app/routes/app_pages.dart';
+import 'package:intl/intl.dart';
 import 'package:img/app/core/helper/helper.dart';
 import 'package:img/app/core/styles/app_color.dart';
 import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/data/datasources/order_remote_datasource.dart';
+import 'package:img/app/data/repositories/order_repository_impl.dart';
+import 'package:img/app/domain/entities/order_tracking_entity.dart';
+import 'package:img/app/domain/usecases/get_order_detail_usecase.dart';
 
 class DetailOrderController extends GetxController {
+  DetailOrderController({
+    this.getOrderDetailUsecase,
+    this.checkStatusPaymentUsecase,
+  });
+
+  final GetOrderDetailUsecase? getOrderDetailUsecase;
+  final CheckStatusPaymentUsecase? checkStatusPaymentUsecase;
+
   final rating = 0.obs;
-  final actualStep = 1.obs;
+  final actualStep = 0.obs;
+  final isLoading = false.obs;
+  final errorMessage = ''.obs;
+  final orderId = ''.obs;
+
+  final orderTracking = Rxn<OrderTrackingEntity>();
+  CheckoutEntity? checkoutResult;
+
   RxBool selectedReason1 = false.obs;
   RxBool selectedReason2 = false.obs;
   RxBool selectedReason3 = false.obs;
   RxBool selectedReason4 = false.obs;
+  RxBool isCheckingStatus = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _extractOrderIdAndFetch();
+  }
+
+  void _extractOrderIdAndFetch() {
+    final args = Get.arguments;
+    String? extractedId;
+
+    if (args is String && args.isNotEmpty) {
+      extractedId = args;
+    } else if (args is Map) {
+      extractedId = args['order_id']?.toString() ?? args['id']?.toString();
+    }
+
+    if (extractedId != null && extractedId.isNotEmpty) {
+      orderId.value = extractedId;
+      fetchOrderDetail(extractedId);
+    }
+  }
+
+  Future<void> fetchOrderDetail(String id) async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      final useCase = getOrderDetailUsecase ??
+          GetOrderDetailUsecase(
+            OrderRepositoryImpl(
+              remoteDataSource: OrderRemoteDataSourceImpl(),
+            ),
+          );
+
+      final result = await useCase.call(id);
+      orderTracking.value = result;
+
+      if (result.events.isNotEmpty) {
+        actualStep.value = result.events.length - 1;
+      }
+    } catch (e, stackTrace) {
+      logger.severe('❌ [DETAIL ORDER] Failed to fetch order tracking: $e');
+      if (kDebugMode) {
+        print('❌ [DETAIL ORDER] Error: $e');
+        print(stackTrace);
+      }
+      errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  double get itemsSubtotal {
+    final items = orderTracking.value?.items ?? [];
+    double sum = 0.0;
+    for (var item in items) {
+      sum += item.total;
+    }
+    return sum;
+  }
+
+  double get itemsTotalDiscount {
+    final items = orderTracking.value?.items ?? [];
+    double sum = 0.0;
+    for (var item in items) {
+      sum += item.discountNominal * item.quantity;
+    }
+    return sum;
+  }
+
+  String formatDateString(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return '-';
+    try {
+      final dateTime = DateTime.parse(dateStr);
+      final formatted =
+          DateFormat('dd MMM yyyy, HH:mm', 'id_ID').format(dateTime);
+      return '$formatted WIB';
+    } catch (_) {
+      try {
+        final dateTime = DateTime.parse(dateStr);
+        final formatted = DateFormat('dd MMM yyyy, HH:mm').format(dateTime);
+        return '$formatted WIB';
+      } catch (_) {
+        return dateStr;
+      }
+    }
+  }
 
   void showConfirmationDialog() {
     Get.dialog(
@@ -60,7 +176,7 @@ class DetailOrderController extends GetxController {
                         actualStep.value = 4;
                         Get.back();
                         await Future.delayed(
-                          Duration(milliseconds: 800),
+                          const Duration(milliseconds: 800),
                         );
                         Get.dialog(
                           Dialog(
@@ -268,7 +384,7 @@ class DetailOrderController extends GetxController {
                 12.verticalSpace,
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.info_outline,
                       color: AppColors.blue,
                     ),
@@ -431,5 +547,70 @@ class DetailOrderController extends GetxController {
       ),
       barrierDismissible: false,
     );
+  }
+
+  Future<void> checkPaymentStatus() async {
+    try {
+      logger.info(
+          '🔍 [CHECK PAYMENT STATUS] Initiating check payment status creation...');
+      isCheckingStatus.value = true;
+
+      final useCase = checkStatusPaymentUsecase ??
+          CheckStatusPaymentUsecase(
+            CheckStatusPaymentRepositoryImpl(
+              remoteDataSource: CheckStatusPaymentRemoteDataSourceImpl(),
+            ),
+          );
+
+      final checkPaymentStatusResult = await useCase.call(orderId.value);
+      logger.info(
+          '✅ [CHECK PAYMENT STATUS] Check Payment Status successfully! Checkout status: ${checkPaymentStatusResult.isPaid}');
+
+      await Future.delayed(const Duration(seconds: 1));
+
+      if (checkPaymentStatusResult.isPaid) {
+        isCheckingStatus.value = false;
+
+        finishPayment();
+      } else {
+        isCheckingStatus.value = false;
+
+        Get.snackbar(
+          '',
+          '',
+          titleText: Text('Pembayaran Belum Selesai! ⏳',
+              style: AppTextStyle.largeWhiteBold),
+          messageText: Text(
+              '${checkoutResult?.payment?.description ?? "Metode pembayaran yang dipilih"} belum terselesaikan. Silakan lakukan pembayaran terlebih dahulu.',
+              style: AppTextStyle.mediumWhite),
+          backgroundColor:
+              Get.context?.theme.colorScheme.error ?? AppColors.red,
+          colorText: AppColors.white,
+        );
+      }
+    } catch (e, stackTrace) {
+      logger.severe('❌ [CHECK PAYMENT STATUS] Failed to check status: $e');
+      if (kDebugMode) {
+        print('❌ [CHECK PAYMENT STATUS] Error checkout: $e');
+        print(stackTrace);
+      }
+
+      Get.snackbar(
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText: Text(
+            'Terjadi kesalahan saat mengecek status pembayaran. Silakan coba lagi.',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
+      );
+    } finally {
+      isCheckingStatus.value = false;
+    }
+  }
+
+  void finishPayment() {
+    Get.offAllNamed(Routes.SUCCESS, arguments: orderId.value);
   }
 }

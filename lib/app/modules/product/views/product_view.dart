@@ -7,11 +7,12 @@ import 'package:get/get.dart';
 import 'package:img/app/core/helper/helper.dart';
 import 'package:img/app/core/styles/app_color.dart';
 import 'package:img/app/core/styles/app_text_style.dart';
+
 import 'package:img/app/modules/cart/controllers/cart_controller.dart';
+import 'package:img/app/modules/home/widgets/home_category_section.dart';
 import 'package:img/app/modules/home/widgets/icon_badge.dart';
 import 'package:img/app/modules/home/widgets/product_card.dart';
 import 'package:img/app/routes/app_pages.dart';
-import 'package:img/app/shared/widgets/app_search_field.dart';
 
 import '../controllers/product_controller.dart';
 
@@ -28,56 +29,33 @@ class ProductView extends GetView<ProductController> {
     return Scaffold(
       appBar: _buildAppBar(),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-          child: Column(
-            children: [
-              15.verticalSpace,
-              SizedBox(
-                height: 40.h,
-                child: ListView.separated(
-                  separatorBuilder: (_, __) => const SizedBox(width: 10),
-                  padding: const EdgeInsets.only(left: 8, bottom: 5, right: 8),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 4,
-                  itemBuilder: (context, index) => Obx(
-                    () => InkWell(
-                      onTap: () => controller.selectedIndex.value = index,
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: controller.selectedIndex.value == index
-                                ? AppColors.primaryColor
-                                : AppColors.lightGrey,
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            index == 0
-                                ? 'Semua'
-                                : index == 1
-                                    ? 'Harga Terendah'
-                                    : index == 2
-                                        ? 'Promo'
-                                        : 'Bebas Ongkir',
-                            style: controller.selectedIndex.value == index
-                                ? AppTextStyle.mediumBlack
-                                    .copyWith(color: AppColors.primaryColor)
-                                : AppTextStyle.mediumBlack,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+        child: Column(
+          children: [
+            5.verticalSpace,
+            // Categories horizontal list
+            Obx(
+              () => CategorySection(
+                showTitle: true,
+                categories: controller.category.toList(),
+                selectedCategoryId: controller.selectedCategoryId.value,
+                onSelectCategory: (cat) {
+                  Get.toNamed(
+                    Routes.CATEGORY_PRODUCT,
+                    arguments: {
+                      'categories': controller.category.toList(),
+                      if (cat != null) 'selectedCategory': cat,
+                      if (cat != null) 'categoryId': cat.id,
+                    },
+                  );
+                },
+                categoryScrollController: controller.categoryScrollController,
+                isLoadingMore: controller.isLoadingMoreCategories.value,
               ),
-              15.verticalSpace,
-              _buildHomepageContent(),
-              20.verticalSpace,
-            ],
-          ),
+            ),
+
+            _buildHomepageContent(),
+            20.verticalSpace,
+          ],
         ),
       ),
     );
@@ -112,9 +90,13 @@ class ProductView extends GetView<ProductController> {
 
                     ProductsCard buildProductCard(int index) {
                       final product = section.items.data[index];
-                      final imageUrl = product.thumbnailUrl.isEmpty
-                          ? product.thumbnail
-                          : (product.image.isNotEmpty ? product.image : '');
+                      final thumbnailUrlStr =
+                          product.thumbnailUrl?.toString() ?? '';
+                      final thumbnailStr = product.thumbnail?.toString() ?? '';
+                      final imageStr = product.image?.toString() ?? '';
+                      final imageUrl = thumbnailUrlStr.isNotEmpty
+                          ? thumbnailUrlStr
+                          : (thumbnailStr.isNotEmpty ? thumbnailStr : imageStr);
 
                       ImageProvider imageProvider;
                       if (imageUrl.startsWith('http://') ||
@@ -145,7 +127,7 @@ class ProductView extends GetView<ProductController> {
                     }
 
                     return SizedBox(
-                      height: 270.h,
+                      height: 220.h,
                       child: ListView.separated(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
@@ -167,42 +149,201 @@ class ProductView extends GetView<ProductController> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      toolbarHeight: 70.h,
+      toolbarHeight: 48.h,
       automaticallyImplyLeading: false,
       title: SizedBox(
-        width: 260.w,
-        child: SearchAnchor(
-          viewBackgroundColor: AppColors.white,
-          searchController: controller.searchAnchorController,
-          viewLeading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: AppColors.black),
-            onPressed: Get.back,
-          ),
-          viewTrailing: [
-            IconButton(
-              icon: const Icon(Icons.clear, color: AppColors.black),
-              onPressed: controller.searchAnchorController.clear,
+          width: 280.w,
+          child: SearchAnchor(
+            viewBackgroundColor: AppColors.white,
+            viewShape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(16.0)),
             ),
-          ],
-          builder: (context, searchController) => InkWell(
-            onTap: searchController.openView,
-            child: const IgnorePointer(child: AppSearchField()),
-          ),
-          suggestionsBuilder: (context, searchController) {
-            final keyword = searchController.text.trim();
-            if (keyword.isEmpty) return const <Widget>[];
-            return [
-              ListTile(
-                leading:
-                    const Icon(Icons.search, color: AppColors.primaryColor),
-                title: Text('Cari "$keyword"',
-                    style: AppTextStyle.mediumBlackBold),
-                onTap: () => searchController.closeView(keyword),
+            viewLeading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              color: Colors.black,
+              onPressed: () {
+                Get.back();
+              },
+            ),
+            viewTrailing: [
+              IconButton(
+                icon: const Icon(
+                  Icons.clear,
+                  color: AppColors.black,
+                ),
+                onPressed: () {
+                  controller.searchAnchorController.clear();
+                },
               ),
-            ];
-          },
-        ),
-      ),
+            ],
+            searchController: controller.searchAnchorController,
+            builder: (context, searchController) {
+              return InkWell(
+                onTap: () => searchController.openView(),
+                child: IgnorePointer(
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 10,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.search,
+                          color: AppColors.grey,
+                          size: 20,
+                        ),
+                        10.horizontalSpace,
+                        Expanded(
+                          child: Text(
+                            'Cari produk, brand atau kategori...',
+                            style: AppTextStyle.mediumBlackSecondary.copyWith(
+                              color: AppColors.grey,
+                              fontSize: 11.sp,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+            suggestionsBuilder:
+                (BuildContext context, SearchController sc) async {
+              final String keyword = sc.text.trim();
+              final List<Widget> suggestions = [];
+
+              if (keyword.isNotEmpty) {
+                suggestions.add(
+                  ListTile(
+                    leading:
+                        const Icon(Icons.search, color: AppColors.primaryColor),
+                    title: Text(
+                      'Cari "$keyword"',
+                      style: AppTextStyle.mediumBlackBold,
+                    ),
+                    subtitle: const Text(
+                      'Cari produk berdasarkan kata kunci',
+                      style: AppTextStyle.mediumBlack,
+                    ),
+                    onTap: () {
+                      sc.closeView(keyword);
+                      controller.fetchProducts(
+                          search: keyword, categoryId: null);
+                    },
+                  ),
+                );
+                suggestions.add(
+                  const Divider(color: AppColors.lightGrey, thickness: 1.2),
+                );
+              }
+
+              // Tag Suggestions
+              final matchingTags = controller.productTags.where((tag) {
+                final name = tag.name;
+                return keyword.isEmpty ||
+                    name.toLowerCase().contains(keyword.toLowerCase());
+              }).toList();
+
+              if (matchingTags.isNotEmpty) {
+                suggestions.add(
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                    child: const Text(
+                      'Tag Produk',
+                      style: AppTextStyle.mediumBlackBold,
+                    ),
+                  ),
+                );
+                for (final tag in matchingTags) {
+                  final tagItem = tag;
+                  suggestions.add(
+                    ListTile(
+                      leading: const Icon(Icons.label_outlined,
+                          color: AppColors.primaryColor),
+                      title: Text(tagItem.name,
+                          style: AppTextStyle.mediumBlackBold),
+                      onTap: () {
+                        sc.closeView(tagItem.name);
+                        Get.toNamed(
+                          Routes.CATEGORY_PRODUCT,
+                          arguments: {
+                            'selectedTag': tagItem,
+                            'tagId': tagItem.id,
+                            'tags': controller.productTags,
+                          },
+                        );
+                      },
+                    ),
+                  );
+                }
+                suggestions.add(
+                  const Divider(color: AppColors.lightGrey, thickness: 1.2),
+                );
+              }
+
+              // Live Product Suggestions from API
+              if (keyword.isNotEmpty) {
+                suggestions.add(
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                    child: const Text(
+                      'Hasil Produk',
+                      style: AppTextStyle.mediumGreyBold,
+                    ),
+                  ),
+                );
+
+                final apiProducts =
+                    await controller.searchProductsFromApi(keyword);
+                if (apiProducts.isEmpty) {
+                  suggestions.add(
+                    Padding(
+                      padding: EdgeInsets.all(16.r),
+                      child: const Text(
+                        'Tidak ada produk ditemukan',
+                        style: AppTextStyle.mediumGrey,
+                      ),
+                    ),
+                  );
+                } else {
+                  for (final prod in apiProducts) {
+                    suggestions.add(
+                      ListTile(
+                        leading: const Icon(Icons.shopping_bag_outlined,
+                            color: AppColors.primaryColor),
+                        title: Text(prod.name,
+                            style: AppTextStyle.mediumBlackBold),
+                        subtitle: Text(
+                          Helper.formatCurrency(prod.finalPrice.toInt()),
+                          style: AppTextStyle.mediumBlackBold,
+                        ),
+                        onTap: () {
+                          sc.closeView(prod.name);
+                          controller.fetchProductByID(prod.id);
+                        },
+                      ),
+                    );
+                  }
+                }
+              }
+
+              return suggestions;
+            },
+          )),
       backgroundColor: AppColors.primaryColor,
       actions: [
         //** Next Phase **
@@ -215,7 +356,7 @@ class ProductView extends GetView<ProductController> {
           builder: (cartController) {
             return AddToCartIcon(
               key: controller.cartKey,
-              icon: InkWell(
+              icon: GestureDetector(
                 onTap: () => Get.toNamed(Routes.CART),
                 child: IconBadge(
                   iconPath: 'ic_cart.svg',

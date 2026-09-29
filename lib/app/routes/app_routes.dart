@@ -26,6 +26,7 @@ abstract class Routes {
   static const WISHLIST = _Paths.WISHLIST;
   static const DETAIL_ADDRESS = _Paths.DETAIL_ADDRESS;
   static const CATEGORY_PRODUCT = _Paths.CATEGORY_PRODUCT;
+  static const SHORTCUT_PRODUCT = _Paths.SHORTCUT_PRODUCT;
   static const CHANGE_PASSWORD = _Paths.CHANGE_PASSWORD;
 }
 
@@ -54,5 +55,6 @@ abstract class _Paths {
   static const WISHLIST = '/wishlist';
   static const DETAIL_ADDRESS = '/detail-address';
   static const CATEGORY_PRODUCT = '/category-product';
+  static const SHORTCUT_PRODUCT = '/shortcut-product';
   static const CHANGE_PASSWORD = '/change-password';
 }

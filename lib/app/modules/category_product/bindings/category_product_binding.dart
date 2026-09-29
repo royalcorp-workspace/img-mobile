@@ -11,6 +11,8 @@ import 'package:img/app/domain/usecases/get_products_usecase.dart';
 
 import '../controllers/category_product_controller.dart';
 
+import 'package:img/app/domain/usecases/get_product_tags_usecase.dart';
+
 class CategoryProductBinding extends Bindings {
   @override
   void dependencies() {
@@ -36,6 +38,11 @@ class CategoryProductBinding extends Bindings {
         () => GetProductsUseCase(Get.find()),
       );
     }
+    if (!Get.isRegistered<GetProductTagsUseCase>()) {
+      Get.lazyPut<GetProductTagsUseCase>(
+        () => GetProductTagsUseCase(Get.find()),
+      );
+    }
     if (!Get.isRegistered<GetCategoryUsecase>()) {
       Get.lazyPut<GetCategoryUsecase>(
         () => GetCategoryUsecase(Get.find()),
@@ -51,6 +58,7 @@ class CategoryProductBinding extends Bindings {
         getProductsUseCase: Get.find(),
         getCategoryUsecase: Get.find(),
         getProductByIdUsecase: Get.find(),
+        getProductTagsUseCase: Get.find(),
       ),
     );
   }

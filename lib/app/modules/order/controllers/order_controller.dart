@@ -32,6 +32,7 @@ class OrderController extends GetxController {
   final int itemsPerPage = 10;
   var orderHistoryErrorMessage = ''.obs;
   RxString customerId = ''.obs;
+  RxString orderId = ''.obs;
   final SearchController searchAnchorController = SearchController();
 
   List<OrderHistoryEntity> get filteredOrderHistory {
@@ -191,17 +192,17 @@ class OrderController extends GetxController {
       case 'menunggu pembayaran':
         return const Color(0xFFD97706);
       case 'draft':
-        return Colors.grey; // Grey
+        return Colors.grey;
       case 'konfirmasi':
-        return const Color(0xFF2563EB); // Purple
+        return const Color(0xFF2563EB);
       case 'diproses':
-        return const Color(0xFF7C3AED); // Orange
+        return const Color(0xFF7C3AED);
       case 'dikirim':
-        return const Color(0xFF0891B2); // Cyan
+        return const Color(0xFF0891B2);
       case 'terkirim':
-        return const Color(0xFF16A34A); // Green
+        return const Color(0xFF16A34A);
       case 'gagal transaksi':
-        return const Color(0xFFA31616); // Red
+        return const Color(0xFFA31616);
       default:
         return const Color(0xFF2563EB);
     }

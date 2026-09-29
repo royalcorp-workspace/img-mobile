@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
 import 'package:img/app/core/utils/log/logger.dart';
 import 'package:img/app/core/utils/token_storage.dart';
 import 'package:img/app/data/datasources/customer_remote_datasource.dart';
@@ -35,8 +38,14 @@ class AddressController extends GetxController {
       final String? customerId = await _getOrFetchCustomerId();
       if (customerId == null || customerId.isEmpty) {
         Get.snackbar(
-          'Gagal',
-          'Customer ID tidak ditemukan.',
+          '',
+          '',
+          titleText: Text('Gagal', style: AppTextStyle.largeWhiteBold),
+          messageText: Text('Customer ID tidak ditemukan.',
+              style: AppTextStyle.mediumWhite),
+          backgroundColor:
+              Get.context?.theme.colorScheme.error ?? AppColors.red,
+          colorText: AppColors.white,
         );
         return;
       }
@@ -61,9 +70,15 @@ class AddressController extends GetxController {
         print('❌ [SET PRIMARY ADDRESS] Error: $e');
         print(stackTrace);
       }
+
       Get.snackbar(
-        'Gagal',
-        'Gagal mengubah alamat utama. Silakan coba lagi.',
+        '',
+        '',
+        titleText: Text('Gagal', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Gagal mengubah alamat utama. Silakan coba lagi.',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
       );
     } finally {
       isLoading.value = false;
@@ -153,13 +168,15 @@ class AddressController extends GetxController {
       return;
     }
 
-    final primary = currentAddresses.firstWhere(
-      (element) => element.isPrimary == true,
-      orElse: () => currentAddresses.first,
-    );
+    final primary = currentAddresses.firstWhereOrNull(
+          (element) => element.isPrimary == true,
+        ) ??
+        (currentAddresses.isNotEmpty ? currentAddresses.first : null);
 
-    selectedAddressId.value = primary.id ?? '';
-    selectedOption.value = primary.id ?? '';
+    if (primary != null) {
+      selectedAddressId.value = primary.id ?? '';
+      selectedOption.value = primary.id ?? '';
+    }
   }
 
   Future<String?> _getOrFetchCustomerId() async {

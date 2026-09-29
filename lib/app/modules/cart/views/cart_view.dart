@@ -24,19 +24,19 @@ class CartView extends GetView<CartController> {
           style: AppTextStyle.xxLargeWhiteBold,
         ),
         centerTitle: true,
-        actions: [
-          RPadding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: GestureDetector(
-              onTap: () => Get.toNamed(Routes.WISHLIST),
-              child: Icon(
-                Icons.favorite_border,
-                color: AppColors.white,
-                size: 30,
-              ),
-            ),
-          )
-        ],
+        // actions: [
+        //   RPadding(
+        //     padding: const EdgeInsets.only(right: 8.0),
+        //     child: GestureDetector(
+        //       onTap: () => Get.toNamed(Routes.WISHLIST),
+        //       child: Icon(
+        //         Icons.favorite_border,
+        //         color: AppColors.white,
+        //         size: 30,
+        //       ),
+        //     ),
+        //   )
+        // ],
       ),
       body: GetBuilder<CartController>(
         initState: (_) {
@@ -114,15 +114,23 @@ class CartView extends GetView<CartController> {
                               ? AppColors.primaryColor
                               : AppColors.lightGrey,
                         ),
+                        decColor: controller.isItemSelected(itemId)
+                            ? AppColors.black
+                            : AppColors.blackSecondary,
+                        incColor: controller.isItemSelected(itemId)
+                            ? AppColors.black
+                            : AppColors.blackSecondary,
                         value: controller.isItemSelected(itemId),
                         onChanged: (e) {
                           controller.toggleItemSelection(itemId, e ?? false);
                         },
                         decrement: () {
                           controller.decrementQty(itemId);
+                          controller.toggleItemSelection(itemId, true);
                         },
                         increment: () {
                           controller.incrementQty(itemId);
+                          controller.toggleItemSelection(itemId, true);
                         },
                       ),
                     );

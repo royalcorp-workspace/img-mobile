@@ -158,10 +158,16 @@ class SettingView extends GetView<SettingController> {
                         if (!await launchUrl(url,
                             mode: LaunchMode.externalApplication)) {
                           Get.snackbar(
-                            'Kesalahan',
-                            'Gagal membuka Kebijakan Privasi',
-                            backgroundColor: Colors.red,
-                            colorText: Colors.white,
+                            '',
+                            '',
+                            titleText: Text('Kesalahan',
+                                style: AppTextStyle.largeWhiteBold),
+                            messageText: Text('Gagal membuka Kebijakan Privasi',
+                                style: AppTextStyle.mediumWhite),
+                            backgroundColor:
+                                Get.context?.theme.colorScheme.error ??
+                                    AppColors.red,
+                            colorText: AppColors.white,
                           );
                         }
                       },

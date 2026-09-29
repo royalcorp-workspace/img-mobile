@@ -1,5 +1,6 @@
 import 'package:img/app/data/datasources/homepage_content_remote_datasource.dart';
 import 'package:img/app/domain/entities/content_banner_entity.dart';
+import 'package:img/app/domain/entities/content_event_active_entity.dart';
 import 'package:img/app/domain/entities/homepage_content_entity.dart';
 import 'package:img/app/domain/entities/paginated_entity.dart';
 import 'package:img/app/domain/repositories/homepage_content_repository.dart';
@@ -17,5 +18,10 @@ class HomepageContentRepositoryImpl implements HomepageContentRepository {
   @override
   Future<PaginatedEntity<HomepageContentSectionEntity>> getHomepageContent() {
     return remoteDataSource.getHomepageContent();
+  }
+
+  @override
+  Future<ContentEventActiveEntity> getContentEventActive() {
+    return remoteDataSource.getContentEventActive();
   }
 }

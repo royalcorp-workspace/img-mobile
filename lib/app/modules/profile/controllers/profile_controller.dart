@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
 import 'package:intl/intl.dart';
 import 'package:img/app/core/styles/app_color.dart';
 import 'package:img/app/core/utils/log/logger.dart';
@@ -140,16 +141,28 @@ class ProfileController extends GetxController {
     final gender = selectedGender.value;
 
     if (name.isEmpty) {
-      Get.snackbar('Kesalahan', 'Nama tidak boleh kosong',
-          backgroundColor: Get.context!.theme.colorScheme.error,
-          colorText: Colors.white);
+      Get.snackbar(
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText:
+            Text('Nama tidak boleh kosong', style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
+      );
       return;
     }
 
     if (email.isEmpty) {
-      Get.snackbar('Kesalahan', 'Email tidak boleh kosong',
-          backgroundColor: Get.context!.theme.colorScheme.error,
-          colorText: Colors.white);
+      Get.snackbar(
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText:
+            Text('Email tidak boleh kosong', style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
+      );
       return;
     }
 
@@ -184,11 +197,15 @@ class ProfileController extends GetxController {
       );
     } catch (e) {
       logger.severe('❌ [PROFILE-CONTROLLER] Error updating profile: $e');
+
       Get.snackbar(
-        'Gagal',
-        'Gagal memperbarui profil. Silakan coba lagi.',
-        backgroundColor: Get.context!.theme.colorScheme.error,
-        colorText: Colors.white,
+        '',
+        '',
+        titleText: Text('Gagal', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Gagal memperbarui profil. Silakan coba lagi.',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
       );
     } finally {
       isLoading.value = false;

@@ -32,7 +32,7 @@ class DetailAddressView extends GetView<DetailAddressController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            20.verticalSpace,
+            10.verticalSpace,
             RPadding(
               padding: const EdgeInsets.symmetric(horizontal: 14),
               child: Column(
@@ -206,12 +206,11 @@ class DetailAddressView extends GetView<DetailAddressController> {
                   TextFormfieldApp(
                     title: 'Alamat Lengkap',
                     controller: controller.addressController,
-                    maxLines: 3,
+                    maxLines: 5,
                   ),
                 ],
               ),
             ),
-            25.verticalSpace,
             Row(
               children: [
                 Obx(
@@ -230,6 +229,7 @@ class DetailAddressView extends GetView<DetailAddressController> {
                 )
               ],
             ),
+            10.verticalSpace,
             RPadding(
               padding: const EdgeInsets.symmetric(horizontal: 14),
               child: Obx(

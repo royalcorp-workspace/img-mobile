@@ -33,9 +33,9 @@ class HomepageContentItemEntity {
   final String title;
   final String name;
   final String slug;
-  final String image;
-  final String thumbnail;
-  final String thumbnailUrl;
+  final dynamic image;
+  final dynamic thumbnail;
+  final dynamic thumbnailUrl;
   final int basePrice;
   final int sellPrice;
   final int discountPercent;

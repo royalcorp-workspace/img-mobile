@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
 import 'package:img/app/core/utils/log/logger.dart';
 import 'package:img/app/core/utils/token_storage.dart';
 import 'package:img/app/data/datasources/customer_remote_datasource.dart';
@@ -190,57 +192,97 @@ class DetailAddressController extends GetxController {
   bool validateForm() {
     if (recipientNameController.text.trim().isEmpty) {
       Get.snackbar(
-        'Validasi Gagal',
-        'Nama penerima tidak boleh kosong.',
+        '',
+        '',
+        titleText: Text('Validasi Gagal', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Nama penerima tidak boleh kosong.',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
       );
       return false;
     }
     if (phoneController.text.trim().isEmpty) {
       Get.snackbar(
-        'Validasi Gagal',
-        'Nomor HP tidak boleh kosong.',
+        '',
+        '',
+        titleText: Text('Validasi Gagal', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Nomor HP tidak boleh kosong.',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
       );
       return false;
     }
     if (labelController.text.trim().isEmpty) {
       Get.snackbar(
-        'Validasi Gagal',
-        'Label alamat tidak boleh kosong.',
+        '',
+        '',
+        titleText: Text('Validasi Gagal', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Label alamat tidak boleh kosong.',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
       );
       return false;
     }
     if (selectedProvincy.value.isEmpty) {
       Get.snackbar(
-        'Validasi Gagal',
-        'Silakan pilih Provinsi.',
+        '',
+        '',
+        titleText: Text('Validasi Gagal', style: AppTextStyle.largeWhiteBold),
+        messageText:
+            Text('Silakan pilih Provinsi.', style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
       );
       return false;
     }
     if (selectedCity.value.isEmpty) {
       Get.snackbar(
-        'Validasi Gagal',
-        'Silakan pilih Kota.',
+        '',
+        '',
+        titleText: Text('Validasi Gagal', style: AppTextStyle.largeWhiteBold),
+        messageText:
+            Text('Silakan pilih Kota.', style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
       );
       return false;
     }
     if (selectedSubDistrict.value.isEmpty) {
       Get.snackbar(
-        'Validasi Gagal',
-        'Silakan pilih Desa / Kelurahan.',
+        '',
+        '',
+        titleText: Text('Validasi Gagal', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Silakan pilih Desa / Kelurahan.',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
       );
       return false;
     }
     if (selectedPostalCode.value.isEmpty) {
       Get.snackbar(
-        'Validasi Gagal',
-        'Silakan pilih Kode Pos.',
+        '',
+        '',
+        titleText: Text('Validasi Gagal', style: AppTextStyle.largeWhiteBold),
+        messageText:
+            Text('Silakan pilih Kode Pos.', style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
       );
       return false;
     }
     if (addressController.text.trim().isEmpty) {
       Get.snackbar(
-        'Validasi Gagal',
-        'Alamat lengkap tidak boleh kosong.',
+        '',
+        '',
+        titleText: Text('Validasi Gagal', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Alamat lengkap tidak boleh kosong.',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
       );
       return false;
     }
@@ -258,8 +300,15 @@ class DetailAddressController extends GetxController {
       final userDataStr = await TokenStorage.getUserData();
       if (userDataStr == null || userDataStr.isEmpty) {
         Get.snackbar(
-          'Gagal',
-          'Data pengguna tidak ditemukan. Silakan login kembali.',
+          '',
+          '',
+          titleText: Text(' Gagal', style: AppTextStyle.largeWhiteBold),
+          messageText: Text(
+              'Data pengguna tidak ditemukan. Silakan login kembali.',
+              style: AppTextStyle.mediumWhite),
+          backgroundColor:
+              Get.context?.theme.colorScheme.error ?? AppColors.red,
+          colorText: AppColors.white,
         );
         return;
       }
@@ -271,8 +320,14 @@ class DetailAddressController extends GetxController {
       final String? customerId = await _getOrFetchCustomerId();
       if (customerId == null || customerId.isEmpty) {
         Get.snackbar(
-          'Gagal',
-          'Customer ID tidak ditemukan.',
+          '',
+          '',
+          titleText: Text(' Gagal', style: AppTextStyle.largeWhiteBold),
+          messageText: Text('Customer ID tidak ditemukan.',
+              style: AppTextStyle.mediumWhite),
+          backgroundColor:
+              Get.context?.theme.colorScheme.error ?? AppColors.red,
+          colorText: AppColors.white,
         );
         return;
       }
@@ -336,9 +391,15 @@ class DetailAddressController extends GetxController {
         print('❌ [DETAIL_ADDRESS] Error: $e');
         print(stackTrace);
       }
+
       Get.snackbar(
-        'Gagal',
-        'Gagal menyimpan alamat. Silakan coba lagi.',
+        '',
+        '',
+        titleText: Text('Gagal', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Gagal menyimpan alamat. Silakan coba lagi.',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
       );
     } finally {
       isLoading.value = false;

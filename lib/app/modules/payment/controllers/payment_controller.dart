@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
 import 'package:intl/intl.dart';
 import 'package:img/app/core/utils/log/logger.dart';
 import 'package:img/app/data/datasources/check_status_payment_remote_datasource.dart';
@@ -139,11 +141,18 @@ class PaymentController extends GetxController {
         isCheckingStatus.value = false;
       } else {
         isCheckingStatus.value = false;
+
         Get.snackbar(
-          'Pembayaran Belum Selesai! ⏳',
-          '${checkoutResult?.payment?.description} akan otomatis dibatalkan dalam $formattedTime. Silakan lakukan pembayaran',
-          backgroundColor: Get.context!.theme.colorScheme.error,
-          colorText: Colors.white,
+          '',
+          '',
+          titleText: Text('Pembayaran Belum Selesai! ⏳',
+              style: AppTextStyle.largeWhiteBold),
+          messageText: Text(
+              '${checkoutResult?.payment?.description} akan otomatis dibatalkan dalam $formattedTime. Silakan lakukan pembayaran',
+              style: AppTextStyle.mediumWhite),
+          backgroundColor:
+              Get.context?.theme.colorScheme.error ?? AppColors.red,
+          colorText: AppColors.white,
         );
       }
     } catch (e, stackTrace) {
@@ -152,11 +161,16 @@ class PaymentController extends GetxController {
         print('❌ [CHECK PAYMENT STATUS Error checkout: $e');
         print(stackTrace);
       }
+
       Get.snackbar(
-        'Kesalahan $e',
-        'Terjadi kesalahan saat mengecek status pembayaran. Silakan coba beberapa saat lagi.',
-        backgroundColor: Get.context!.theme.colorScheme.error,
-        colorText: Colors.white,
+        '',
+        '',
+        titleText: Text('Kesalahan $e', style: AppTextStyle.largeWhiteBold),
+        messageText: Text(
+            'Terjadi kesalahan saat mengecek status pembayaran. Silakan coba beberapa saat lagi.',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
       );
     } finally {
       isCheckingStatus.value = false;
@@ -164,6 +178,6 @@ class PaymentController extends GetxController {
   }
 
   void finishPayment() {
-    Get.offAllNamed(Routes.SUCCESS);
+    Get.offAllNamed(Routes.SUCCESS, arguments: orderId.value);
   }
 }

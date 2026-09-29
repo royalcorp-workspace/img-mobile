@@ -17,6 +17,8 @@ import 'package:img/app/shared/widgets/app_divider.dart';
 import 'package:img/app/shared/widgets/text/text_price_line_through.dart';
 import 'package:readmore/readmore.dart';
 
+import 'package:img/app/domain/entities/product_entity.dart';
+
 import '../controllers/detail_product_controller.dart';
 
 class DetailProductView extends GetView<DetailProductController> {
@@ -44,9 +46,7 @@ class DetailProductView extends GetView<DetailProductController> {
               Obx(
                 () {
                   final product = controller.productByID.value;
-                  final selectedVariant = product.variants?.isNotEmpty == true
-                      ? product.variants![controller.selectedIndex.value]
-                      : null;
+                  final selectedVariant = controller.selectedVariant;
                   final variantImage = selectedVariant?.imageUrl ?? '';
                   final productImages = product.images
                           ?.map((image) => image.imageUrl)
@@ -87,14 +87,14 @@ class DetailProductView extends GetView<DetailProductController> {
                         ),
                         5.horizontalSpace,
                         Text(
-                          '4.2',
+                          controller.productByID.value.avgRating.toString(),
                           style: AppTextStyle.mediumBlackBold.copyWith(
                             color: AppColors.yellow,
                           ),
                         ),
                         5.horizontalSpace,
-                        const Text(
-                          '(128)',
+                        Text(
+                          '(${controller.productByID.value.reviews?.length})',
                           style: AppTextStyle.smallGrey,
                         ),
                       ],
@@ -105,32 +105,32 @@ class DetailProductView extends GetView<DetailProductController> {
                       style: AppTextStyle.mediumGrey
                           .copyWith(color: AppColors.lightGrey),
                     ),
-                    8.horizontalSpace,
-                    Row(
-                      children: [
-                        const Text(
-                          '30',
-                          style: AppTextStyle.mediumBlack,
-                        ),
-                        5.horizontalSpace,
-                        const Text(
-                          'Terjual',
-                          style: AppTextStyle.smallGrey,
-                        ),
-                      ],
-                    ),
-                    8.horizontalSpace,
-                    Text(
-                      '|',
-                      style: AppTextStyle.mediumGrey
-                          .copyWith(color: AppColors.lightGrey),
-                    ),
+                    // 8.horizontalSpace,
+                    // Row(
+                    //   children: [
+                    //     const Text(
+                    //       '30',
+                    //       style: AppTextStyle.mediumBlack,
+                    //     ),
+                    //     5.horizontalSpace,
+                    //     const Text(
+                    //       'Terjual',
+                    //       style: AppTextStyle.smallGrey,
+                    //     ),
+                    //   ],
+                    // ),
+                    // 8.horizontalSpace,
+                    // Text(
+                    //   '|',
+                    //   style: AppTextStyle.mediumGrey
+                    //       .copyWith(color: AppColors.lightGrey),
+                    // ),
                     8.horizontalSpace,
                     Row(
                       children: [
                         Obx(
                           () => Text(
-                            '${controller.productByID.value.variants?[controller.selectedIndex.value].stockQty}',
+                            '${controller.selectedVariant?.stockQty ?? 0}',
                             style: AppTextStyle.mediumBlack,
                           ),
                         ),
@@ -151,13 +151,10 @@ class DetailProductView extends GetView<DetailProductController> {
                   children: [
                     Obx(
                       () => Text(
-                        Helper.formatCurrency(controller
-                                .productByID
-                                .value
-                                .variants?[controller.selectedIndex.value]
-                                .finalPrice
-                                .toInt() ??
-                            0),
+                        Helper.formatCurrency(
+                            controller.selectedVariant?.finalPrice.toInt() ??
+                                controller.productByID.value.finalPrice ??
+                                0),
                         style: AppTextStyle.xLargeBlackBold.copyWith(
                           color: AppColors.orange,
                         ),
@@ -166,150 +163,162 @@ class DetailProductView extends GetView<DetailProductController> {
                     8.horizontalSpace,
                     Obx(
                       () => Visibility(
-                        visible: controller
-                                .productByID
-                                .value
-                                .variants?[controller.selectedIndex.value]
-                                .price !=
-                            0,
+                        visible: (controller.selectedVariant?.price ?? 0) != 0,
                         child: TextPriceLineThrough(
-                            price: Helper.formatCurrency(controller
-                                    .productByID
-                                    .value
-                                    .variants?[controller.selectedIndex.value]
-                                    .price
-                                    .toInt() ??
-                                0)),
+                            price: Helper.formatCurrency(
+                                controller.selectedVariant?.price.toInt() ??
+                                    0)),
                       ),
                     ),
                     8.horizontalSpace,
-                    Visibility(
-                      visible: controller
-                              .productByID
-                              .value
-                              .variants?[controller.selectedIndex.value]
-                              .price !=
-                          0,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: AppColors.shadeRed,
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(8),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.remove,
-                              size: 12,
-                              color: AppColors.orange,
+                    Obx(
+                      () {
+                        final settings = controller
+                                .selectedVariant?.priceProductSettings ??
+                            controller.productByID.value.priceProductSettings ??
+                            [];
+                        final firstSetting =
+                            settings.isEmpty ? null : settings.first;
+                        if (firstSetting == null ||
+                            (controller.selectedVariant?.price ?? 0) == 0) {
+                          return const SizedBox.shrink();
+                        }
+                        int discountVal = 0;
+                        if (firstSetting is PriceProductSettingEntity) {
+                          discountVal = firstSetting.discountValue.toInt();
+                        } else if (firstSetting is Map) {
+                          discountVal = (num.tryParse(
+                                      firstSetting['discount_value']
+                                              ?.toString() ??
+                                          '') ??
+                                  0)
+                              .toInt();
+                        }
+
+                        return Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: AppColors.shadeRed,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(8),
                             ),
-                            Obx(
-                              () => Text(
-                                controller
-                                            .productByID
-                                            .value
-                                            .variants?[
-                                                controller.selectedIndex.value]
-                                            .priceProductSettings
-                                            .isEmpty ==
-                                        true
-                                    ? ''
-                                    : '${controller.productByID.value.variants?[controller.selectedIndex.value].priceProductSettings.first.discountValue.toInt()}%',
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.remove,
+                                size: 12,
+                                color: AppColors.orange,
+                              ),
+                              Text(
+                                '$discountVal%',
                                 style: AppTextStyle.mediumBlackBold.copyWith(
                                   color: AppColors.orange,
                                 ),
                               ),
-                            )
-                          ],
-                        ),
-                      ),
+                            ],
+                          ),
+                        );
+                      },
                     )
                   ],
                 ),
               ),
               10.verticalSpace,
-              Visibility(
-                  visible: controller
-                          .productByID
-                          .value
-                          .variants?[controller.selectedIndex.value]
-                          .priceProductSettings
-                          .isNotEmpty ==
-                      true,
-                  child: const Divider(
-                      color: AppColors.lightGrey, thickness: 1.2)),
-              Visibility(
-                visible: controller
-                        .productByID
-                        .value
-                        .variants?[controller.selectedIndex.value]
-                        .priceProductSettings
-                        .isNotEmpty ==
-                    true,
-                child: ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    minLeadingWidth: 0,
-                    horizontalTitleGap: 5,
-                    leading: Image.asset(
-                      height: 60,
-                      width: 60,
-                      Helper.getImagePath('img_special_promo.png'),
-                    ),
-                    title: Obx(
-                      () => Text(
-                        controller
-                                .productByID
-                                .value
-                                .variants![controller.selectedIndex.value]
-                                .priceProductSettings
-                                .isEmpty
-                            ? '-'
-                            : '${controller.productByID.value.variants?[controller.selectedIndex.value].priceProductSettings.first.title}',
-                        style: AppTextStyle.mediumBlackBold,
+              Obx(
+                () {
+                  final settings =
+                      controller.selectedVariant?.priceProductSettings ??
+                          controller.productByID.value.priceProductSettings ??
+                          [];
+                  final firstSetting = settings.isEmpty ? null : settings.first;
+                  if (firstSetting == null) return const SizedBox.shrink();
+
+                  String title = '-';
+                  String description = '-';
+                  if (firstSetting is PriceProductSettingEntity) {
+                    title = firstSetting.title.isNotEmpty
+                        ? firstSetting.title
+                        : '-';
+                    description = (firstSetting.description != null &&
+                            firstSetting.description!.isNotEmpty)
+                        ? firstSetting.description!
+                        : '-';
+                  } else if (firstSetting is Map) {
+                    title = firstSetting['title']?.toString() ?? '-';
+                    description =
+                        firstSetting['description']?.toString() ?? '-';
+                  }
+
+                  return Column(
+                    children: [
+                      const Divider(
+                        color: AppColors.lightGrey,
+                        thickness: 1.2,
                       ),
-                    ),
-                    subtitle: Obx(
-                      () => Text(
-                        controller
-                                .productByID
-                                .value
-                                .variants![controller.selectedIndex.value]
-                                .priceProductSettings
-                                .isEmpty
-                            ? '-'
-                            : '${controller.productByID.value.variants?[controller.selectedIndex.value].priceProductSettings.first.description}',
-                        style: AppTextStyle.mediumBlack,
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        minLeadingWidth: 0,
+                        horizontalTitleGap: 5,
+                        leading: Image.asset(
+                          height: 60,
+                          width: 60,
+                          Helper.getImagePath('img_special_promo.png'),
+                        ),
+                        title: Text(
+                          title,
+                          style: AppTextStyle.mediumBlackBold,
+                        ),
+                        subtitle: Text(
+                          description,
+                          style: AppTextStyle.mediumBlack,
+                        ),
                       ),
-                    )),
+                    ],
+                  );
+                },
               ),
-              AppDivider(),
-              10.verticalSpace,
-              RPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                child: const Text(
-                  'Pilih Ukuran',
-                  style: AppTextStyle.largeBlackBold,
-                ),
-              ),
-              10.verticalSpace,
-              RPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                child: SizedBox(
-                  height: 32.h,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    shrinkWrap: true,
-                    itemCount: controller.productByID.value.variants?.length,
-                    itemBuilder: (context, index) => Obx(
-                      () => SizeContainerWidget(
-                        label:
-                            '${controller.productByID.value.variants?[index].width}x${controller.productByID.value.variants?[index].length}',
-                        isSelected: controller.selectedIndex.value == index,
-                        onTap: () => controller.selectedIndex.value = index,
+              Obx(
+                () => Visibility(
+                  visible:
+                      controller.productByID.value.variants?.isNotEmpty == true,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppDivider(),
+                      10.verticalSpace,
+                      RPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        child: const Text(
+                          'Pilih Ukuran',
+                          style: AppTextStyle.largeBlackBold,
+                        ),
                       ),
-                    ),
+                      10.verticalSpace,
+                      RPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        child: SizedBox(
+                          height: 32.h,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            shrinkWrap: true,
+                            itemCount:
+                                controller.productByID.value.variants?.length ??
+                                    0,
+                            itemBuilder: (context, index) => Obx(
+                              () => SizeContainerWidget(
+                                label:
+                                    '${controller.productByID.value.variants?[index].width}x${controller.productByID.value.variants?[index].length}',
+                                isSelected:
+                                    controller.selectedIndex.value == index,
+                                onTap: () =>
+                                    controller.selectedIndex.value = index,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -395,10 +404,10 @@ ${controller.productByID.value.description}
                       'Ulasan Produk',
                       style: AppTextStyle.largeBlackBold,
                     ),
-                    Text(
-                      'Lihat Semua',
-                      style: AppTextStyle.smallBlackBold,
-                    ),
+                    // Text(
+                    //   'Lihat Semua',
+                    //   style: AppTextStyle.smallBlackBold,
+                    // ),
                   ],
                 ),
               ),
@@ -421,14 +430,15 @@ ${controller.productByID.value.description}
                               ),
                               5.horizontalSpace,
                               Text(
-                                '4.2',
+                                controller.productByID.value.avgRating
+                                    .toString(),
                                 style: AppTextStyle.xLargeBlackBold,
                               ),
                             ],
                           ),
                           12.verticalSpace,
                           Text(
-                            '128 Rating\ndan 24 Review',
+                            '${controller.productByID.value.avgRating} Rating\ndan ${controller.productByID.value.reviews?.length} Review',
                             style: AppTextStyle.smallGrey,
                           )
                         ],

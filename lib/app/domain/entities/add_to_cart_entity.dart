@@ -116,25 +116,40 @@ class ItemCart {
     this.variant,
   });
 
-  factory ItemCart.fromJson(Map<String, dynamic> json) => ItemCart(
-        productId: json["product_id"],
-        productVariantId: json["product_variant_id"],
-        name: json["name"],
-        quantity: json["quantity"],
-        unitPrice: json["unit_price"]?.toDouble(),
-        total: json["total"]?.toDouble(),
-        discountNominal: json["discount_nominal"],
-        discountPercent: json["discount_percent"],
-        itemNotes: json["item_notes"],
-        meta: json["meta"],
-        id: json["id"],
-        addToCartId: json["add_to_cart_id"],
-        product:
-            json["product"] == null ? null : Product.fromJson(json["product"]),
-        variant: json["variant"] == null
-            ? null
-            : VariantCart.fromJson(json["variant"]),
-      );
+  factory ItemCart.fromJson(Map<String, dynamic> json) {
+    double toDouble(dynamic val) {
+      if (val == null) return 0.0;
+      if (val is num) return val.toDouble();
+      return double.tryParse(val.toString()) ?? 0.0;
+    }
+
+    int toInt(dynamic val) {
+      if (val == null) return 0;
+      if (val is num) return val.toInt();
+      return int.tryParse(val.toString()) ?? (double.tryParse(val.toString())?.toInt() ?? 0);
+    }
+
+    return ItemCart(
+      productId: json["product_id"]?.toString(),
+      productVariantId: json["product_variant_id"]?.toString(),
+      name: json["name"]?.toString(),
+      quantity: toInt(json["quantity"]),
+      unitPrice: toDouble(json["unit_price"]),
+      total: toDouble(json["total"]),
+      discountNominal: toDouble(json["discount_nominal"]),
+      discountPercent: toDouble(json["discount_percent"]),
+      itemNotes: json["item_notes"],
+      meta: json["meta"],
+      id: json["id"]?.toString(),
+      addToCartId: json["add_to_cart_id"]?.toString(),
+      product: json["product"] != null && json["product"] is Map
+          ? Product.fromJson(json["product"] as Map<String, dynamic>)
+          : null,
+      variant: json["variant"] != null && json["variant"] is Map
+          ? VariantCart.fromJson(json["variant"] as Map<String, dynamic>)
+          : null,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "product_id": productId,
@@ -168,10 +183,10 @@ class Product {
   });
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
-        id: json["id"],
-        name: json["name"],
-        slug: json["slug"],
-        basePrice: json["base_price"],
+        id: json["id"]?.toString(),
+        name: json["name"]?.toString(),
+        slug: json["slug"]?.toString(),
+        basePrice: json["base_price"]?.toString(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -239,11 +254,11 @@ class VariantCart {
       stockQty: toDouble(json["stock_qty"]),
       attributes: json["attributes"],
       id: json["id"]?.toString(),
-      priceProductSettings: json["price_product_settings"] == null
-          ? []
-          : List<dynamic>.from(
-              json["price_product_settings"].map((x) => x),
-            ),
+      priceProductSettings: json["price_product_settings"] is List
+          ? List<dynamic>.from(
+              (json["price_product_settings"] as List).map((x) => x),
+            )
+          : [],
       finalPrice: toDouble(json["final_price"]),
     );
   }

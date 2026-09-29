@@ -11,8 +11,10 @@ import 'package:img/app/data/repositories/category_repository_impl.dart';
 import 'package:img/app/data/repositories/product_repository_impl.dart';
 import 'package:img/app/domain/entities/category_entity.dart';
 import 'package:img/app/domain/entities/product_entity.dart';
+import 'package:img/app/domain/entities/product_tag_entity.dart';
 import 'package:img/app/domain/usecases/get_category_usecase.dart';
 import 'package:img/app/domain/usecases/get_product_by_id_usecase.dart';
+import 'package:img/app/domain/usecases/get_product_tags_usecase.dart';
 import 'package:img/app/domain/usecases/get_products_usecase.dart';
 import 'package:img/app/modules/cart/controllers/cart_controller.dart';
 import 'package:img/app/routes/app_pages.dart';
@@ -22,11 +24,13 @@ class CategoryProductController extends GetxController {
     this.getProductsUseCase,
     this.getCategoryUsecase,
     this.getProductByIdUsecase,
+    this.getProductTagsUseCase,
   });
 
   final GetProductsUseCase? getProductsUseCase;
   final GetCategoryUsecase? getCategoryUsecase;
   final GetProductByIdUsecase? getProductByIdUsecase;
+  final GetProductTagsUseCase? getProductTagsUseCase;
 
   GlobalKey<CartIconKey> cartKey = GlobalKey<CartIconKey>();
 
@@ -37,12 +41,17 @@ class CategoryProductController extends GetxController {
   final categoryList = <CategoryEntity>[].obs;
   final selectedIndex = 0.obs;
 
+  final tagList = <ProductTagEntity>[].obs;
+  final selectedTagId = RxnString();
+  final selectedTag = Rxn<ProductTagEntity>();
+
   final products = <ProductEntity>[].obs;
   final isLoadingProducts = false.obs;
   final isLoadingMore = false.obs;
   final hasMore = true.obs;
 
   final isLoadingCategories = false.obs;
+  final isLoadingTags = false.obs;
   final RxBool showScrollToTop = false.obs;
   final productErrorMessage = ''.obs;
 
@@ -66,13 +75,15 @@ class CategoryProductController extends GetxController {
     return null;
   }
 
-  String? get selectedCategoryId => selectedCategory?.id;
+  String? get selectedCategoryId =>
+      selectedTagId.value != null ? null : selectedCategory?.id;
 
   @override
   void onInit() {
     super.onInit();
     _initScrollListeners();
     _parseArgumentsAndInit();
+    fetchTags();
   }
 
   @override
@@ -115,13 +126,24 @@ class CategoryProductController extends GetxController {
 
     final args = Get.arguments;
     if (args is Map) {
+      if (args.containsKey('tagId') && args['tagId'] is String) {
+        selectedTagId.value = args['tagId'] as String;
+      }
+      if (args.containsKey('selectedTag') &&
+          args['selectedTag'] is ProductTagEntity) {
+        selectedTag.value = args['selectedTag'] as ProductTagEntity;
+        selectedTagId.value = selectedTag.value?.id;
+      }
+      if (args.containsKey('tags') && args['tags'] is List) {
+        tagList.assignAll(
+            (args['tags'] as List).whereType<ProductTagEntity>().toList());
+      }
       if (args.containsKey('initialIndex') && args['initialIndex'] is int) {
         initialIndex = args['initialIndex'] as int;
       }
       if (args.containsKey('categories') && args['categories'] is List) {
-        passedCategories = (args['categories'] as List)
-            .whereType<CategoryEntity>()
-            .toList();
+        passedCategories =
+            (args['categories'] as List).whereType<CategoryEntity>().toList();
       }
       if (args.containsKey('selectedCategory') &&
           args['selectedCategory'] is CategoryEntity) {
@@ -131,6 +153,8 @@ class CategoryProductController extends GetxController {
           args['categoryId'] is String) {
         initialCategoryId = args['categoryId'] as String;
       }
+    } else if (args is CategoryEntity) {
+      initialCategoryId = args.id;
     } else if (args is int) {
       initialIndex = args;
     } else if (args is String) {
@@ -143,19 +167,23 @@ class CategoryProductController extends GetxController {
       await fetchCategories();
     }
 
-    if (initialCategoryId != null && categoryList.isNotEmpty) {
-      final index = categoryList.indexWhere((c) => c.id == initialCategoryId);
-      if (index != -1) {
-        initialIndex = index;
+    if (selectedTagId.value != null) {
+      selectedIndex.value = -1;
+    } else {
+      if (initialCategoryId != null && categoryList.isNotEmpty) {
+        final index = categoryList.indexWhere((c) => c.id == initialCategoryId);
+        if (index != -1) {
+          initialIndex = index;
+        }
       }
-    }
 
-    if (categoryList.isNotEmpty) {
-      if (initialIndex < 0 || initialIndex >= categoryList.length) {
-        initialIndex = 0;
+      if (categoryList.isNotEmpty) {
+        if (initialIndex < 0 || initialIndex >= categoryList.length) {
+          initialIndex = 0;
+        }
+        selectedIndex.value = initialIndex;
+        _scrollToCategoryIndex(initialIndex);
       }
-      selectedIndex.value = initialIndex;
-      _scrollToCategoryIndex(initialIndex);
     }
 
     fetchProducts();
@@ -179,6 +207,25 @@ class CategoryProductController extends GetxController {
     }
   }
 
+  Future<void> fetchTags() async {
+    if (tagList.isNotEmpty) return;
+    try {
+      isLoadingTags.value = true;
+      final useCase = getProductTagsUseCase ??
+          GetProductTagsUseCase(
+            ProductRepositoryImpl(
+              remoteDataSource: ProductRemoteDataSourceImpl(),
+            ),
+          );
+      final result = await useCase.call();
+      tagList.assignAll(result);
+    } catch (e) {
+      logger.warning('❌ [CATEGORY-PRODUCT] Failed to fetch tags: $e');
+    } finally {
+      isLoadingTags.value = false;
+    }
+  }
+
   void _scrollToCategoryIndex(int index) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!categoryScrollController.hasClients) return;
@@ -196,9 +243,11 @@ class CategoryProductController extends GetxController {
   }
 
   void selectCategory(int index) {
+    logger.info('HERE select cat $index');
     if (index < 0 || index >= categoryList.length) return;
-    if (selectedIndex.value == index && searchQuery.value.isEmpty) return;
 
+    selectedTagId.value = null;
+    selectedTag.value = null;
     selectedIndex.value = index;
     searchQuery.value = '';
     searchAnchorController.clear();
@@ -206,7 +255,26 @@ class CategoryProductController extends GetxController {
     fetchProducts();
   }
 
+  void selectTag(ProductTagEntity tag) {
+    selectedTag.value = tag;
+    selectedTagId.value = tag.id;
+    selectedIndex.value = -1;
+    searchQuery.value = '';
+    searchAnchorController.clear();
+    fetchProducts();
+  }
+
+  void clearTagFilter() {
+    selectedTagId.value = null;
+    selectedTag.value = null;
+    if (categoryList.isNotEmpty && selectedIndex.value < 0) {
+      selectedIndex.value = 0;
+    }
+    fetchProducts();
+  }
+
   Future<void> fetchProducts({String? search}) async {
+    logger.info('HERE fetch $search');
     try {
       isLoadingProducts.value = true;
       productErrorMessage.value = '';
@@ -228,6 +296,7 @@ class CategoryProductController extends GetxController {
         page: currentPage,
         itemsPerPage: itemsPerPage,
         categoryId: selectedCategoryId,
+        tagId: selectedTagId.value,
         search: searchQuery.value.isEmpty ? null : searchQuery.value,
       );
 
@@ -267,6 +336,7 @@ class CategoryProductController extends GetxController {
         page: nextPage,
         itemsPerPage: itemsPerPage,
         categoryId: selectedCategoryId,
+        tagId: selectedTagId.value,
         search: searchQuery.value.isEmpty ? null : searchQuery.value,
       );
 
@@ -305,6 +375,7 @@ class CategoryProductController extends GetxController {
         page: 1,
         itemsPerPage: 10,
         categoryId: selectedCategoryId,
+        tagId: selectedTagId.value,
         search: query.trim(),
       );
       return result.data;

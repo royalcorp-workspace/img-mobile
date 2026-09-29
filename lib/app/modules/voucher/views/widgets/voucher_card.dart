@@ -113,11 +113,14 @@ class VoucherCard extends StatelessWidget {
                             ClipboardData(text: codeVoucher));
 
                         Get.snackbar(
-                          'Berhasil!',
-                          'Copied to clipboard!',
+                          '',
+                          '',
+                          titleText: Text('Berhasil',
+                              style: AppTextStyle.largeWhiteBold),
+                          messageText: Text('Tersalin ke clipboard!',
+                              style: AppTextStyle.mediumWhite),
                           backgroundColor: AppColors.green,
-                          colorText: Colors.white,
-                          snackPosition: SnackPosition.BOTTOM,
+                          colorText: AppColors.white,
                         );
                       },
                       child: Text(

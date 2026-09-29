@@ -77,6 +77,11 @@ class LoginView extends GetView<AuthController> {
                       borderRadius: BorderRadius.circular(12.r),
                       borderSide: const BorderSide(color: AppColors.lightGrey),
                     ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                      borderSide:
+                          const BorderSide(color: AppColors.primaryColor),
+                    ),
                   ),
                 ),
                 SizedBox(height: 20.h),
@@ -116,6 +121,11 @@ class LoginView extends GetView<AuthController> {
                           borderRadius: BorderRadius.circular(12.r),
                           borderSide:
                               const BorderSide(color: AppColors.lightGrey),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                          borderSide:
+                              const BorderSide(color: AppColors.primaryColor),
                         ),
                       ),
                     )),

@@ -12,12 +12,14 @@ class GetProductsUseCase {
     int itemsPerPage = 10,
     String? categoryId,
     String? search,
+    String? tagId,
   }) {
     return repository.getProducts(
       page: page,
       itemsPerPage: itemsPerPage,
       categoryId: categoryId,
       search: search,
+      tagId: tagId,
     );
   }
 }

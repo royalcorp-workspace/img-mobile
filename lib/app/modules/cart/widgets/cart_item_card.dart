@@ -17,6 +17,8 @@ class CartItemCard extends StatelessWidget {
     this.value,
     this.decrement,
     this.increment,
+    this.decColor,
+    this.incColor,
   });
 
   final String name, description, price;
@@ -26,6 +28,7 @@ class CartItemCard extends StatelessWidget {
   final bool? value;
   final void Function()? decrement;
   final void Function()? increment;
+  final Color? decColor, incColor;
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +116,7 @@ class CartItemCard extends StatelessWidget {
                     quantity == 1 ? Icons.delete_outline : Icons.remove,
                     color: quantity == 1
                         ? AppColors.red
-                        : AppColors.blackSecondary,
+                        : decColor ?? AppColors.blackSecondary,
                   ),
                 ),
                 Text(
@@ -124,7 +127,7 @@ class CartItemCard extends StatelessWidget {
                   onTap: increment,
                   child: Icon(
                     Icons.add,
-                    color: AppColors.blackSecondary,
+                    color: incColor ?? AppColors.blackSecondary,
                   ),
                 )
               ],

@@ -39,14 +39,14 @@ class SuccessView extends GetView<SuccessController> {
                     style: AppTextStyle.mediumGrey,
                     children: [
                       TextSpan(
-                        text: '#9ds69hs',
+                        text: '#${controller.invoiceNumber}',
                         style: AppTextStyle.mediumBlackBold.copyWith(
                           color: AppColors.secondaryColor,
                         ),
                       ),
                       TextSpan(
                         text:
-                            '. Kamu dapat melacak pengiriman di bagian riwayat pesanan',
+                            '. Kamu dapat melacak pengiriman di bagian pesanan',
                         style: AppTextStyle.mediumGrey,
                       ),
                     ],

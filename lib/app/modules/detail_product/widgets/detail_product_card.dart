@@ -1,3 +1,5 @@
+// ignore_for_file: sized_box_for_whitespace
+
 import 'package:flutter/material.dart';
 
 class DetailProductCard extends StatelessWidget {
@@ -17,7 +19,7 @@ class DetailProductCard extends StatelessWidget {
     final images = imageUrls.where((url) => url.isNotEmpty).toList();
     final galleryHeight = MediaQuery.sizeOf(context).width * 1;
 
-    return SizedBox(
+    return Container(
       key: widgetKey,
       width: double.infinity,
       height: galleryHeight,
@@ -32,8 +34,13 @@ class DetailProductCard extends StatelessWidget {
               image: imageUrl.startsWith('http://') ||
                       imageUrl.startsWith('https://')
                   ? NetworkImage(imageUrl)
-                  : const AssetImage('assets/images/img_product1.jpg'),
+                  : const AssetImage('assets/images/img_product1.jpg')
+                      as ImageProvider,
               fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) => Image.asset(
+                'assets/images/img_product1.jpg',
+                fit: BoxFit.contain,
+              ),
             ),
           );
         },

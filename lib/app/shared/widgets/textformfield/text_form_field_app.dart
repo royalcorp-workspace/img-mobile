@@ -70,6 +70,10 @@ class TextFormfieldApp extends StatelessWidget {
               hintStyle: AppTextStyle.mediumGrey,
               fillColor: AppColors.white,
               filled: true,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
               enabledBorder: OutlineInputBorder(
                 borderSide: const BorderSide(color: AppColors.lightGrey),
                 borderRadius: BorderRadius.circular(14),

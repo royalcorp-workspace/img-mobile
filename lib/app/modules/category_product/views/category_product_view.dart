@@ -106,8 +106,8 @@ class CategoryProductView extends GetView<CategoryProductController> {
                   'Cari "$keyword"',
                   style: AppTextStyle.mediumBlackBold,
                 ),
-                subtitle: Text(
-                  'Cari produk di kategori ini',
+                subtitle: const Text(
+                  'Cari produk berdasarkan kata kunci',
                   style: AppTextStyle.mediumBlack,
                 ),
                 onTap: () {
@@ -118,23 +118,62 @@ class CategoryProductView extends GetView<CategoryProductController> {
             );
             suggestions
                 .add(const Divider(color: AppColors.lightGrey, thickness: 1.2));
+          }
 
+          // Tag Suggestions
+          final matchingTags = controller.tagList.where((tag) {
+            final name = tag.name;
+            return keyword.isEmpty ||
+                name.toLowerCase().contains(keyword.toLowerCase());
+          }).toList();
+
+          if (matchingTags.isNotEmpty) {
             suggestions.add(
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                child: Text(
+                child: const Text(
+                  'Tag Produk',
+                  style: AppTextStyle.mediumBlackBold,
+                ),
+              ),
+            );
+            for (final tag in matchingTags) {
+              final tagItem = tag;
+              suggestions.add(
+                ListTile(
+                  leading: const Icon(Icons.label_outlined,
+                      color: AppColors.primaryColor),
+                  title:
+                      Text(tagItem.name, style: AppTextStyle.mediumBlackBold),
+                  onTap: () {
+                    sc.closeView(tagItem.name);
+                    controller.selectTag(tagItem);
+                  },
+                ),
+              );
+            }
+            suggestions.add(
+                const Divider(color: AppColors.lightGrey, thickness: 1.2));
+          }
+
+          if (keyword.isNotEmpty) {
+            suggestions.add(
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                child: const Text(
                   'Hasil Produk',
                   style: AppTextStyle.mediumGreyBold,
                 ),
               ),
             );
 
-            final apiProducts = await controller.searchProductsFromApi(keyword);
+            final apiProducts =
+                await controller.searchProductsFromApi(keyword);
             if (apiProducts.isEmpty) {
               suggestions.add(
                 Padding(
                   padding: EdgeInsets.all(16.r),
-                  child: Text(
+                  child: const Text(
                     'Tidak ada produk ditemukan',
                     style: AppTextStyle.mediumGrey,
                   ),
@@ -221,7 +260,8 @@ class CategoryProductView extends GetView<CategoryProductController> {
             itemBuilder: (context, index) {
               final cat = controller.categoryList[index];
               return Obx(() {
-                final isSelected = controller.selectedIndex.value == index;
+                final isSelected = controller.selectedIndex.value == index &&
+                    controller.selectedTagId.value == null;
                 return GestureDetector(
                   onTap: () => controller.selectCategory(index),
                   child: AnimatedContainer(
@@ -251,52 +291,88 @@ class CategoryProductView extends GetView<CategoryProductController> {
 
   Widget _buildActiveCategoryHeader() {
     return Obx(() {
-      final selected = controller.selectedCategory;
-      final categoryName = selected?.name ?? 'Semua Produk';
+      final selectedCat = controller.selectedCategory;
+      final selectedTag = controller.selectedTag.value;
       final hasSearch = controller.searchQuery.value.isNotEmpty;
+      final hasTag = controller.selectedTagId.value != null;
+
+      if (!hasSearch && !hasTag && selectedCat == null) {
+        return const SliverToBoxAdapter();
+      }
+
+      String headerText = '';
+      if (hasTag) {
+        headerText = 'Tag: ${selectedTag?.name ?? 'Tag Terpilih'}';
+      } else if (selectedCat != null) {
+        headerText = 'Kategori: ${selectedCat.name}';
+      } else {
+        headerText = 'Semua Produk';
+      }
 
       return SliverToBoxAdapter(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      categoryName,
-                      style: AppTextStyle.largeBlackBold,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (hasSearch)
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+            decoration: BoxDecoration(
+              color: AppColors.primaryColor.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(
+                color: AppColors.primaryColor.withOpacity(0.25),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        'Pencarian: "${controller.searchQuery.value}"',
-                        style: AppTextStyle.mediumGrey,
+                        headerText,
+                        style: AppTextStyle.mediumBlackBold.copyWith(
+                          color: AppColors.primaryColor,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
-                  ],
-                ),
-              ),
-              if (hasSearch)
-                InkWell(
-                  onTap: () => controller.fetchProducts(search: ''),
-                  child: Padding(
-                    padding: EdgeInsets.all(4.r),
-                    child: Row(
-                      children: [
+                      if (hasSearch)
                         Text(
-                          'Hapus Cari',
+                          'Pencarian: "${controller.searchQuery.value}"',
                           style: AppTextStyle.smallGrey,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        4.horizontalSpace,
-                        const Icon(Icons.close, size: 16, color: AppColors.red),
-                      ],
-                    ),
+                    ],
                   ),
                 ),
-            ],
+                if (hasTag || hasSearch)
+                  InkWell(
+                    onTap: () {
+                      if (hasTag) {
+                        controller.clearTagFilter();
+                      } else {
+                        controller.fetchProducts(search: '');
+                      }
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.all(4.r),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Hapus Filter',
+                            style: AppTextStyle.smallGrey.copyWith(
+                              color: AppColors.red,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          4.horizontalSpace,
+                          const Icon(Icons.close,
+                              size: 16, color: AppColors.red),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       );
@@ -317,7 +393,7 @@ class CategoryProductView extends GetView<CategoryProductController> {
               crossAxisCount: 2,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
-              childAspectRatio: 0.53,
+              childAspectRatio: 0.7,
             ),
           ),
         );
@@ -343,7 +419,7 @@ class CategoryProductView extends GetView<CategoryProductController> {
                 ),
                 8.verticalSpace,
                 Text(
-                  'Tidak ada produk yang tersedia di kategori ini saat ini.',
+                  'Tidak ada produk yang tersedia saat ini.',
                   style: AppTextStyle.mediumGrey,
                   textAlign: TextAlign.center,
                 ),
@@ -360,9 +436,8 @@ class CategoryProductView extends GetView<CategoryProductController> {
             (context, index) {
               final product = controller.products[index];
               final title = product.name;
-              final variant = product.variants.isNotEmpty == true
-                  ? product.variants.first
-                  : null;
+              final variant =
+                  product.variants.isNotEmpty ? product.variants.first : null;
 
               final price = product.finalPrice > 0
                   ? product.finalPrice
@@ -416,7 +491,7 @@ class CategoryProductView extends GetView<CategoryProductController> {
             crossAxisCount: 2,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
-            childAspectRatio: 0.53,
+            childAspectRatio: 0.64,
           ),
         ),
       );

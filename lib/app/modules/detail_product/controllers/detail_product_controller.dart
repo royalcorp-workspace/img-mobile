@@ -5,10 +5,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
 import 'package:img/app/core/utils/log/logger.dart';
 import 'package:img/app/core/utils/token_storage.dart';
 import 'package:img/app/data/datasources/cart_remote_datasource.dart';
 import 'package:img/app/data/models/user_model.dart';
+import 'package:img/app/domain/entities/variant_entity.dart';
 import 'package:img/app/modules/cart/controllers/cart_controller.dart';
 import 'package:img/app/data/repositories/cart_repository_impl.dart';
 import 'package:img/app/domain/entities/add_to_cart_entity.dart';
@@ -114,6 +116,15 @@ class DetailProductController extends GetxController {
     return "3fa85f64-5717-4562-b3fc-2c963f66afa6";
   }
 
+  VariantEntity? get selectedVariant {
+    final variants = productByID.value.variants;
+    final index = selectedIndex.value;
+    if (variants != null && index >= 0 && index < variants.length) {
+      return variants[index];
+    }
+    return null;
+  }
+
   Future<void> addToCart(GlobalKey widgetKey) async {
     try {
       logger.info('🔍 [ADD_TO_CART] Initiating add to cart creation...');
@@ -123,12 +134,13 @@ class DetailProductController extends GetxController {
       List<ItemParams> payloadItems = [];
 
       final productId = productByID.value.id.toString();
-      final variantId = productByID.value.variants?.isNotEmpty == true
-          ? (productByID.value.variants![selectedIndex.value].id)
-          : "1";
+      final variant = selectedVariant;
+      final variantId = variant?.id ?? "1";
       final itemQty = 1;
-      final itemUnitPrice =
-          productByID.value.variants![selectedIndex.value].finalPrice;
+      final itemUnitPrice = (variant?.finalPrice ??
+              productByID.value.finalPrice?.toDouble() ??
+              0.0)
+          .toDouble();
       final discountNominal = 0.0;
       final itemTotal = itemUnitPrice - discountNominal;
       final productName = productByID.value.name.toString();
@@ -142,7 +154,7 @@ class DetailProductController extends GetxController {
           discountNominal: discountNominal,
           discountPercent: 0,
           total: itemTotal,
-          weight: 0,
+          weight: variant?.weight.toDouble() ?? 0,
           name: productName,
         ),
       ];
@@ -195,8 +207,13 @@ class DetailProductController extends GetxController {
         print(stackTrace);
       }
       Get.snackbar(
-        'Gagal menambahkan produk',
-        'Terjadi kesalahan saat memproses produk. Silakan coba lagi.',
+        '',
+        '',
+        titleText: Text('Gagal menambahkan produk',
+            style: AppTextStyle.largeWhiteBold),
+        messageText: Text(
+            'Terjadi kesalahan saat memproses produk. Silakan coba lagi.',
+            style: AppTextStyle.mediumWhite),
         backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
         colorText: AppColors.white,
       );
