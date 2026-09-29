@@ -1,4 +1,4 @@
-import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
+import 'package:img/app/domain/entities/paginated_entity.dart';
 
 class PaginatedModel<T> extends PaginatedEntity<T> {
   PaginatedModel({

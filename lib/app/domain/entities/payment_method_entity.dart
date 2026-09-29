@@ -1,4 +1,4 @@
-import 'package:pos_royal/app/data/models/payment_method_model.dart';
+import 'package:img/app/data/models/payment_method_model.dart';
 
 class PaymentMethodEntity {
   final String createdAt;

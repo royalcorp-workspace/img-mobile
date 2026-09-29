@@ -37,37 +37,44 @@ class CheckoutView extends GetView<CheckoutController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    15.verticalSpace,
+                    10.verticalSpace,
                     RPadding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: InkWell(
                         onTap: () => Get.toNamed(Routes.ADDRESS),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.location_on_sharp,
-                                  size: 18,
-                                  color: AppColors.primaryColor,
-                                ),
-                                5.horizontalSpace,
-                                RichText(
-                                  text: TextSpan(
-                                    text: 'Dikirim ke ',
-                                    style: AppTextStyle.mediumGrey,
-                                    children: [
-                                      TextSpan(
-                                        text:
-                                            'Jl. Raya Batujajar, Bandung Barat',
-                                        style: AppTextStyle.mediumBlackBold,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ],
+                            Icon(
+                              Icons.location_on_sharp,
+                              size: 18,
+                              color: AppColors.primaryColor,
                             ),
+                            5.horizontalSpace,
+                            Expanded(
+                              child: RichText(
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                text: TextSpan(
+                                  text: 'Dikirim ke ',
+                                  style: AppTextStyle.mediumGrey,
+                                  children: [
+                                    TextSpan(
+                                      text: (controller.adddress != null &&
+                                              controller.adddress!.isNotEmpty)
+                                          ? '${controller.adddress!.first.address}, ${controller.adddress!.first.cityName}'
+                                          : 'Belum ada alamat pengiriman terpilih',
+                                      style: (controller.adddress != null &&
+                                              controller.adddress!.isNotEmpty)
+                                          ? AppTextStyle.mediumBlackBold
+                                          : AppTextStyle.mediumGreyBold,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            5.horizontalSpace,
                             Icon(
                               Icons.arrow_forward_ios_outlined,
                               color: AppColors.blackSecondary,
@@ -77,95 +84,82 @@ class CheckoutView extends GetView<CheckoutController> {
                         ),
                       ),
                     ),
-                    15.verticalSpace,
+                    10.verticalSpace,
+                    controller.checkoutSource == CheckoutSource.product
+                        ? RPadding(
+                            padding: const EdgeInsets.symmetric(horizontal: 14),
+                            child: Obx(
+                              () => CheckoutItemCard(
+                                source: true,
+                                name: controller.productByID.value.name ?? '',
+                                attributes: controller
+                                        .productByID
+                                        .value
+                                        .variants?[
+                                            controller.selectedIndex.value]
+                                        .variantName ??
+                                    '',
+                                promoDesc: (controller.productByID.value
+                                            .priceProductSettings?.isNotEmpty ==
+                                        true)
+                                    ? (controller.productByID.value
+                                        .priceProductSettings!.first.title)
+                                    : '',
+                                price: controller
+                                        .productByID
+                                        .value
+                                        .variants?[
+                                            controller.selectedIndex.value]
+                                        .finalPrice
+                                        .toInt() ??
+                                    0,
+                                onTapDecrement:
+                                    controller.selectedQty.value == 1
+                                        ? null
+                                        : controller.decrementQty,
+                                qty: controller.selectedQty.value,
+                                onTapIncrement: controller.incrementQty,
+                              ),
+                            ),
+                          )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: controller.itemParams.length,
+                            itemBuilder: (context, index) {
+                              final data = controller.itemParams[index];
+                              return RPadding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 14),
+                                child: CheckoutItemCard(
+                                  source: false,
+                                  name: data.name,
+                                  attributes:
+                                      data.variant?.variantName?.toString() ??
+                                          '',
+                                  promoDesc: '',
+                                  price: data.unitPrice.toInt(),
+                                  onTapDecrement: null,
+                                  qty: data.quantity,
+                                  onTapIncrement: null,
+                                ),
+                              );
+                            }),
+                    10.verticalSpace,
                     RPadding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
-                      child: Obx(
-                        () => CheckoutItemCard(
-                          name: controller.productByID.value.name ?? '',
-                          attributes: controller
-                                  .productByID
-                                  .value
-                                  .variants?[controller.selectedIndex.value]
-                                  .variantName ??
-                              '',
-                          promoDesc: (controller.productByID.value
-                                      .priceProductSettings?.isNotEmpty ==
-                                  true)
-                              ? controller.productByID.value
-                                  .priceProductSettings!.first.title
-                              : '',
-                          price: controller.productByID.value.finalPrice ?? 0,
-                          onTapDecrement: controller.selectedQty.value == 1
-                              ? null
-                              : controller.decrementQty,
-                          qty: controller.selectedQty.value,
-                          onTapIncrement: controller.incrementQty,
-                        ),
+                      child: AddNotesWidget(
+                        controller: controller.notesC,
                       ),
                     ),
-                    15.verticalSpace,
-                    RPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                      child: AddMessageWidget(),
-                    ),
-                    15.verticalSpace,
+                    10.verticalSpace,
                     AppDivider(),
-                    15.verticalSpace,
+                    10.verticalSpace,
                     RPadding(
                       padding: EdgeInsets.symmetric(horizontal: 14),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Icon(
-                                      Icons.inventory_2_outlined,
-                                      size: 18,
-                                      color: AppColors.primaryColor,
-                                    ),
-                                    5.horizontalSpace,
-                                    Expanded(
-                                      child: RichText(
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        text: TextSpan(
-                                          text: 'Akan dikirim dari ',
-                                          style: AppTextStyle.mediumGrey,
-                                          children: [
-                                            TextSpan(
-                                              text: 'Royal Pusat',
-                                              style:
-                                                  AppTextStyle.mediumBlackBold,
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Icon(
-                                Icons.arrow_forward_ios_outlined,
-                                color: AppColors.blackSecondary,
-                                size: 15,
-                              )
-                            ],
-                          ),
-                          10.verticalSpace,
-                          Text(
-                            'Jl.Raya Barat, Cimareme, Kec. Ngamprah, Kabupaten Bandung Barat, Jawa Barat 40552',
-                            style: AppTextStyle.mediumBlackSecondary,
-                          ),
-                          10.verticalSpace,
-                          const Divider(
-                              color: AppColors.lightGrey, thickness: 1.2),
-                          15.verticalSpace,
                           InkWell(
                             onTap: () {
                               showModalBottomSheet(
@@ -655,6 +649,86 @@ class CheckoutView extends GetView<CheckoutController> {
                             ),
                           ),
                           20.verticalSpace,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Metode Pembayaran',
+                                style: AppTextStyle.mediumBlackBold,
+                              ),
+                              GestureDetector(
+                                onTap: () async {
+                                  final result = await Get.toNamed(
+                                      Routes.PAYMENT_METHOD,
+                                      arguments: [
+                                        controller.total.value,
+                                        controller.selectedQty.value,
+                                        controller.productByID.value,
+                                      ]);
+                                  if (result != null) {
+                                    controller.setSelectedPaymentMethodFromPage(
+                                        result);
+                                  }
+                                },
+                                child: Text(
+                                  'Lihat Semua',
+                                  style: AppTextStyle.mediumBlackBold
+                                      .copyWith(color: AppColors.primaryColor),
+                                ),
+                              ),
+                            ],
+                          ),
+                          10.verticalSpace,
+                          Obx(
+                            () => controller.paymentMethod.isEmpty
+                                ? SizedBox()
+                                : ListView.separated(
+                                    physics: NeverScrollableScrollPhysics(),
+                                    padding: EdgeInsets.zero,
+                                    shrinkWrap: true,
+                                    itemCount:
+                                        controller.paymentMethod.length > 3
+                                            ? 3
+                                            : controller.paymentMethod.length,
+                                    separatorBuilder: (context, index) =>
+                                        const Divider(
+                                          color: AppColors.lightGrey,
+                                          thickness: 1.2,
+                                        ),
+                                    itemBuilder: (contex, index) {
+                                      final data =
+                                          controller.paymentMethod[index];
+                                      final itemCode = data.code ?? '';
+                                      return Obx(
+                                        () {
+                                          final isSelected =
+                                              controller.selectedOption.value ==
+                                                      itemCode ||
+                                                  (controller.selectedOption
+                                                          .value.isEmpty &&
+                                                      index == 0);
+                                          return VirtualAccountListTile(
+                                            imgPath: 'img_dana.png',
+                                            title: data.name ?? '',
+                                            index: index,
+                                            code: itemCode,
+                                            isSelected: isSelected,
+                                            onChanged: (val) {
+                                              if (val != null) {
+                                                controller
+                                                    .selectedOption.value = val;
+                                              }
+                                            },
+                                            onTap: () {
+                                              controller.selectedOption.value =
+                                                  itemCode;
+                                            },
+                                          );
+                                        },
+                                      );
+                                    }),
+                          ),
+                          20.verticalSpace,
                           Text(
                             'Rincian Pembayaran',
                             style: AppTextStyle.mediumBlackBold,
@@ -667,13 +741,11 @@ class CheckoutView extends GetView<CheckoutController> {
                                 'Total Pembelian',
                                 style: AppTextStyle.mediumGrey,
                               ),
-                              Obx(
-                                () => Text(
-                                  Helper.formatCurrency(
-                                      controller.productByID.value.finalPrice! *
-                                          controller.selectedQty.value),
-                                  style: AppTextStyle.mediumBlack,
+                              Text(
+                                Helper.formatCurrency(
+                                  controller.checkoutTotal.toInt(),
                                 ),
+                                style: AppTextStyle.mediumBlack,
                               ),
                             ],
                           ),

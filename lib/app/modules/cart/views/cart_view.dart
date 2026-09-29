@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/helper/helper.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
-import 'package:pos_royal/app/modules/cart/widgets/cart_item_card.dart';
-import 'package:pos_royal/app/routes/app_pages.dart';
+import 'package:img/app/core/helper/helper.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:img/app/modules/cart/widgets/cart_item_card.dart';
+import 'package:img/app/routes/app_pages.dart';
 
 import '../controllers/cart_controller.dart';
 
@@ -23,22 +23,123 @@ class CartView extends GetView<CartController> {
           style: AppTextStyle.xxLargeWhiteBold,
         ),
         centerTitle: true,
-        actions: [
-          RPadding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: GestureDetector(
-              onTap: () => Get.toNamed(Routes.WISHLIST),
-              child: Icon(
-                Icons.favorite_border,
-                color: AppColors.white,
-                size: 30,
-              ),
-            ),
-          )
-        ],
+        // actions: [
+        //   RPadding(
+        //     padding: const EdgeInsets.only(right: 8.0),
+        //     child: GestureDetector(
+        //       onTap: () => Get.toNamed(Routes.WISHLIST),
+        //       child: Icon(
+        //         Icons.favorite_border,
+        //         color: AppColors.white,
+        //         size: 30,
+        //       ),
+        //     ),
+        //   )
+        // ],
       ),
-      body: Column(
-        children: [CartItemCard(controller: controller)],
+      body: GetBuilder<CartController>(
+        initState: (_) {
+          controller.fetchCart();
+        },
+        builder: (_) => Obx(
+          () {
+            if (controller.isLoading.value && controller.carts.isEmpty) {
+              return const Center(
+                child: CircularProgressIndicator(color: AppColors.primaryColor),
+              );
+            }
+
+            final items = controller.cartItems;
+            if (items.isEmpty) {
+              return const Center(
+                child: Text(
+                  'Keranjang kamu kosong',
+                  style: AppTextStyle.largeBlackBold,
+                ),
+              );
+            }
+
+            return CustomScrollView(
+              controller: controller.pageScrollController,
+              slivers: [
+                SliverToBoxAdapter(
+                    child: Visibility(
+                  visible: controller.hasSelectedItems,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      10.verticalSpace,
+                      GestureDetector(
+                        onTap: () =>
+                            controller.showDeleteSelectedConfirmationDialog(),
+                        child: RPadding(
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                textAlign: TextAlign.end,
+                                '${controller.selectedCartItems.length} produk terpilih',
+                                style: AppTextStyle.smallBlack,
+                              ),
+                              Text(
+                                textAlign: TextAlign.end,
+                                'Hapus',
+                                style: AppTextStyle.smallBlackBold
+                                    .copyWith(color: AppColors.red),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      10.verticalSpace,
+                    ],
+                  ),
+                )),
+                SliverList.builder(
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    final item = items[index];
+                    final itemId = item.id ?? controller.uniqueKeyForItem(item);
+
+                    return Obx(
+                      () => CartItemCard(
+                        name: item.name ?? item.product?.name ?? '',
+                        description: item.product?.slug ?? '',
+                        price: Helper.formatCurrency((item.unitPrice).toInt()),
+                        quantity: controller.getItemQuantity(itemId),
+                        fillColor: WidgetStatePropertyAll(
+                          controller.isItemSelected(itemId)
+                              ? AppColors.primaryColor
+                              : AppColors.lightGrey,
+                        ),
+                        decColor: controller.isItemSelected(itemId)
+                            ? AppColors.black
+                            : AppColors.blackSecondary,
+                        incColor: controller.isItemSelected(itemId)
+                            ? AppColors.black
+                            : AppColors.blackSecondary,
+                        value: controller.isItemSelected(itemId),
+                        onChanged: (e) {
+                          controller.toggleItemSelection(itemId, e ?? false);
+                        },
+                        decrement: () {
+                          controller.decrementQty(itemId);
+                          controller.toggleItemSelection(itemId, true);
+                        },
+                        increment: () {
+                          controller.incrementQty(itemId);
+                          controller.toggleItemSelection(itemId, true);
+                        },
+                      ),
+                    );
+                  },
+                ),
+                _buildLoadMoreIndicator()
+              ],
+            );
+          },
+        ),
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(

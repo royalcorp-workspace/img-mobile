@@ -1,6 +1,6 @@
-import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
-import 'package:pos_royal/app/domain/entities/shipping_addresses_entity.dart';
-import 'package:pos_royal/app/domain/repositories/shipping_addresses_repository.dart';
+import 'package:img/app/domain/entities/paginated_entity.dart';
+import 'package:img/app/domain/entities/shipping_addresses_entity.dart';
+import 'package:img/app/domain/repositories/shipping_addresses_repository.dart';
 
 class GetShippingAddressesUsecase {
   final ShippingAddressesRepository repository;

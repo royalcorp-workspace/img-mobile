@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
 import '../../../domain/entities/chat_message_entity.dart';
 
 class ChatMessageBubble extends StatelessWidget {

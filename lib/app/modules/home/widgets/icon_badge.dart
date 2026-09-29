@@ -20,7 +20,7 @@ class IconBadge extends StatelessWidget {
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: AppColors.warmIvory,
+        color: AppColors.greyWhite,
       ),
       child: Badge(
         alignment: Alignment.topRight,

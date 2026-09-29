@@ -3,8 +3,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/helper/helper.dart';
-import 'package:pos_royal/app/shared/widgets/button/primary_button.dart';
+import 'package:img/app/core/helper/helper.dart';
+import 'package:img/app/shared/widgets/button/primary_button.dart';
+
 import '../../../core/styles/app_color.dart';
 import '../../../core/styles/app_text_style.dart';
 import '../../../routes/app_pages.dart';
@@ -77,6 +78,11 @@ class LoginView extends GetView<AuthController> {
                       borderRadius: BorderRadius.circular(12.r),
                       borderSide: const BorderSide(color: AppColors.lightGrey),
                     ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                      borderSide:
+                          const BorderSide(color: AppColors.primaryColor),
+                    ),
                   ),
                 ),
                 SizedBox(height: 20.h),
@@ -116,6 +122,11 @@ class LoginView extends GetView<AuthController> {
                           borderRadius: BorderRadius.circular(12.r),
                           borderSide:
                               const BorderSide(color: AppColors.lightGrey),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                          borderSide:
+                              const BorderSide(color: AppColors.primaryColor),
                         ),
                       ),
                     )),

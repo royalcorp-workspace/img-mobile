@@ -1,5 +1,6 @@
-import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
-import 'package:pos_royal/app/domain/entities/product_entity.dart';
+import 'package:img/app/domain/entities/paginated_entity.dart';
+import 'package:img/app/domain/entities/product_entity.dart';
+
 import '../repositories/product_repository.dart';
 
 class GetProductsUseCase {
@@ -10,10 +11,16 @@ class GetProductsUseCase {
   Future<PaginatedEntity<ProductEntity>> call({
     int page = 1,
     int itemsPerPage = 10,
+    String? categoryId,
+    String? search,
+    String? tagId,
   }) {
     return repository.getProducts(
       page: page,
       itemsPerPage: itemsPerPage,
+      categoryId: categoryId,
+      search: search,
+      tagId: tagId,
     );
   }
 }

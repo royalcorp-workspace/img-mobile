@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
+import 'package:get/get.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
 
 class VoucherCard extends StatelessWidget {
   const VoucherCard({
@@ -72,81 +74,72 @@ class VoucherCard extends StatelessWidget {
                         ),
                 ],
               ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 12,
+              5.verticalSpace,
+              Text(
+                description,
+                style: AppTextStyle.mediumGrey,
+              ),
+              12.verticalSpace,
+              Row(
+                children: [
+                  Icon(
+                    Icons.timer_outlined,
+                    size: 16,
+                    color: AppColors.red,
+                  ),
+                  SizedBox(width: 6),
+                  Text(
+                    "Berakhir 9 jam lagi",
+                    style: AppTextStyle.smallBlack
+                        .copyWith(color: AppColors.redContrast),
+                  )
+                ],
+              ),
+              10.verticalSpace,
+              Row(
+                children: List.generate(
+                  30,
+                  (index) => Expanded(
+                    child: Container(
+                      height: 1,
+                      margin: const EdgeInsets.symmetric(horizontal: 1),
+                      color: Colors.grey.shade300,
+                    ),
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+              10.verticalSpace,
+              Container(
+                padding: REdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.secondaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      description,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: const [
-                        Icon(
-                          Icons.timer_outlined,
-                          size: 16,
-                          color: AppColors.red,
+                    Text(codeVoucher, style: AppTextStyle.mediumBlack600),
+                    GestureDetector(
+                      onTap: () async {
+                        await Clipboard.setData(
+                            ClipboardData(text: codeVoucher));
+
+                        Get.snackbar(
+                          '',
+                          '',
+                          titleText: Text('Berhasil',
+                              style: AppTextStyle.largeWhiteBold),
+                          messageText: Text('Tersalin ke clipboard!',
+                              style: AppTextStyle.mediumWhite),
+                          backgroundColor: AppColors.green,
+                          colorText: AppColors.white,
+                        );
+                      },
+                      child: Text(
+                        "Salin Kode",
+                        style: AppTextStyle.smallBlackBold.copyWith(
+                          color: AppColors.secondaryColor,
                         ),
-                        SizedBox(width: 6),
-                        Text(
-                          "Berakhir 9 jam lagi",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.red,
-                          ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: List.generate(
-                        30,
-                        (index) => Expanded(
-                          child: Container(
-                            height: 1,
-                            margin: const EdgeInsets.symmetric(horizontal: 1),
-                            color: Colors.grey.shade300,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.h),
-                      decoration: BoxDecoration(
-                        color: AppColors.secondaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(codeVoucher, style: AppTextStyle.mediumBlack600),
-                          Text(
-                            "Salin Kode",
-                            style: AppTextStyle.mediumBlack600.copyWith(
-                              color: AppColors.secondaryColor,
-                            ),
-                          )
-                        ],
                       ),
                     )
                   ],

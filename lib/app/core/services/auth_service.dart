@@ -1,12 +1,20 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:img/app/core/network/dio_network.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/core/utils/token_storage.dart';
+import 'package:img/app/data/models/auth_response_model.dart';
+import 'package:img/app/routes/app_pages.dart';
+
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:pos_royal/app/core/network/dio_network.dart';
-import 'package:pos_royal/app/core/utils/token_storage.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/data/models/auth_response_model.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -56,21 +64,6 @@ class AuthService {
       rethrow;
     }
     return false;
-  }
-
-  Future<UserCredential> register(
-      {required String email, required String password}) async {
-    logger.info('🔍 [AUTH] Starting email registration: $email');
-    try {
-      final cred = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      logger.info('✅ [AUTH] Email registration successful: ${cred.user?.uid}');
-      await _handlePostAuth();
-      return cred;
-    } catch (e) {
-      logger.severe('❌ [AUTH] Email registration failed: $e');
-      rethrow;
-    }
   }
 
   Future<UserCredential> loginWithEmailFirebase(
@@ -283,6 +276,226 @@ class AuthService {
     }
   }
 
+  Future<bool> logout() async {
+    logger.info('🔍 [AUTH-LOGOUT] Starting logout');
+    try {
+      logger.info('🔍 [AUTH-LOGOUT] Sending POST /auth/logout');
+      final resp = await DioNetwork.appAPI.post('/auth/logout');
+
+      logger.info('🔍 [AUTH-LOGOUT] Response status: ${resp.statusCode}');
+      logger.info('🔍 [AUTH-LOGOUT] Response data: ${resp.data}');
+
+      if (resp.statusCode != null &&
+          resp.statusCode! < 300 &&
+          resp.data != null) {
+        final Map<String, dynamic> dataMap = resp.data is String
+            ? jsonDecode(resp.data as String)
+            : Map<String, dynamic>.from(resp.data as Map);
+
+        LogoutResponseModel.fromJson(dataMap);
+
+        return true;
+      } else {
+        logger.warning(
+            '⚠️ [AUTH-LOGOUT] Invalid response status: ${resp.statusCode}');
+      }
+    } catch (e) {
+      logger.severe('❌ [AUTH-LOGOUT] Server verification failed: $e');
+      logger.severe('  Error type: ${e.runtimeType}');
+      rethrow;
+    }
+    return false;
+  }
+
+  Future<void> register(Map<String, dynamic> body) async {
+    logger.info('🔍 [AUTH-REGISTER] Starting body: $body');
+    try {
+      logger.info('🔍 [AUTH-REGISTER] Sending POST /auth/register');
+      final resp = await DioNetwork.appAPI.post(
+        '/auth/register',
+        data: body,
+      );
+
+      logger.info('🔍 [AUTH-REGISTER] Response status: ${resp.statusCode}');
+      logger.info('🔍 [AUTH-REGISTER] Response data: ${resp.data}');
+
+      String userEmail = body['email'] ?? 'email Anda';
+      String verificationLink = '';
+
+      if (resp.statusCode != null &&
+          resp.statusCode! < 300 &&
+          resp.data != null) {
+        Map<String, dynamic> responseData = resp.data is String
+            ? jsonDecode(resp.data as String) as Map<String, dynamic>
+            : Map<String, dynamic>.from(resp.data as Map);
+
+        verificationLink = responseData['activation_url'] ?? '';
+      } else {
+        logger.warning(
+            '⚠️ [AUTH-REGISTER] Invalid response status: ${resp.statusCode}');
+        throw Exception('Gagal mendaftar: Status ${resp.statusMessage}');
+      }
+
+      Get.dialog(
+        Dialog(
+          backgroundColor: AppColors.white,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Periksa Kotak Masuk Anda ✉️',
+                  style: AppTextStyle.xLargeBlackBold,
+                  textAlign: TextAlign.center,
+                ),
+                12.verticalSpace,
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    text: 'Kami telah mengirimkan link verifikasi ke ',
+                    style: AppTextStyle.mediumGrey.copyWith(height: 1.2),
+                    children: [
+                      TextSpan(
+                        text: userEmail,
+                        style:
+                            AppTextStyle.mediumBlackBold.copyWith(height: 1.2),
+                      ),
+                      TextSpan(
+                        text:
+                            '\nSilakan klik link tersebut untuk mengaktifkan akun Anda.',
+                        style: AppTextStyle.mediumGrey.copyWith(height: 1.2),
+                      )
+                    ],
+                  ),
+                ),
+                24.verticalSpace,
+                SizedBox(
+                  width: Get.width,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (verificationLink.isEmpty) {
+                        Get.snackbar(
+                          'Kesalahan',
+                          'Link verifikasi tidak valid atau tidak ditemukan.',
+                          backgroundColor: AppColors.red,
+                          colorText: AppColors.white,
+                        );
+                        return;
+                      }
+
+                      try {
+                        Get.showOverlay(
+                          asyncFunction: () async {
+                            logger.info(
+                                '🔗 [VERIFY-EMAIL] Verifying token via HTTP GET: $verificationLink');
+
+                            final resp =
+                                await DioNetwork.appAPI.get(verificationLink);
+
+                            logger.info(
+                                '🔗 [VERIFY-EMAIL] Status: ${resp.statusCode}, Data: ${resp.data}');
+
+                            if (resp.statusCode != null &&
+                                resp.statusCode! < 300) {
+                              Get.back();
+
+                              await Future.delayed(
+                                  const Duration(milliseconds: 300));
+
+                              Get.snackbar(
+                                'Sukses Berhasil',
+                                'Email Anda berhasil diverifikasi!',
+                                backgroundColor: AppColors.green,
+                                colorText: AppColors.white,
+                                snackPosition: SnackPosition.TOP,
+                                duration: const Duration(seconds: 3),
+                              );
+
+                              Get.offAllNamed(Routes.LOGIN);
+                            } else {
+                              throw Exception('Respons server tidak valid');
+                            }
+                          },
+                          loadingWidget: const Center(
+                            child: CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          ),
+                        );
+                      } on DioException catch (e) {
+                        String errorMsg = 'Gagal verifikasi akun, coba lagi';
+                        if (e.response != null && e.response?.data != null) {
+                          final resData = e.response!.data;
+                          final errorResponse = resData is String
+                              ? jsonDecode(resData) as Map<String, dynamic>
+                              : Map<String, dynamic>.from(resData as Map);
+                          if (errorResponse.containsKey('detail')) {
+                            errorMsg = errorResponse['detail'];
+                          } else if (errorResponse.containsKey('message')) {
+                            errorMsg = errorResponse['message'];
+                          }
+                        }
+
+                        Get.snackbar(
+                          'Kesalahan',
+                          errorMsg,
+                          backgroundColor: AppColors.red,
+                          colorText: AppColors.white,
+                        );
+                      } catch (e) {
+                        Get.snackbar(
+                          'Kesalahan',
+                          'Terjadi kesalahan koneksi internet',
+                          backgroundColor: AppColors.red,
+                          colorText: AppColors.white,
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    child: Text(
+                      'Verifikasi Email',
+                      style: AppTextStyle.largeWhiteBold,
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+        barrierDismissible: false,
+      );
+    } on DioException catch (e) {
+      String serverMessage = 'Gagal mendaftar, silakan coba lagi';
+
+      if (e.response != null && e.response?.data != null) {
+        final resData = e.response!.data;
+        Map<String, dynamic> errorResponse = resData is String
+            ? jsonDecode(resData) as Map<String, dynamic>
+            : Map<String, dynamic>.from(resData as Map);
+
+        if (errorResponse.containsKey('detail')) {
+          serverMessage = errorResponse['detail'];
+        }
+      }
+      logger.severe('❌ [AUTH-REGISTER] Server Error: $serverMessage');
+
+      throw Exception(serverMessage);
+    } catch (e) {
+      logger.severe('❌ [AUTH-REGISTER] Server verification failed: $e');
+      rethrow;
+    }
+  }
+
   Future<bool> _handlePostAuth() async {
     logger.info('🔍 [AUTH-POST] Starting post-auth verification...');
     try {
@@ -301,37 +514,5 @@ class AuthService {
     }
 
     return false;
-  }
-
-  Future<String> logout() async {
-    var response = '';
-    logger.info('🔍 [AUTH-LOGOUT] Starting logout');
-    try {
-      logger.info('🔍 [AUTH-LOGOUT] Sending POST /auth/logout');
-      final resp = await DioNetwork.appAPI.post('/auth/logout');
-
-      logger.info('🔍 [AUTH-LOGOUT] Response status: ${resp.statusCode}');
-      logger.info('🔍 [AUTH-LOGOUT] Response data: ${resp.data}');
-
-      if (resp.statusCode != null &&
-          resp.statusCode! < 300 &&
-          resp.data != null) {
-        final Map<String, dynamic> dataMap = resp.data is String
-            ? jsonDecode(resp.data as String)
-            : Map<String, dynamic>.from(resp.data as Map);
-
-        final logoutResponse = LogoutResponseModel.fromJson(dataMap);
-        response = logoutResponse.message;
-        return response;
-      } else {
-        logger.warning(
-            '⚠️ [AUTH-LOGOUT] Invalid response status: ${resp.statusCode}');
-      }
-    } catch (e) {
-      logger.severe('❌ [AUTH-LOGOUT] Server verification failed: $e');
-      logger.severe('  Error type: ${e.runtimeType}');
-      rethrow;
-    }
-    return response;
   }
 }

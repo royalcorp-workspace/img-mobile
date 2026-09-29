@@ -7,6 +7,12 @@ import '../modules/auth/views/login_view.dart';
 import '../modules/auth/views/register_view.dart';
 import '../modules/cart/bindings/cart_binding.dart';
 import '../modules/cart/views/cart_view.dart';
+import '../modules/category_product/bindings/category_product_binding.dart';
+import '../modules/category_product/views/category_product_view.dart';
+import '../modules/shortcut_product/bindings/shortcut_product_binding.dart';
+import '../modules/shortcut_product/views/shortcut_product_view.dart';
+import '../modules/change_password/bindings/change_password_binding.dart';
+import '../modules/change_password/views/change_password_view.dart';
 import '../modules/chat/bindings/chat_binding.dart';
 import '../modules/chat/views/chat_view.dart';
 import '../modules/checkout/bindings/checkout_binding.dart';
@@ -149,6 +155,26 @@ class AppPages {
       name: _Paths.WISHLIST,
       page: () => const WishlistView(),
       binding: WishlistBinding(),
+    ),
+    GetPage(
+      name: _Paths.DETAIL_ADDRESS,
+      page: () => const DetailAddressView(),
+      binding: DetailAddressBinding(),
+    ),
+    GetPage(
+      name: _Paths.CATEGORY_PRODUCT,
+      page: () => const CategoryProductView(),
+      binding: CategoryProductBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHORTCUT_PRODUCT,
+      page: () => const ShortcutProductView(),
+      binding: ShortcutProductBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHANGE_PASSWORD,
+      page: () => const ChangePasswordView(),
+      binding: ChangePasswordBinding(),
     ),
     GetPage(
       name: _Paths.CHAT,

@@ -1,15 +1,17 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
-import 'package:pos_royal/app/core/helper/helper.dart';
-import 'package:pos_royal/app/core/network/logger_interceptor.dart';
-import 'package:pos_royal/app/core/utils/constants/network_constant.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/core/utils/token_storage.dart';
-import 'package:pos_royal/app/routes/app_pages.dart';
+import 'package:img/app/core/helper/helper.dart';
+import 'package:img/app/core/network/logger_interceptor.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:img/app/core/utils/constants/network_constant.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/core/utils/token_storage.dart';
+import 'package:img/app/routes/app_pages.dart';
 
 class DioNetwork {
   static final Dio appAPI = Dio(_baseOptions(apiUrl))
@@ -31,6 +33,9 @@ class DioNetwork {
   }
 
   ///__________App__________///
+
+  static Completer<bool>? _refreshTokenCompleter;
+  static bool _isRedirectingToLogin = false;
 
   /// App Api Queued Interceptor
   static QueuedInterceptorsWrapper appQueuedInterceptorsWrapper() {
@@ -74,6 +79,101 @@ class DioNetwork {
         return handler.next(response);
       },
     );
+  }
+
+  static bool _isAuthRequest(RequestOptions request) {
+    return request.path.contains('/auth/login') ||
+        request.path.contains('/auth/refresh') ||
+        request.path.contains('/auth/firebase-login');
+  }
+
+  static Future<bool> _refreshAccessToken() async {
+    // If a refresh request is already in progress, wait for its result
+    if (_refreshTokenCompleter != null) {
+      return _refreshTokenCompleter!.future;
+    }
+
+    final completer = Completer<bool>();
+    _refreshTokenCompleter = completer;
+
+    final refreshToken = TokenStorage.refreshToken;
+    final accessToken = TokenStorage.serverToken;
+    if (refreshToken == null || refreshToken.isEmpty) {
+      logger.warning('⚠️ [HTTP-401] No refresh token available');
+      _refreshTokenCompleter = null;
+      completer.complete(false);
+      return false;
+    }
+
+    try {
+      final response = await Dio(
+        BaseOptions(
+          baseUrl: apiUrl,
+          validateStatus: (status) => status != null && status < 300,
+        ),
+      ).post(
+        '/auth/refresh',
+        data: {'refresh_token': refreshToken},
+        options: Options(
+          headers: accessToken == null
+              ? null
+              : {'Authorization': 'Bearer $accessToken'},
+        ),
+      );
+
+      final data = Map<String, dynamic>.from(response.data as Map);
+      final nextAccessToken = data['access_token'] as String?;
+      final nextRefreshToken = data['refresh_token'] as String?;
+      if (nextAccessToken == null || nextAccessToken.isEmpty) {
+        _refreshTokenCompleter = null;
+        completer.complete(false);
+        return false;
+      }
+
+      await TokenStorage.save(nextAccessToken, refresh: nextRefreshToken);
+      logger.info('✅ [HTTP-401] Access token refreshed successfully');
+      _refreshTokenCompleter = null;
+      completer.complete(true);
+      return true;
+    } catch (e) {
+      logger.warning('⚠️ [HTTP-401] Token refresh failed: $e');
+      _refreshTokenCompleter = null;
+      completer.complete(false);
+      return false;
+    }
+  }
+
+  static Future<void> _redirectToLogin() async {
+    if (_isRedirectingToLogin) return;
+    _isRedirectingToLogin = true;
+
+    logger.severe(
+        '⚠️ [HTTP-401] Refresh failed. Clearing session and redirecting to LOGIN...');
+    await TokenStorage.clear();
+
+    // Close open dialogs or bottom sheets that could freeze user interaction
+    if (Get.isDialogOpen == true) {
+      Get.back();
+    }
+    if (Get.isBottomSheetOpen == true) {
+      Get.back();
+    }
+
+    if (Get.currentRoute != Routes.LOGIN) {
+      await Get.offAllNamed(Routes.LOGIN);
+      if (Get.context != null) {
+        Get.snackbar(
+          '',
+          '',
+          titleText: Text('Sesi Berakhir', style: AppTextStyle.largeWhiteBold),
+          messageText: Text('Sesi Anda telah berakhir, silakan masuk kembali.',
+              style: AppTextStyle.mediumWhite),
+          backgroundColor: Get.context!.theme.colorScheme.error,
+          colorText: Colors.white,
+        );
+      }
+    }
+    _isRedirectingToLogin = false;
   }
 
   /// App interceptor

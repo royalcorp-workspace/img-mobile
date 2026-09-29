@@ -13,79 +13,85 @@ class ProfileView extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: AppColors.shadowGrey,
-        appBar: AppBar(
-          backgroundColor: AppColors.primaryColor,
-          elevation: 2,
-          title: const Text(
-            'Ubah Profile Saya',
-            style: AppTextStyle.xxLargeWhiteBold,
-          ),
-          centerTitle: true,
+      backgroundColor: AppColors.shadowGrey,
+      appBar: AppBar(
+        backgroundColor: AppColors.primaryColor,
+        elevation: 2,
+        title: const Text(
+          'Ubah Profile Saya',
+          style: AppTextStyle.xxLargeWhiteBold,
         ),
-        body: SafeArea(
-          child: RPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                20.verticalSpace,
-                Center(
-                  child: Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 38.r,
-                        backgroundColor: AppColors.primaryColor,
-                        child: Icon(
-                          Icons.person_outline,
-                          size: 35,
-                        ),
-                      ),
-                      Positioned(
-                          bottom: 3,
-                          right: 0,
-                          child: Container(
-                            padding: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              color: AppColors.secondaryColor,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.camera_alt_outlined,
-                              size: 20,
-                              color: AppColors.white,
-                            ),
-                          ))
-                    ],
-                  ),
-                ),
-                20.verticalSpace,
-                Text(
-                  'Informasi Umum',
-                  style: AppTextStyle.largeBlackBold,
-                ),
-                20.verticalSpace,
-                TextFormfieldApp(
-                  title: 'Nama Lengkap',
-                  hintText: 'Alghany Kennedy Adam',
-                ),
-                10.verticalSpace,
-                TextFormfieldApp(
-                  title: 'Tanggal Lahir',
-                  hintText: 'Cth: 01 Januari 1990',
-                ),
-                10.verticalSpace,
-                TextFormfieldApp(
-                  title: 'Jenis Kelamin',
-                  hintText: 'Laki-laki',
-                ),
-                10.verticalSpace,
-                Column(
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: Obx(() {
+          if (controller.isFetching.value &&
+              controller.customerModel.value == null) {
+            return const Center(child: LoadingIndicator());
+          }
+
+          return RefreshIndicator(
+            onRefresh: () => controller.fetchProfile(),
+            color: AppColors.primaryColor,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              child: Form(
+                key: controller.formKey,
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Berat/Tinggi Badan',
-                      style: AppTextStyle.mediumBlackBold,
+                    Center(
+                      child: Stack(
+                        children: [
+                          CircleAvatar(
+                            radius: 42.r,
+                            backgroundColor: AppColors.primaryColor,
+                            child: controller.customerModel.value?.avatar !=
+                                        null &&
+                                    controller
+                                        .customerModel.value!.avatar!.isNotEmpty
+                                ? ClipOval(
+                                    child: Image.network(
+                                      controller.customerModel.value!.avatar!,
+                                      width: 80.r,
+                                      height: 80.r,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => const Icon(
+                                        Icons.person_outline,
+                                        size: 45,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                : const Icon(
+                                    Icons.person_outline,
+                                    size: 45,
+                                    color: Colors.white,
+                                  ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    24.verticalSpace,
+                    TextFormfieldApp(
+                      title: 'Nama Lengkap',
+                      controller: controller.nameController,
+                      hintText: 'Masukkan nama lengkap',
+                    ),
+                    16.verticalSpace,
+                    TextFormfieldApp(
+                      title: 'Nomor Telepon',
+                      controller: controller.phoneController,
+                      keyboardType: TextInputType.phone,
+                      hintText: 'Masukkan nomor telepon',
+                    ),
+                    16.verticalSpace,
+                    TextFormfieldApp(
+                      title: 'Email',
+                      controller: controller.emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      hintText: 'Masukkan email',
                     ),
                     5.verticalSpace,
                     Row(

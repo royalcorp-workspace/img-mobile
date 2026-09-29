@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
-import 'package:pos_royal/app/modules/checkout/controllers/checkout_controller.dart';
-import 'package:pos_royal/app/modules/home/controllers/home_controller.dart';
-import 'package:pos_royal/app/modules/navigation/controllers/navigation_controller.dart';
-import 'package:pos_royal/app/modules/order/controllers/order_controller.dart';
-import 'package:pos_royal/app/modules/product/controllers/product_controller.dart';
-import 'package:pos_royal/app/modules/setting/controllers/setting_controller.dart';
-import 'package:pos_royal/app/modules/splash/controllers/splash_controller.dart';
+import 'package:img/app/modules/checkout/controllers/checkout_controller.dart';
+import 'package:img/app/modules/home/controllers/home_controller.dart';
+import 'package:img/app/modules/navigation/controllers/navigation_controller.dart';
+import 'package:img/app/modules/order/controllers/order_controller.dart';
+import 'package:img/app/modules/product/controllers/product_controller.dart';
+import 'package:img/app/modules/setting/controllers/setting_controller.dart';
+import 'package:img/app/modules/splash/controllers/splash_controller.dart';
 
 class InitialBinding extends Bindings {
   @override

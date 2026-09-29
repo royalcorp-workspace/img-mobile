@@ -1,4 +1,4 @@
-import 'package:pos_royal/app/domain/entities/category_entity.dart';
+import 'package:img/app/domain/entities/category_entity.dart';
 
 class CategoryModel extends CategoryEntity {
   CategoryModel({

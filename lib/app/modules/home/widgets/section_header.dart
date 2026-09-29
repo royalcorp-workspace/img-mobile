@@ -8,9 +8,11 @@ class SectionHeader extends StatelessWidget {
     super.key,
     required this.title,
     required this.actionText,
+    this.onActionTap,
   });
 
   final String title, actionText;
+  final VoidCallback? onActionTap;
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +21,18 @@ class SectionHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: AppTextStyle.largeBlackBold),
-          Text(
-            actionText,
-            style: AppTextStyle.smallBlackBold.copyWith(
-              color: AppColors.brownAccent,
+          Text(title,
+              style: AppTextStyle.largeBlackBold.copyWith(
+                fontSize: 10.5.sp,
+              )),
+          InkWell(
+            onTap: onActionTap,
+            child: Text(
+              actionText,
+              style: AppTextStyle.smallBlackBold.copyWith(
+                fontSize: 10.5.sp,
+                color: AppColors.brownAccent,
+              ),
             ),
           ),
         ],

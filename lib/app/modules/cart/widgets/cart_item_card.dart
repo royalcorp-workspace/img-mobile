@@ -1,18 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/helper/helper.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
-import 'package:pos_royal/app/modules/cart/controllers/cart_controller.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
 
 class CartItemCard extends StatelessWidget {
   const CartItemCard({
     super.key,
-    required this.controller,
+    required this.name,
+    required this.description,
+    required this.price,
+    required this.quantity,
+    this.onChanged,
+    this.fillColor,
+    this.value,
+    this.decrement,
+    this.increment,
+    this.decColor,
+    this.incColor,
   });
 
-  final CartController controller;
+  final String name, description, price;
+  final int quantity;
+  final void Function(bool?)? onChanged;
+  final WidgetStateProperty<Color?>? fillColor;
+  final bool? value;
+  final void Function()? decrement;
+  final void Function()? increment;
+  final Color? decColor, incColor;
 
   @override
   Widget build(BuildContext context) {
@@ -99,36 +114,30 @@ class CartItemCard extends StatelessWidget {
               border: Border.all(color: AppColors.lightGrey),
               borderRadius: BorderRadius.circular(21),
             ),
-            child: Obx(
-              () => Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  InkWell(
-                    onTap: controller.selectedQty.value == 1
-                        ? controller.showDeleteConfirmationDialog
-                        : controller.decrementQty,
-                    child: Icon(
-                      controller.selectedQty.value == 1
-                          ? Icons.delete_outline
-                          : Icons.remove,
-                      color: controller.selectedQty.value == 1
-                          ? AppColors.red
-                          : AppColors.blackSecondary,
-                    ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InkWell(
+                  onTap: decrement,
+                  child: Icon(
+                    quantity == 1 ? Icons.delete_outline : Icons.remove,
+                    color: quantity == 1
+                        ? AppColors.red
+                        : decColor ?? AppColors.blackSecondary,
                   ),
-                  Text(
-                    '${controller.selectedQty}',
-                    style: AppTextStyle.largeBlackBold,
+                ),
+                Text(
+                  '$quantity',
+                  style: AppTextStyle.largeBlackBold,
+                ),
+                InkWell(
+                  onTap: increment,
+                  child: Icon(
+                    Icons.add,
+                    color: incColor ?? AppColors.blackSecondary,
                   ),
-                  InkWell(
-                    onTap: controller.incrementQty,
-                    child: Icon(
-                      Icons.add,
-                      color: AppColors.blackSecondary,
-                    ),
-                  )
-                ],
-              ),
+                )
+              ],
             ),
           ),
         ),

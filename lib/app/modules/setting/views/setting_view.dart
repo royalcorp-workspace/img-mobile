@@ -134,6 +134,30 @@ class SettingView extends GetView<SettingController> {
                 ),
                 child: Column(
                   children: [
+                    _menuTile(
+                      Icons.info_outline,
+                      "Kebijakan Privasi",
+                      () async {
+                        final Uri url = Uri.parse(
+                            'https://dev-img.royalcorp.co.id/kebijakan-privacy');
+                        if (!await launchUrl(url,
+                            mode: LaunchMode.externalApplication)) {
+                          Get.snackbar(
+                            '',
+                            '',
+                            titleText: Text('Kesalahan',
+                                style: AppTextStyle.largeWhiteBold),
+                            messageText: Text('Gagal membuka Kebijakan Privasi',
+                                style: AppTextStyle.mediumWhite),
+                            backgroundColor:
+                                Get.context?.theme.colorScheme.error ??
+                                    AppColors.red,
+                            colorText: AppColors.white,
+                          );
+                        }
+                      },
+                    ),
+                    _divider(),
                     _menuTile(Icons.support_agent, "Bantuan Royal Care", () {}),
                     _divider(),
                     _menuTile(Icons.info_outline, "Ketentuan Privasi", () {}),

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pos_royal/app/domain/entities/product_by_id_entity.dart';
+import 'package:img/app/domain/entities/product_by_id_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/utils/log/logger.dart';

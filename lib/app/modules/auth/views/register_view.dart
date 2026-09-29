@@ -22,7 +22,7 @@ class RegisterView extends GetView<AuthController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: 10.h),
+              SizedBox(height: 5.h),
               // Logo Placeholder
               Image.asset(Helper.getImagePath('img_logo.webp'), height: 64)
                   .animate()
@@ -40,7 +40,7 @@ class RegisterView extends GetView<AuthController> {
                 style: AppTextStyle.mediumBlackSecondary
                     .copyWith(color: AppColors.textMedium),
               ),
-              SizedBox(height: 40.h),
+              SizedBox(height: 30.h),
 
               // Full Name Input
               _buildTextField(
@@ -53,6 +53,7 @@ class RegisterView extends GetView<AuthController> {
               // Email Input
               _buildTextField(
                 hint: "Email",
+                keyboardType: TextInputType.emailAddress,
                 icon: Icons.mail_outline,
                 controller: controller.registerEmailC,
               ),
@@ -61,6 +62,7 @@ class RegisterView extends GetView<AuthController> {
               // Phone Number Input
               _buildTextField(
                 hint: "Nomor Telepon",
+                keyboardType: TextInputType.phone,
                 icon: Icons.phone_outlined,
                 controller: controller.registerPhoneC,
               ),
@@ -82,43 +84,44 @@ class RegisterView extends GetView<AuthController> {
                     onToggle: controller.toggleConfirmPassword,
                     controller: controller.registerConfirmPassC,
                   )),
-              SizedBox(height: 10.h),
+              // SizedBox(height: 10.h),
 
-              // Terms and Conditions
-              Row(
-                children: [
-                  Obx(() => Checkbox(
-                        value: controller.isTermsAccepted.value,
-                        onChanged: controller.toggleTermsAccepted,
-                        activeColor: AppColors.primaryColor,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4.r)),
-                      )),
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(
-                        text: "Saya setuju dengan ",
-                        style: AppTextStyle.smallBlackSecondary
-                            .copyWith(color: AppColors.textMedium),
-                        children: [
-                          TextSpan(
-                            text: "Syarat & Ketentuan",
-                            style: AppTextStyle.smallBlackBold
-                                .copyWith(color: AppColors.primaryColor),
-                          ),
-                          const TextSpan(text: "\ndan "),
-                          TextSpan(
-                            text: "Kebijakan Privasi",
-                            style: AppTextStyle.smallBlackBold
-                                .copyWith(color: AppColors.primaryColor),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 40.h),
+              // Terms and Conditions (ON HOLD)
+              // Row(
+              //   children: [
+              //     Obx(() => Checkbox(
+              //           value: controller.isTermsAccepted.value,
+              //           onChanged: controller.toggleTermsAccepted,
+              //           activeColor: AppColors.primaryColor,
+              //           shape: RoundedRectangleBorder(
+              //               borderRadius: BorderRadius.circular(4.r)),
+              //         )),
+              //     Expanded(
+              //       child: RichText(
+              //         text: TextSpan(
+              //           text: "Saya setuju dengan ",
+              //           style: AppTextStyle.smallBlackSecondary
+              //               .copyWith(color: AppColors.textMedium),
+              //           children: [
+              //             TextSpan(
+              //               text: "Syarat & Ketentuan",
+              //               style: AppTextStyle.smallBlackBold
+              //                   .copyWith(color: AppColors.primaryColor),
+              //             ),
+              //             const TextSpan(text: "\ndan "),
+              //             TextSpan(
+              //               text: "Kebijakan Privasi",
+              //               style: AppTextStyle.smallBlackBold
+              //                   .copyWith(color: AppColors.primaryColor),
+              //             ),
+              //           ],
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
+
+              SizedBox(height: 30.h),
 
               // Create Account Button
               Obx(() => ButtonPrimary(
@@ -150,7 +153,7 @@ class RegisterView extends GetView<AuthController> {
               // Social Login: Google
               SizedBox(
                 width: double.infinity,
-                height: 50.h,
+                height: 40.h,
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -205,9 +208,11 @@ class RegisterView extends GetView<AuthController> {
     required String hint,
     required IconData icon,
     TextEditingController? controller,
+    TextInputType? keyboardType,
   }) {
     return TextFormField(
       controller: controller,
+      keyboardType: keyboardType,
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: AppTextStyle.mediumGrey,
@@ -219,6 +224,10 @@ class RegisterView extends GetView<AuthController> {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
           borderSide: const BorderSide(color: AppColors.lightGrey),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: AppColors.primaryColor),
         ),
       ),
     );
@@ -253,6 +262,10 @@ class RegisterView extends GetView<AuthController> {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
           borderSide: const BorderSide(color: AppColors.lightGrey),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: AppColors.primaryColor),
         ),
       ),
     );
