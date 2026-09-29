@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pos_royal/app/core/helper/helper.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
+import 'package:img/app/core/helper/helper.dart';
+import 'package:img/app/core/styles/app_color.dart';
 
 class ProductCategoryCard extends StatelessWidget {
   const ProductCategoryCard({super.key, required this.image});

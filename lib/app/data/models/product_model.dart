@@ -1,4 +1,5 @@
 import '../../domain/entities/product_entity.dart';
+import 'variant_model.dart';
 
 double _parseDouble(dynamic val) {
   if (val == null) return 0.0;
@@ -126,47 +127,6 @@ class ProductImageModel extends ProductImageEntity {
       image: _parseString(json['image']),
       altText: json['alt_text']?.toString(),
       status: _parseBool(json['status']),
-    );
-  }
-}
-
-class ProductVariantModel extends ProductVariantEntity {
-  ProductVariantModel({
-    required super.id,
-    required super.productId,
-    required super.sku,
-    required super.variantName,
-    required super.price,
-    required super.finalPrice,
-    required super.stockQty,
-    required super.width,
-    required super.length,
-    required super.height,
-    required super.weight,
-    required super.status,
-    required super.priceProductSettings,
-  });
-
-  factory ProductVariantModel.fromJson(Map<String, dynamic> json) {
-    final attrs = json['attributes'] as Map<String, dynamic>?;
-    return ProductVariantModel(
-      id: _parseString(json['id']),
-      productId: _parseString(json['product_id']),
-      sku: _parseString(json['sku']),
-      variantName: _parseString(json['variant_name']),
-      price: _parseDouble(json['price']),
-      finalPrice: _parseDouble(json['final_price']),
-      stockQty: _parseInt(json['stock_qty']),
-      width: _parseInt(attrs?['width'] ?? json['width']),
-      length: _parseInt(attrs?['length'] ?? json['length']),
-      height: _parseInt(attrs?['height'] ?? json['height']),
-      weight: _parseInt(attrs?['weight'] ?? json['weight']),
-      status: _parseBool(json['status']),
-      priceProductSettings: (json['price_product_settings'] as List<dynamic>?)
-              ?.map((e) =>
-                  PriceProductSettingModel.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
     );
   }
 }

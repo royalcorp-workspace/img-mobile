@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CLIENT_ID</key>
+	<string>122681934982-rul6nn8bjdmbi5l6n0snq80coptt2ddp.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.122681934982-rul6nn8bjdmbi5l6n0snq80coptt2ddp</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>122681934982-r3vvnv5glnb36bnha85l8bs66v5ev5o1.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyAtLNKjh69uJ5gAjG7uNwMNZnPn53RB1bY</string>
 	<key>GCM_SENDER_ID</key>
@@ -9,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>posroyal.posRoyal</string>
+	<string>com.img.royalcorp</string>
 	<key>PROJECT_ID</key>
 	<string>img-royalcorp</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:122681934982:ios:3211d4eb27c506dc267d07</string>
+	<string>1:122681934982:ios:e1a2c5647ea19db9267d07</string>
 </dict>
 </plist>

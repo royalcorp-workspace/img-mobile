@@ -6,6 +6,10 @@ class CustomerModel {
   final String? name;
   final String? email;
   final String? phone;
+  final String? avatar;
+  final String? photoUrl;
+  final String? birthdate;
+  final String? gender;
   final dynamic meta;
   final String? createdAt;
   final String? updatedAt;
@@ -17,6 +21,10 @@ class CustomerModel {
     this.name,
     this.email,
     this.phone,
+    this.avatar,
+    this.photoUrl,
+    this.birthdate,
+    this.gender,
     this.meta,
     this.createdAt,
     this.updatedAt,
@@ -30,6 +38,12 @@ class CustomerModel {
       name: json['name'] as String?,
       email: json['email'] as String?,
       phone: json['phone'] as String?,
+      avatar: json['avatar'] as String?,
+      photoUrl: json['photo_url'] as String?,
+      birthdate: json['birthdate'] as String? ??
+          (json['meta'] is Map ? json['meta']['birthdate'] as String? : null),
+      gender: json['gender'] as String? ??
+          (json['meta'] is Map ? json['meta']['gender'] as String? : null),
       meta: json['meta'],
       createdAt: json['created_at'] as String?,
       updatedAt: json['updated_at'] as String?,
@@ -46,6 +60,10 @@ class CustomerModel {
       'name': name,
       'email': email,
       'phone': phone,
+      'avatar': avatar,
+      'photo_url': photoUrl,
+      'birthdate': birthdate,
+      'gender': gender,
       'meta': meta,
       'created_at': createdAt,
       'updated_at': updatedAt,

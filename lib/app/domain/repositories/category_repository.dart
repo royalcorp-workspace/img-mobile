@@ -1,5 +1,5 @@
-import 'package:pos_royal/app/domain/entities/category_entity.dart';
-import 'package:pos_royal/app/domain/entities/paginated_entity.dart';
+import 'package:img/app/domain/entities/category_entity.dart';
+import 'package:img/app/domain/entities/paginated_entity.dart';
 
 abstract class CategoryRepository {
   Future<PaginatedEntity<CategoryEntity>> getCategory({

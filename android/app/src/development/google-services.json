@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:355423691978:android:3f772e61c8f3e0131c0033",
+        "mobilesdk_app_id": "1:355423691978:android:bf5ce62d8ee67cd11c0033",
         "android_client_info": {
-          "package_name": "posroyal.pos_royal"
+          "package_name": "com.img.royalcorp.dev"
         }
       },
       "oauth_client": [

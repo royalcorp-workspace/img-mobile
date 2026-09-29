@@ -11,6 +11,8 @@ import '../modules/chat/bindings/chat_binding.dart';
 import '../modules/chat/views/chat_view.dart';
 import '../modules/checkout/bindings/checkout_binding.dart';
 import '../modules/checkout/views/checkout_view.dart';
+import '../modules/detail_address/bindings/detail_address_binding.dart';
+import '../modules/detail_address/views/detail_address_view.dart';
 import '../modules/detail_order/bindings/detail_order_binding.dart';
 import '../modules/detail_order/views/detail_order_view.dart';
 import '../modules/detail_product/bindings/detail_product_binding.dart';

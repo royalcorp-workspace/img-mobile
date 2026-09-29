@@ -1,3 +1,5 @@
+import 'variant_entity.dart';
+
 class ProductEntity {
   final String id;
   final String name;
@@ -50,6 +52,33 @@ class ProductEntity {
     required this.avgRating,
     required this.totalReviews,
   });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'slug': slug,
+        'category_id': categoryId,
+        'brand_id': brandId,
+        'thumbnail': thumbnail,
+        'alt_text': altText,
+        'short_description': shortDescription,
+        'description': description,
+        'best_seller': bestSeller,
+        'is_new': isNew,
+        'sort_order': sortOrder,
+        'status': status,
+        'base_price': basePrice,
+        'final_price': finalPrice,
+        'uom': uom,
+        'images': images.map((image) => image.toJson()).toList(),
+        'variants': variants.map((variant) => variant.toJson()).toList(),
+        'colors': colors.map((color) => color.toJson()).toList(),
+        'price_product_settings':
+            priceProductSettings.map((setting) => setting.toJson()).toList(),
+        'reviews': reviews,
+        'avg_rating': avgRating,
+        'total_reviews': totalReviews,
+      };
 }
 
 class ProductImageEntity {
@@ -66,39 +95,17 @@ class ProductImageEntity {
     this.altText,
     required this.status,
   });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'product_id': productId,
+        'image': image,
+        'alt_text': altText,
+        'status': status,
+      };
 }
 
-class ProductVariantEntity {
-  final String id;
-  final String productId;
-  final String sku;
-  final String variantName;
-  final double price;
-  final double finalPrice;
-  final int stockQty;
-  final int width;
-  final int length;
-  final int height;
-  final int weight;
-  final bool status;
-  final List<PriceProductSettingEntity> priceProductSettings;
-
-  ProductVariantEntity({
-    required this.id,
-    required this.productId,
-    required this.sku,
-    required this.variantName,
-    required this.price,
-    required this.finalPrice,
-    required this.stockQty,
-    required this.width,
-    required this.length,
-    required this.height,
-    required this.weight,
-    required this.status,
-    required this.priceProductSettings,
-  });
-}
+typedef ProductVariantEntity = VariantEntity;
 
 class ProductColorEntity {
   final String id;
@@ -114,6 +121,14 @@ class ProductColorEntity {
     required this.colorCode,
     required this.status,
   });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'product_id': productId,
+        'color_name': colorName,
+        'color_code': colorCode,
+        'status': status,
+      };
 }
 
 class PriceProductSettingEntity {
@@ -140,6 +155,21 @@ class PriceProductSettingEntity {
     required this.isActive,
     required this.isFeatured,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'code': code,
+      'description': description,
+      'discount_type': discountType,
+      'discount_value': discountValue,
+      'max_discount': maxDiscount,
+      'min_purchase': minPurchase,
+      'is_active': isActive,
+      'is_featured': isFeatured,
+    };
+  }
 }
 
 class ProductSegmentsEntity {

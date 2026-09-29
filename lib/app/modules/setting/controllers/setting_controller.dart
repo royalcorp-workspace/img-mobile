@@ -12,6 +12,10 @@ import 'package:pos_royal/app/data/models/user_model.dart';
 import 'package:pos_royal/app/routes/app_pages.dart';
 
 class SettingController extends GetxController {
+  final GetCustomerProfileUsecase? getCustomerProfileUsecase;
+
+  SettingController({this.getCustomerProfileUsecase});
+
   var userModel = UserModel().obs;
   final AuthService _authService = AuthService();
   var isLoggingOut = false.obs;
@@ -19,7 +23,7 @@ class SettingController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _getOrFetchCustomerId();
+    loadUserProfile();
   }
 
   void logout() async {
@@ -78,11 +82,26 @@ class SettingController extends GetxController {
           return parsed.id!;
         }
       }
+    }
+  }
+
+  void _loadFromTokenStorage() {
+    try {
+      final userDataStr = TokenStorage.getUserData();
+      userDataStr.then((str) {
+        if (str != null && str.isNotEmpty) {
+          final Map<String, dynamic> userMap = jsonDecode(str);
+          final parsed = UserModel.fromJson(userMap);
+          userModel.value = parsed;
+          if (parsed.customer != null) {
+            customerModel.value = parsed.customer;
+          }
+        }
+      });
     } catch (e) {
       logger
           .warning('⚠️ [SETTING] Could not parse stored user customer ID: $e');
     }
-    return "3fa85f64-5717-4562-b3fc-2c963f66afa6";
   }
 
   void showDeleteConfirmationDialog() {

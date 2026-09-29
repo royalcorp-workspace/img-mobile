@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/services/auth_service.dart';
-import 'package:pos_royal/app/core/utils/log/logger.dart';
-import 'package:pos_royal/app/routes/app_pages.dart';
+import 'package:img/app/core/services/auth_service.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:img/app/core/utils/log/logger.dart';
+import 'package:img/app/data/models/register_params_model.dart';
+import 'package:img/app/routes/app_pages.dart';
 
 class AuthController extends GetxController {
   final AuthService _authService = AuthService();
@@ -21,7 +24,7 @@ class AuthController extends GetxController {
   final TextEditingController registerConfirmPassC = TextEditingController();
   var isRegisterPasswordHidden = true.obs;
   var isConfirmPasswordHidden = true.obs;
-  var isTermsAccepted = false.obs;
+  // var isTermsAccepted = false.obs;
   var isRegistering = false.obs;
 
   void toggleLoginPassword() {
@@ -36,11 +39,11 @@ class AuthController extends GetxController {
     isConfirmPasswordHidden.value = !isConfirmPasswordHidden.value;
   }
 
-  void toggleTermsAccepted(bool? value) {
-    if (value != null) {
-      isTermsAccepted.value = value;
-    }
-  }
+  // void toggleTermsAccepted(bool? value) {
+  //   if (value != null) {
+  //     isTermsAccepted.value = value;
+  //   }
+  // }
 
   /// Validate email format
   bool _isValidEmail(String email) {
@@ -54,37 +57,63 @@ class AuthController extends GetxController {
     final email = loginEmailC.text.trim();
     final password = loginPassC.text;
 
-    logger.info('  Email: $email');
+    logger.info('Email: $email');
 
     // Validation
-    // if (email.isEmpty) {
-    //   logger.warning('⚠️ [CONTROLLER] Email is empty');
-    //   Get.snackbar('Kesalahan', 'Email diperlukan',
-    //       backgroundColor: Get.context!.theme.colorScheme.error,
-    //       colorText: Colors.white);
-    //   return;
-    // }
-    // if (!_isValidEmail(email)) {
-    //   logger.warning('⚠️ [CONTROLLER] Invalid email format: $email');
-    //   Get.snackbar('Kesalahan', 'Masukkan email yang valid',
-    //       backgroundColor: Get.context!.theme.colorScheme.error,
-    //       colorText: Colors.white);
-    //   return;
-    // }
-    // if (password.isEmpty) {
-    //   logger.warning('⚠️ [CONTROLLER] Password is empty');
-    //   Get.snackbar('Kesalahan', 'Kata sandi diperlukan',
-    //       backgroundColor: Get.context!.theme.colorScheme.error,
-    //       colorText: Colors.white);
-    //   return;
-    // }
-    // if (password.length < 6) {
-    //   logger.warning('⚠️ [CONTROLLER] Password too short');
-    //   Get.snackbar('Kesalahan', 'Kata sandi harus minimal 6 karakter',
-    //       backgroundColor: Get.context!.theme.colorScheme.error,
-    //       colorText: Colors.white);
-    //   return;
-    // }
+    if (email.isEmpty) {
+      logger.warning('⚠️ [CONTROLLER] Email is empty');
+
+      Get.snackbar(
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Email diperlukan', style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
+      );
+      return;
+    }
+    if (!_isValidEmail(email)) {
+      logger.warning('⚠️ [CONTROLLER] Invalid email format: $email');
+
+      Get.snackbar(
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText:
+            Text('Masukkan email yang valid', style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
+      );
+      return;
+    }
+    if (password.isEmpty) {
+      logger.warning('⚠️ [CONTROLLER] Password is empty');
+      Get.snackbar(
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText:
+            Text('Kata sandi diperlukan', style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
+      );
+      return;
+    }
+    if (password.length < 6) {
+      logger.warning('⚠️ [CONTROLLER] Password too short');
+
+      Get.snackbar(
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Kata sandi harus minimal 6 karakter',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
+      );
+      return;
+    }
 
     try {
       isLoggingIn.value = true;
@@ -98,10 +127,18 @@ class AuthController extends GetxController {
         Get.offAllNamed(Routes.NAVIGATION);
       } else {
         logger.warning('⚠️ [CONTROLLER] Login failed');
-        Get.snackbar('Kesalahan',
-            'Gagal masuk. Periksa kembali email dan kata sandi Anda.',
-            backgroundColor: Get.context!.theme.colorScheme.error,
-            colorText: Colors.white);
+
+        Get.snackbar(
+          '',
+          '',
+          titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+          messageText: Text(
+              'Gagal masuk. Periksa kembali email dan kata sandi Anda.',
+              style: AppTextStyle.mediumWhite),
+          backgroundColor:
+              Get.context?.theme.colorScheme.error ?? AppColors.red,
+          colorText: AppColors.white,
+        );
       }
     } on Exception catch (e) {
       logger.severe('❌ [CONTROLLER] Login error: $e');
@@ -119,9 +156,15 @@ class AuthController extends GetxController {
       } else if (e.toString().contains('user-disabled')) {
         errorMsg = 'Akun pengguna dinonaktifkan';
       }
-      Get.snackbar('Kesalahan', errorMsg,
-          backgroundColor: Get.context!.theme.colorScheme.error,
-          colorText: Colors.white);
+
+      Get.snackbar(
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText: Text(errorMsg, style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
+      );
     } finally {
       isLoggingIn.value = false;
     }
@@ -137,53 +180,99 @@ class AuthController extends GetxController {
 
     // Validation
     if (name.isEmpty) {
-      Get.snackbar('Kesalahan', 'Nama diperlukan',
-          backgroundColor: Get.context!.theme.colorScheme.error,
-          colorText: Colors.white);
+      Get.snackbar(
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Nama diperlukan', style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
+      );
       return;
     }
     if (email.isEmpty) {
-      Get.snackbar('Kesalahan', 'Email diperlukan',
-          backgroundColor: Get.context!.theme.colorScheme.error,
-          colorText: Colors.white);
+      Get.snackbar(
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Email diperlukan', style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
+      );
       return;
     }
     if (!_isValidEmail(email)) {
-      Get.snackbar('Kesalahan', 'Masukkan email yang valid',
-          backgroundColor: Get.context!.theme.colorScheme.error,
-          colorText: Colors.white);
+      Get.snackbar(
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText:
+            Text('Masukkan email yang valid', style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
+      );
       return;
     }
     if (phone.isEmpty) {
-      Get.snackbar('Kesalahan', 'Nomor telepon diperlukan',
-          backgroundColor: Get.context!.theme.colorScheme.error,
-          colorText: Colors.white);
+      Get.snackbar(
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText:
+            Text('Nomor telepon diperlukan', style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
+      );
       return;
     }
     if (password.isEmpty) {
-      Get.snackbar('Kesalahan', 'Kata sandi diperlukan',
-          backgroundColor: Get.context!.theme.colorScheme.error,
-          colorText: Colors.white);
+      Get.snackbar(
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText:
+            Text('Kata sandi diperlukan', style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
+      );
       return;
     }
     if (password.length < 6) {
-      Get.snackbar('Kesalahan', 'Kata sandi harus minimal 6 karakter',
-          backgroundColor: Get.context!.theme.colorScheme.error,
-          colorText: Colors.white);
+      Get.snackbar(
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText: Text('Kata sandi harus minimal 6 karakter',
+            style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
+      );
       return;
     }
     if (password != confirmPassword) {
-      Get.snackbar('Kesalahan', 'Kata sandi tidak sesuai',
-          backgroundColor: Get.context!.theme.colorScheme.error,
-          colorText: Colors.white);
+      Get.snackbar(
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText:
+            Text('Kata sandi tidak sesuai', style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
+      );
       return;
     }
-    if (!isTermsAccepted.value) {
-      Get.snackbar('Kesalahan', 'Harap terima Syarat & Ketentuan',
-          backgroundColor: Get.context!.theme.colorScheme.error,
-          colorText: Colors.white);
-      return;
-    }
+    // if (!isTermsAccepted.value) {
+    //   Get.snackbar(
+    //     '',
+    //     '',
+    //     titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+    //     messageText: Text('Harap terima Syarat & Ketentuan',
+    //         style: AppTextStyle.mediumWhite),
+    //     backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+    //     colorText: AppColors.white,
+    //   );
+    //   return;
+    // }
 
     try {
       isRegistering.value = true;
@@ -198,9 +287,15 @@ class AuthController extends GetxController {
       } else if (e.toString().contains('weak-password')) {
         errorMsg = 'Kata sandi terlalu lemah';
       }
-      Get.snackbar('Kesalahan', errorMsg,
-          backgroundColor: Get.context!.theme.colorScheme.error,
-          colorText: Colors.white);
+
+      Get.snackbar(
+        '',
+        '',
+        titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+        messageText: Text(errorMsg, style: AppTextStyle.mediumWhite),
+        backgroundColor: Get.context?.theme.colorScheme.error ?? AppColors.red,
+        colorText: AppColors.white,
+      );
     } finally {
       isRegistering.value = false;
     }
@@ -250,9 +345,15 @@ class AuthController extends GetxController {
 
       if (result == null) {
         logger.warning('⚠️ [CONTROLLER] Apple sign-in was cancelled by user');
-        Get.snackbar('ℹ️', 'Apple sign-in dibatalkan',
-            backgroundColor: Get.context!.theme.colorScheme.tertiary,
-            colorText: Colors.white);
+
+        Get.snackbar('', '',
+            titleText: Text('ℹ️', style: AppTextStyle.largeWhiteBold),
+            messageText: Text('Apple sign-in dibatalkan',
+                style: AppTextStyle.mediumWhite),
+            backgroundColor:
+                Get.context?.theme.colorScheme.error ?? AppColors.red,
+            colorText: AppColors.white,
+            duration: Duration(seconds: 5));
         return;
       }
 
@@ -262,24 +363,17 @@ class AuthController extends GetxController {
       logger.severe('❌ [CONTROLLER] Apple sign-in error: $e');
       logger.severe('  Error type: ${e.runtimeType}');
       logger.severe('  Full error: ${e.toString()}');
-      Get.snackbar('Kesalahan', 'Gagal masuk dengan Apple: ${e.toString()}',
-          backgroundColor: Get.context!.theme.colorScheme.error,
-          colorText: Colors.white,
+
+      Get.snackbar('', '',
+          titleText: Text('Kesalahan', style: AppTextStyle.largeWhiteBold),
+          messageText: Text('Gagal masuk dengan Apple: ${e.toString()}',
+              style: AppTextStyle.mediumWhite),
+          backgroundColor:
+              Get.context?.theme.colorScheme.error ?? AppColors.red,
+          colorText: AppColors.white,
           duration: Duration(seconds: 5));
     } finally {
       isLoggingIn.value = false;
     }
-  }
-
-  @override
-  void onClose() {
-    loginEmailC.dispose();
-    loginPassC.dispose();
-    registerNameC.dispose();
-    registerEmailC.dispose();
-    registerPhoneC.dispose();
-    registerPassC.dispose();
-    registerConfirmPassC.dispose();
-    super.onClose();
   }
 }

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/helper/helper.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
-import 'package:pos_royal/app/routes/app_pages.dart';
+import 'package:img/app/core/helper/helper.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:img/app/routes/app_pages.dart';
 
 import '../controllers/success_controller.dart';
 
@@ -39,14 +39,14 @@ class SuccessView extends GetView<SuccessController> {
                     style: AppTextStyle.mediumGrey,
                     children: [
                       TextSpan(
-                        text: '#9ds69hs',
+                        text: '#${controller.invoiceNumber}',
                         style: AppTextStyle.mediumBlackBold.copyWith(
                           color: AppColors.secondaryColor,
                         ),
                       ),
                       TextSpan(
                         text:
-                            '. Kamu dapat melacak pengiriman di bagian riwayat pesanan',
+                            '. Kamu dapat melacak pengiriman di bagian pesanan',
                         style: AppTextStyle.mediumGrey,
                       ),
                     ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
 
 class TextFormfieldApp extends StatelessWidget {
   const TextFormfieldApp({
@@ -10,24 +10,40 @@ class TextFormfieldApp extends StatelessWidget {
     this.keyboardType,
     this.title,
     this.prefix,
+    this.suffixIcon,
     this.hintText,
+    this.maxLines = 1,
+    this.obscureText = false,
+    this.readOnly = false,
+    this.enabled,
+    this.validator,
+    this.onChanged,
   });
 
   final String? title, hintText;
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final Widget? prefix;
+  final Widget? suffixIcon;
+  final int? maxLines;
+  final bool obscureText;
+  final bool readOnly;
+  final bool? enabled;
+  final FormFieldValidator<String>? validator;
+  final ValueChanged<String>? onChanged;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title ?? '',
-          style: AppTextStyle.mediumBlackBold,
-        ),
-        5.verticalSpace,
+        if (title != null && title!.isNotEmpty) ...[
+          Text(
+            title!,
+            style: AppTextStyle.mediumBlackBold,
+          ),
+          5.verticalSpace,
+        ],
         Container(
           decoration: BoxDecoration(
             boxShadow: [
@@ -43,10 +59,21 @@ class TextFormfieldApp extends StatelessWidget {
             controller: controller,
             keyboardType: keyboardType,
             style: AppTextStyle.mediumBlack,
+            maxLines: obscureText ? 1 : maxLines,
+            obscureText: obscureText,
+            readOnly: readOnly,
+            enabled: enabled,
+            validator: validator,
+            onChanged: onChanged,
             decoration: InputDecoration(
               hintText: hintText,
+              hintStyle: AppTextStyle.mediumGrey,
               fillColor: AppColors.white,
               filled: true,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
               enabledBorder: OutlineInputBorder(
                 borderSide: const BorderSide(color: AppColors.lightGrey),
                 borderRadius: BorderRadius.circular(14),
@@ -55,7 +82,16 @@ class TextFormfieldApp extends StatelessWidget {
                 borderSide: const BorderSide(color: AppColors.primaryColor),
                 borderRadius: BorderRadius.circular(14),
               ),
-              prefix: prefix,
+              errorBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: AppColors.red),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: AppColors.red),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              prefixIcon: prefix,
+              suffixIcon: suffixIcon,
             ),
           ),
         ),

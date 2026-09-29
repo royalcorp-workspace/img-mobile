@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:pos_royal/app/routes/app_pages.dart';
-import 'package:pos_royal/app/shared/data/app_shared_prefs.dart';
+import 'package:img/app/routes/app_pages.dart';
+import 'package:img/app/shared/data/app_shared_prefs.dart';
 
 class OnboardingController extends GetxController {
   final pageController = PageController();

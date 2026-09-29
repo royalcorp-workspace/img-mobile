@@ -4,17 +4,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:get/get.dart';
-import 'package:pos_royal/app/core/helper/helper.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
-import 'package:pos_royal/app/modules/detail_product/widgets/cart_badge.dart';
-import 'package:pos_royal/app/modules/detail_product/widgets/comment_card.dart';
-import 'package:pos_royal/app/modules/detail_product/widgets/detail_product_card.dart';
-import 'package:pos_royal/app/modules/home/widgets/product_card.dart';
-import 'package:pos_royal/app/routes/app_pages.dart';
-import 'package:pos_royal/app/shared/widgets/app_divider.dart';
-import 'package:pos_royal/app/shared/widgets/text/text_price_line_through.dart';
+import 'package:img/app/core/helper/helper.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:img/app/modules/cart/controllers/cart_controller.dart';
+import 'package:img/app/modules/checkout/models/checkout_arguments.dart';
+import 'package:img/app/modules/detail_product/widgets/cart_badge.dart';
+import 'package:img/app/modules/detail_product/widgets/comment_card.dart';
+import 'package:img/app/modules/detail_product/widgets/detail_product_card.dart';
+import 'package:img/app/routes/app_pages.dart';
+import 'package:img/app/shared/widgets/app_divider.dart';
+import 'package:img/app/shared/widgets/text/text_price_line_through.dart';
 import 'package:readmore/readmore.dart';
+
+import 'package:img/app/domain/entities/product_entity.dart';
 
 import '../controllers/detail_product_controller.dart';
 
@@ -65,15 +68,15 @@ class DetailProductView extends GetView<DetailProductController> {
                         ),
                         5.horizontalSpace,
                         Text(
-                          '4.2',
+                          controller.productByID.value.avgRating.toString(),
                           style: AppTextStyle.mediumBlackBold.copyWith(
                             color: AppColors.yellow,
                           ),
                         ),
                         5.horizontalSpace,
-                        const Text(
-                          '(128)',
-                          style: AppTextStyle.mediumGrey,
+                        Text(
+                          '(${controller.productByID.value.reviews?.length})',
+                          style: AppTextStyle.smallGrey,
                         ),
                       ],
                     ),
@@ -83,39 +86,39 @@ class DetailProductView extends GetView<DetailProductController> {
                       style: AppTextStyle.mediumGrey
                           .copyWith(color: AppColors.lightGrey),
                     ),
-                    8.horizontalSpace,
-                    Row(
-                      children: [
-                        const Text(
-                          '30',
-                          style: AppTextStyle.mediumBlack,
-                        ),
-                        5.horizontalSpace,
-                        const Text(
-                          'Terjual',
-                          style: AppTextStyle.mediumGrey,
-                        ),
-                      ],
-                    ),
-                    8.horizontalSpace,
-                    Text(
-                      '|',
-                      style: AppTextStyle.mediumGrey
-                          .copyWith(color: AppColors.lightGrey),
-                    ),
+                    // 8.horizontalSpace,
+                    // Row(
+                    //   children: [
+                    //     const Text(
+                    //       '30',
+                    //       style: AppTextStyle.mediumBlack,
+                    //     ),
+                    //     5.horizontalSpace,
+                    //     const Text(
+                    //       'Terjual',
+                    //       style: AppTextStyle.smallGrey,
+                    //     ),
+                    //   ],
+                    // ),
+                    // 8.horizontalSpace,
+                    // Text(
+                    //   '|',
+                    //   style: AppTextStyle.mediumGrey
+                    //       .copyWith(color: AppColors.lightGrey),
+                    // ),
                     8.horizontalSpace,
                     Row(
                       children: [
                         Obx(
                           () => Text(
-                            '${controller.productByID.value.variants?[controller.selectedIndex.value].stockQty}',
+                            '${controller.selectedVariant?.stockQty ?? 0}',
                             style: AppTextStyle.mediumBlack,
                           ),
                         ),
                         5.horizontalSpace,
                         const Text(
                           'Stok',
-                          style: AppTextStyle.mediumGrey,
+                          style: AppTextStyle.smallGrey,
                         ),
                       ],
                     )
@@ -129,13 +132,10 @@ class DetailProductView extends GetView<DetailProductController> {
                   children: [
                     Obx(
                       () => Text(
-                        Helper.formatCurrency(controller
-                                .productByID
-                                .value
-                                .variants?[controller.selectedIndex.value]
-                                .finalPrice
-                                .toInt() ??
-                            0),
+                        Helper.formatCurrency(
+                            controller.selectedVariant?.finalPrice.toInt() ??
+                                controller.productByID.value.finalPrice ??
+                                0),
                         style: AppTextStyle.xLargeBlackBold.copyWith(
                           color: AppColors.orange,
                         ),
@@ -280,31 +280,57 @@ class DetailProductView extends GetView<DetailProductController> {
                   style: AppTextStyle.largeBlackBold,
                 ),
               ),
-              10.verticalSpace,
-              RPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                child: SizedBox(
-                  height: 32.h,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    shrinkWrap: true,
-                    itemCount: controller.productByID.value.variants?.length,
-                    itemBuilder: (context, index) => Obx(
-                      () => SizeContainer(
-                        label:
-                            '${controller.productByID.value.variants?[index].width}x${controller.productByID.value.variants?[index].length}',
-                        isSelected: controller.selectedIndex.value == index,
-                        onTap: () => controller.selectedIndex.value = index,
+              Obx(
+                () => Visibility(
+                  visible:
+                      controller.productByID.value.variants?.isNotEmpty == true,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppDivider(),
+                      10.verticalSpace,
+                      RPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        child: const Text(
+                          'Pilih Ukuran',
+                          style: AppTextStyle.largeBlackBold,
+                        ),
                       ),
-                    ),
+                      10.verticalSpace,
+                      RPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        child: SizedBox(
+                          height: 32.h,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            shrinkWrap: true,
+                            itemCount:
+                                controller.productByID.value.variants?.length ??
+                                    0,
+                            itemBuilder: (context, index) => Obx(
+                              () => SizeContainerWidget(
+                                label:
+                                    '${controller.productByID.value.variants?[index].width}x${controller.productByID.value.variants?[index].length}',
+                                isSelected:
+                                    controller.selectedIndex.value == index,
+                                onTap: () =>
+                                    controller.selectedIndex.value = index,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
               Visibility(
-                  visible: controller.productByID.value.colors!.isNotEmpty,
+                  visible:
+                      controller.productByID.value.colors?.isNotEmpty == true,
                   child: 10.verticalSpace),
               Visibility(
-                visible: controller.productByID.value.colors!.isNotEmpty,
+                visible:
+                    controller.productByID.value.colors?.isNotEmpty == true,
                 child: RPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   child: const Text(
@@ -314,10 +340,12 @@ class DetailProductView extends GetView<DetailProductController> {
                 ),
               ),
               Visibility(
-                  visible: controller.productByID.value.colors!.isNotEmpty,
+                  visible:
+                      controller.productByID.value.colors?.isNotEmpty == true,
                   child: 10.verticalSpace),
               Visibility(
-                visible: controller.productByID.value.colors!.isNotEmpty,
+                visible:
+                    controller.productByID.value.colors?.isNotEmpty == true,
                 child: RPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   child: SizedBox(
@@ -327,11 +355,11 @@ class DetailProductView extends GetView<DetailProductController> {
                       shrinkWrap: true,
                       itemCount: controller.productByID.value.colors?.length,
                       itemBuilder: (context, index) => Obx(
-                        () => SizeContainer(
+                        () => SizeContainerWidget(
                           label:
                               '${controller.productByID.value.colors?[index].name}',
                           isSelected: controller.selectedIndex.value == index,
-                          onTap: () => controller.selectedIndex.value = index,
+                          onTap: () => controller.changeSelectedIndex(index),
                         ),
                       ),
                     ),
@@ -378,10 +406,10 @@ ${controller.productByID.value.description}
                       'Ulasan Produk',
                       style: AppTextStyle.largeBlackBold,
                     ),
-                    Text(
-                      'Lihat Semua',
-                      style: AppTextStyle.mediumBlackBold,
-                    ),
+                    // Text(
+                    //   'Lihat Semua',
+                    //   style: AppTextStyle.smallBlackBold,
+                    // ),
                   ],
                 ),
               ),
@@ -404,15 +432,16 @@ ${controller.productByID.value.description}
                               ),
                               5.horizontalSpace,
                               Text(
-                                '4.2',
+                                controller.productByID.value.avgRating
+                                    .toString(),
                                 style: AppTextStyle.xLargeBlackBold,
                               ),
                             ],
                           ),
                           12.verticalSpace,
                           Text(
-                            '128 Rating\ndan 24 Review',
-                            style: AppTextStyle.mediumGrey,
+                            '${controller.productByID.value.avgRating} Rating\ndan ${controller.productByID.value.reviews?.length} Review',
+                            style: AppTextStyle.smallGrey,
                           )
                         ],
                       ),
@@ -427,7 +456,7 @@ ${controller.productByID.value.description}
                             children: [
                               Text(
                                 '5',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                               5.horizontalSpace,
                               Icon(
@@ -446,7 +475,7 @@ ${controller.productByID.value.description}
                               5.horizontalSpace,
                               Text(
                                 '67%',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                             ],
                           ),
@@ -455,7 +484,7 @@ ${controller.productByID.value.description}
                             children: [
                               Text(
                                 '4',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                               5.horizontalSpace,
                               Icon(
@@ -474,7 +503,7 @@ ${controller.productByID.value.description}
                               5.horizontalSpace,
                               Text(
                                 '20%',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                             ],
                           ),
@@ -483,7 +512,7 @@ ${controller.productByID.value.description}
                             children: [
                               Text(
                                 '3',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                               5.horizontalSpace,
                               Icon(
@@ -502,7 +531,7 @@ ${controller.productByID.value.description}
                               5.horizontalSpace,
                               Text(
                                 '7%',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                             ],
                           ),
@@ -511,7 +540,7 @@ ${controller.productByID.value.description}
                             children: [
                               Text(
                                 '2',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                               5.horizontalSpace,
                               Icon(
@@ -530,7 +559,7 @@ ${controller.productByID.value.description}
                               5.horizontalSpace,
                               Text(
                                 '0%',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                             ],
                           ),
@@ -539,7 +568,7 @@ ${controller.productByID.value.description}
                             children: [
                               Text(
                                 '1',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                               5.horizontalSpace,
                               Icon(
@@ -558,7 +587,7 @@ ${controller.productByID.value.description}
                               5.horizontalSpace,
                               Text(
                                 '2%',
-                                style: AppTextStyle.mediumGrey,
+                                style: AppTextStyle.smallGrey,
                               ),
                             ],
                           )
@@ -574,83 +603,84 @@ ${controller.productByID.value.description}
                 child: CommentCard(),
               ),
               10.verticalSpace,
-              AppDivider(),
-              10.verticalSpace,
-              RPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Produk Serupa',
-                      style: AppTextStyle.largeBlackBold,
-                    ),
-                    Text(
-                      'Lihat Semua',
-                      style: AppTextStyle.mediumBlackBold,
-                    ),
-                  ],
-                ),
-              ),
-              10.verticalSpace,
-              GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(14),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 0.7,
-                  ),
-                  itemCount: 4,
-                  itemBuilder: (context, index) {
-                    //               final String title = product?.name ?? "-";
-                    // double priceVal = 0.0;
-                    // double originalPriceVal = 0.0;
-                    // if (product != null) {
-                    //   priceVal = product!.finalPrice > 0
-                    //       ? product!.finalPrice
-                    //       : (product!.basePrice > 0
-                    //           ? product!.basePrice
-                    //           : (product!.variants.isNotEmpty
-                    //               ? (product!.variants.first.finalPrice > 0
-                    //                   ? product!.variants.first.finalPrice
-                    //                   : product!.variants.first.price)
-                    //               : 0.0));
-                    //   if (product!.basePrice > priceVal) {
-                    //     originalPriceVal = product!.basePrice;
-                    //   }
-                    // }
-                    // final String formattedPrice =
-                    //     product != null ? Helper.formatCurrency(priceVal.toInt()) : 'Rp 0';
-                    // final String formattedOriginalPrice = originalPriceVal > 0
-                    //     ? Helper.formatCurrency(originalPriceVal.toInt())
-                    //     : '';
-                    // final String imageUrl = product?.thumbnail ??
-                    //     (product?.images.isNotEmpty == true ? product!.images.first.image : '');
-                    // final String ratingStr = (product?.avgRating ?? 4.2).toStringAsFixed(1);
-                    // final String reviewsStr = '(${product?.totalReviews ?? 128})';
+              // Similiar Product
+              // AppDivider(),
+              // 10.verticalSpace,
+              // RPadding(
+              //   padding: const EdgeInsets.symmetric(horizontal: 14),
+              //   child: const Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: [
+              //       Text(
+              //         'Produk Serupa',
+              //         style: AppTextStyle.largeBlackBold,
+              //       ),
+              //       Text(
+              //         'Lihat Semua',
+              //         style: AppTextStyle.smallBlackBold,
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              // 10.verticalSpace,
+              // GridView.builder(
+              //     shrinkWrap: true,
+              //     physics: const NeverScrollableScrollPhysics(),
+              //     padding: const EdgeInsets.all(14),
+              //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              //       crossAxisCount: 2,
+              //       crossAxisSpacing: 10,
+              //       mainAxisSpacing: 10,
+              //       childAspectRatio: 0.7,
+              //     ),
+              //     itemCount: 4,
+              //     itemBuilder: (context, index) {
+              //       //               final String title = product?.name ?? "-";
+              //       // double priceVal = 0.0;
+              //       // double originalPriceVal = 0.0;
+              //       // if (product != null) {
+              //       //   priceVal = product!.finalPrice > 0
+              //       //       ? product!.finalPrice
+              //       //       : (product!.basePrice > 0
+              //       //           ? product!.basePrice
+              //       //           : (product!.variants.isNotEmpty
+              //       //               ? (product!.variants.first.finalPrice > 0
+              //       //                   ? product!.variants.first.finalPrice
+              //       //                   : product!.variants.first.price)
+              //       //               : 0.0));
+              //       //   if (product!.basePrice > priceVal) {
+              //       //     originalPriceVal = product!.basePrice;
+              //       //   }
+              //       // }
+              //       // final String formattedPrice =
+              //       //     product != null ? Helper.formatCurrency(priceVal.toInt()) : 'Rp 0';
+              //       // final String formattedOriginalPrice = originalPriceVal > 0
+              //       //     ? Helper.formatCurrency(originalPriceVal.toInt())
+              //       //     : '';
+              //       // final String imageUrl = product?.thumbnail ??
+              //       //     (product?.images.isNotEmpty == true ? product!.images.first.image : '');
+              //       // final String ratingStr = (product?.avgRating ?? 4.2).toStringAsFixed(1);
+              //       // final String reviewsStr = '(${product?.totalReviews ?? 128})';
 
-                    // ImageProvider imageProvider;
-                    // if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-                    //   imageProvider = NetworkImage(imageUrl);
-                    // } else {
-                    //   imageProvider = AssetImage(
-                    //     Helper.getImagePath('img_product1.jpg'),
-                    //   );
-                    // }
-                    return ProductsCard(
-                      title: '',
-                      formattedOriginalPrice: '',
-                      formattedPrice: '',
-                      imageProvider:
-                          AssetImage(Helper.getImagePath('img_product1.jpg')),
-                      rating: '',
-                      review: '',
-                      onTap: (p0) => Get.toNamed(Routes.DETAIL_PRODUCT),
-                    );
-                  })
+              //       // ImageProvider imageProvider;
+              //       // if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+              //       //   imageProvider = NetworkImage(imageUrl);
+              //       // } else {
+              //       //   imageProvider = AssetImage(
+              //       //     Helper.getImagePath('img_product1.jpg'),
+              //       //   );
+              //       // }
+              //       return ProductsCard(
+              //         title: '',
+              //         formattedOriginalPrice: '',
+              //         formattedPrice: '',
+              //         imageProvider:
+              //             AssetImage(Helper.getImagePath('img_product1.jpg')),
+              //         rating: '',
+              //         review: '',
+              //         onTap: (p0) => Get.toNamed(Routes.DETAIL_PRODUCT),
+              //       );
+              //     })
             ],
           ),
         ),
@@ -697,10 +727,13 @@ ${controller.productByID.value.description}
                   ),
                 ),
                 InkWell(
-                  onTap: () => Get.toNamed(Routes.CHECKOUT, arguments: [
-                    controller.productByID.value,
-                    controller.selectedIndex.value
-                  ]),
+                  onTap: () => Get.toNamed(
+                    Routes.CHECKOUT,
+                    arguments: CheckoutArguments.fromProduct(
+                      product: controller.productByID.value,
+                      selectedVariantIndex: controller.selectedIndex.value,
+                    ),
+                  ),
                   child: Container(
                     height: 35.h,
                     width: 148.w,
@@ -769,23 +802,25 @@ ${controller.productByID.value.description}
           ),
         ),
         2.horizontalSpace,
-        Obx(
-          () => AddToCartIcon(
-            key: controller.cartKey,
-            icon: InkWell(
-              onTap: () => Get.toNamed(Routes.CART),
-              child: CartBadge(
-                iconPath: 'ic_cart.svg',
-                count: controller.cartQuantityItems.value,
+        GetBuilder<CartController>(
+          builder: (cartController) {
+            return AddToCartIcon(
+              key: controller.cartKey,
+              icon: InkWell(
+                onTap: () => Get.toNamed(Routes.CART),
+                child: CartBadge(
+                  iconPath: 'ic_cart.svg',
+                  count: cartController.cartItemCount,
+                ),
               ),
-            ),
-            badgeOptions: const BadgeOptions(
-              width: 0,
-              height: 0,
-              fontSize: 0,
-              active: false,
-            ),
-          ),
+              badgeOptions: const BadgeOptions(
+                width: 0,
+                height: 0,
+                fontSize: 0,
+                active: false,
+              ),
+            );
+          },
         ),
         7.horizontalSpace,
       ],
@@ -793,8 +828,8 @@ ${controller.productByID.value.description}
   }
 }
 
-class SizeContainer extends StatelessWidget {
-  const SizeContainer({
+class SizeContainerWidget extends StatelessWidget {
+  const SizeContainerWidget({
     super.key,
     required this.label,
     this.onTap,

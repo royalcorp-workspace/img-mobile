@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pos_royal/app/core/styles/app_color.dart';
-import 'package:pos_royal/app/core/styles/app_text_style.dart';
-import 'package:pos_royal/app/shared/widgets/loading_indicator.dart';
+import 'package:img/app/core/styles/app_color.dart';
+import 'package:img/app/core/styles/app_text_style.dart';
+import 'package:img/app/shared/widgets/loading_indicator.dart';
 
 class ButtonPrimary extends StatefulWidget {
   const ButtonPrimary({

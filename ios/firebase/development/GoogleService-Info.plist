@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>355423691978-9h5huqvobsm386imj14l5kgpb9f5fljg.apps.googleusercontent.com</string>
+	<string>355423691978-troea3anss1lm2r7otd857srcjf8slc1.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.355423691978-9h5huqvobsm386imj14l5kgpb9f5fljg</string>
+	<string>com.googleusercontent.apps.355423691978-troea3anss1lm2r7otd857srcjf8slc1</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>355423691978-0cftgdnual1rq6muo3mkeg9lb6p4i75p.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>posroyal.posRoyal.dev</string>
+	<string>com.img.royalcorp.dev</string>
 	<key>PROJECT_ID</key>
 	<string>img-royalcorp-dev</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:355423691978:ios:c40c32c918ef3ad81c0033</string>
+	<string>1:355423691978:ios:5d91eb1d346b77e31c0033</string>
 </dict>
 </plist>

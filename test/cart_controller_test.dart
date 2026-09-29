@@ -1,0 +1,192 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:img/app/domain/entities/add_to_cart_entity.dart';
+import 'package:img/app/domain/entities/cart_entity.dart';
+import 'package:img/app/domain/entities/paginated_entity.dart';
+import 'package:img/app/domain/repositories/cart_repository.dart';
+import 'package:img/app/domain/usecases/delete_cart_item_usecase.dart';
+import 'package:img/app/domain/usecases/get_cart_usecase.dart';
+import 'package:img/app/modules/cart/controllers/cart_controller.dart';
+
+class _FakeCartRepository implements CartRepository {
+  final List<String> deletedItems = [];
+  List<CartEntity> cartData = [];
+
+  @override
+  Future<AddToCartEntity> addToCart(AddToCartEntityParams params) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deleteCartItem({
+    required String addToCartId,
+    required String itemId,
+  }) async {
+    deletedItems.add(itemId);
+  }
+
+  @override
+  Future<PaginatedEntity<CartEntity>> getCart({
+    int page = 1,
+    int itemsPerPage = 100,
+  }) async {
+    return PaginatedEntity(
+      data: cartData,
+      totalCount: cartData.length,
+      hasMore: false,
+      page: page,
+      itemsPerPage: itemsPerPage,
+    );
+  }
+}
+
+void main() {
+  group('CartController selection logic', () {
+    test('selectedTotalPrice sums only selected items and their quantities',
+        () {
+      final controller = CartController();
+      controller.carts.value = [
+        CartEntity(
+          items: [
+            ItemCart(id: 'a', quantity: 2, unitPrice: 100000, total: 200000),
+            ItemCart(id: 'b', quantity: 3, unitPrice: 50000, total: 150000),
+            ItemCart(id: 'c', quantity: 1, unitPrice: 75000, total: 75000),
+          ],
+        ),
+      ];
+
+      controller.selectedItems['a'] = true;
+      controller.selectedItems['c'] = true;
+      controller.itemQuantities['a'] = 2;
+      controller.itemQuantities['b'] = 3;
+      controller.itemQuantities['c'] = 1;
+
+      expect(controller.selectedTotalPrice, 275000);
+      expect(controller.selectedCartItems.length, 2);
+      expect(controller.hasSelectedItems, isTrue);
+    });
+
+    test('toggleItemSelection and quantity updates do not leak across items',
+        () {
+      final controller = CartController();
+      controller.carts.value = [
+        CartEntity(
+          items: [
+            ItemCart(id: 'a', quantity: 2, unitPrice: 100000, total: 200000),
+            ItemCart(id: 'b', quantity: 1, unitPrice: 50000, total: 50000),
+          ],
+        ),
+      ];
+
+      controller.toggleItemSelection('a', true);
+      controller.incrementQty('a');
+      controller.incrementQty('b');
+
+      expect(controller.isItemSelected('a'), isTrue);
+      expect(controller.isItemSelected('b'), isFalse);
+      expect(controller.getItemQuantity('a'), 3);
+      expect(controller.getItemQuantity('b'), 2);
+      expect(controller.selectedTotalPrice, 300000);
+    });
+
+    test('cartItemCount counts cart lines rather than item quantities', () {
+      final controller = CartController();
+      controller.carts.value = [
+        CartEntity(
+          items: [
+            ItemCart(id: 'a', quantity: 2, unitPrice: 100000, total: 200000),
+            ItemCart(id: 'b', quantity: 1, unitPrice: 50000, total: 50000),
+          ],
+        ),
+        CartEntity(
+          items: [
+            ItemCart(id: 'c', quantity: 3, unitPrice: 40000, total: 120000),
+          ],
+        ),
+      ];
+
+      expect(controller.cartItemCount, 3);
+      expect(controller.cartItemCount, 3);
+    });
+
+    test('deleteSelectedItems removes all selected cart items', () async {
+      final repository = _FakeCartRepository();
+      final controller = CartController(
+        deleteCartItemUsecase: DeleteCartItemUsecase(repository),
+      );
+
+      controller.carts.value = [
+        CartEntity(
+          items: [
+            ItemCart(
+              id: 'a',
+              addToCartId: 'cart-1',
+              quantity: 2,
+              unitPrice: 100000,
+              total: 200000,
+            ),
+            ItemCart(
+              id: 'b',
+              addToCartId: 'cart-1',
+              quantity: 1,
+              unitPrice: 50000,
+              total: 50000,
+            ),
+            ItemCart(
+              id: 'c',
+              addToCartId: 'cart-1',
+              quantity: 1,
+              unitPrice: 75000,
+              total: 75000,
+            ),
+          ],
+        ),
+      ];
+
+      controller.selectedItems['a'] = true;
+      controller.selectedItems['c'] = true;
+      controller.itemQuantities['a'] = 2;
+      controller.itemQuantities['c'] = 1;
+
+      await controller.deleteSelectedItems();
+
+      expect(repository.deletedItems, containsAll(['a', 'c']));
+      expect(controller.selectedItems['a'], isNull);
+      expect(controller.selectedItems['c'], isNull);
+      expect(controller.hasSelectedItems, isFalse);
+    });
+
+    test(
+        'fetchCart updates itemQuantities when item quantity changes on server',
+        () async {
+      final repository = _FakeCartRepository();
+      repository.cartData = [
+        CartEntity(
+          items: [
+            ItemCart(id: 'a', quantity: 1, unitPrice: 100000, total: 100000),
+          ],
+        ),
+      ];
+      final getCartUseCase = GetCartUsecase(repository);
+      final controller = CartController(getCartUsecase: getCartUseCase);
+
+      // Initial fetch -> quantity is 1
+      await controller.fetchCart();
+      expect(controller.getItemQuantity('a'), 1);
+
+      // Simulate adding product to cart: server now returns quantity 2
+      repository.cartData = [
+        CartEntity(
+          items: [
+            ItemCart(id: 'a', quantity: 2, unitPrice: 100000, total: 200000),
+          ],
+        ),
+      ];
+
+      // fetchCart called after adding to cart
+      await controller.fetchCart();
+
+      // Quantity should now immediately reflect 2 without requiring app restart
+      expect(controller.getItemQuantity('a'), 2);
+    });
+  });
+}
